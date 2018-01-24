@@ -1,5 +1,6 @@
 package pl.cezaryregec.auth;
 
+import java.util.List;
 import javax.jws.WebService;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -31,9 +32,9 @@ public class AuthService {
         Query q = entitymanager.createNamedQuery("User.findByMail");
         q.setParameter("mail", mail);
         
-        User result = (User) q.getResultList().get(0);
+        List<User> result = q.getResultList();
         
-        if(result.checkPassword(password)) {
+        if(result.size() > 0 && result.get(0).checkPassword(password)) {
             
             return Response.ok().build();
         }
