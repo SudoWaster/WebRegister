@@ -1,0 +1,43 @@
+package pl.cezaryregec.auth;
+
+import javax.jws.WebService;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+/**
+ *
+ * @author SudoWaster <cezaryre@gmail.com>
+ */
+@WebService(serviceName = "AuthService")
+@Path("auth")
+public class AuthService {
+
+    @POST
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getUser(@FormParam("mail") String mail, 
+            @FormParam("password") String password) {
+        EntityManagerFactory emfactory;
+        emfactory = Persistence.createEntityManagerFactory( "pl.cezaryregec_WebRegister-web_war_1.0" );
+        
+        EntityManager entitymanager = emfactory.createEntityManager();
+        Query q = entitymanager.createNamedQuery("User.findByMail");
+        q.setParameter("mail", mail);
+        
+        User result = (User) q.getResultList().get(0);
+        
+        if(result.checkPassword(password)) {
+            
+            return Response.ok().build();
+        }
+        
+        return Response.status(401).build();
+    }
+}
