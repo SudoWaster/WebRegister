@@ -1,5 +1,6 @@
 package pl.cezaryregec.auth;
 
+import java.util.Date;
 import java.util.List;
 import javax.jws.WebService;
 import javax.persistence.EntityManager;
@@ -36,8 +37,23 @@ public class AuthService {
         
         if(result.size() > 0 && result.get(0).checkPassword(password)) {
             
-            return Response.ok().build();
+            entitymanager.getTransaction().begin();
+            
+            Token token = new Token();
+            token.setExpiration(0);
+            token.setUser(1);
+            
+            entitymanager.persist(token);
+            entitymanager.getTransaction().commit();
+            
+            entitymanager.close();
+            emfactory.close();
+            
+            return Response.ok(token.getToken()).build();
         }
+        
+        entitymanager.close();
+        emfactory.close();
         
         return Response.status(401).build();
     }
