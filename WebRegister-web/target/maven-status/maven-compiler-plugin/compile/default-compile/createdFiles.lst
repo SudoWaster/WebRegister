@@ -1,4 +1,11 @@
-org/netbeans/rest/application/config/ApplicationConfig.class
-pl/cezaryregec/auth/AuthService.class
-pl/cezaryregec/auth/Users_.class
-pl/cezaryregec/auth/Users.class
+pl/cezaryregec/rest/ApplicationConfig.class
+pl/cezaryregec/auth/Token.class
+pl/cezaryregec/APIServletContextListener.class
+pl/cezaryregec/APIServletModule.class
+pl/cezaryregec/rest/RestBuilder.class
+pl/cezaryregec/services/AuthService.class
+pl/cezaryregec/auth/User_.class
+pl/cezaryregec/rest/ApplicationConfig$1.class
+pl/cezaryregec/rest/RestBuilderImpl.class
+pl/cezaryregec/auth/Token_.class
+pl/cezaryregec/auth/User.class

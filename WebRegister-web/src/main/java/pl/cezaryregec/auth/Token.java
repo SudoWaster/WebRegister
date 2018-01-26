@@ -39,6 +39,7 @@ public class Token implements Serializable {
     private Integer user;
 
     public Token() {
+        // TODO: hash-based tokens with client app info to prevent fixation
         this.token = "test" + new Date().getTime();
     }
     

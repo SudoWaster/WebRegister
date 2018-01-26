@@ -89,10 +89,12 @@ public class User implements Serializable {
     }
 
     public boolean checkPassword(String pass) {
+        // TODO: argument salthash
         return pass.equals(password);
     }
 
     public void setPassword(String password) {
+        // TODO: salthash and requirements
         this.password = password;
     }
 
