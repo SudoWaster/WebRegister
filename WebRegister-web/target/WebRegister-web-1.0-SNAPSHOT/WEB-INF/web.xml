@@ -6,15 +6,25 @@
 	 version="3.1">
     <display-name>WebRegister</display-name>
     
+    <servlet>
+        <servlet-name>Jersey REST Service</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>pl.cezaryregec.ApplicationConfig</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Jersey REST Service</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
-    
-    <listener>
-        <listener-class>pl.cezaryregec.APIServletContextListener</listener-class>
-    </listener>
     
     <filter>
       <filter-name>GuiceFilter</filter-name>
@@ -25,4 +35,8 @@
       <filter-name>GuiceFilter</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
+    
+    <listener>
+        <listener-class>pl.cezaryregec.APIServletContextListener</listener-class>
+    </listener>
 </web-app>

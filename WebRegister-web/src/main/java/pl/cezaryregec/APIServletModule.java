@@ -1,11 +1,14 @@
 package pl.cezaryregec;
 
+import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.servlet.ServletModule;
-import org.glassfish.jersey.servlet.ServletContainer;
-import pl.cezaryregec.services.AuthService;
-import pl.cezaryregec.rest.RestBuilder;
-import pl.cezaryregec.rest.RestBuilderImpl;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import pl.cezaryregec.auth.UserService;
+import pl.cezaryregec.auth.UserServiceImpl;
+import pl.cezaryregec.resources.AuthResource;
 
 
 /**
@@ -16,11 +19,20 @@ public class APIServletModule extends ServletModule {
     
     @Override
     public void configureServlets() {
-        RestBuilder app = new RestBuilderImpl();
-        
-        bind(ServletContainer.class).in(Scopes.SINGLETON);
-        serve("/*").with(ServletContainer.class, app.buildParams("pl.cezaryregec.services"));
-        
-        bind(AuthService.class).in(Scopes.SINGLETON);
+        //bind(AuthResource.class);
     }
+    
+    @Provides
+    public EntityManager getEntityManager() {
+        EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "pl.cezaryregec_WebRegister-web_war_1.0" );
+        EntityManager em = emfactory.createEntityManager();
+        
+        return em;
+    }
+    
+    @Provides
+    public UserService getUserService() {
+        return new UserServiceImpl();
+    }
+
 }

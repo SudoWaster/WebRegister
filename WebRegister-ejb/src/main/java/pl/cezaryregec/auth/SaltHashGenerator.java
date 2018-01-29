@@ -6,4 +6,9 @@ package pl.cezaryregec.auth;
  */
 public class SaltHashGenerator {
     
+    public SaltHashGenerator() {
+        
+    }
+    
+    
 }

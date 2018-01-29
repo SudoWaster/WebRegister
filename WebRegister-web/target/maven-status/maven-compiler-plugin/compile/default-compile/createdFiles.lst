@@ -1,11 +1,5 @@
-pl/cezaryregec/rest/ApplicationConfig.class
-pl/cezaryregec/auth/Token.class
+pl/cezaryregec/resources/AuthResource.class
 pl/cezaryregec/APIServletContextListener.class
 pl/cezaryregec/APIServletModule.class
-pl/cezaryregec/rest/RestBuilder.class
-pl/cezaryregec/services/AuthService.class
-pl/cezaryregec/auth/User_.class
-pl/cezaryregec/rest/ApplicationConfig$1.class
-pl/cezaryregec/rest/RestBuilderImpl.class
-pl/cezaryregec/auth/Token_.class
-pl/cezaryregec/auth/User.class
+pl/cezaryregec/ApplicationConfig.class
+pl/cezaryregec/GuiceFeature.class
