@@ -1,4 +1,4 @@
-package pl.cezaryregec.auth;
+package pl.cezaryregec.auth.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

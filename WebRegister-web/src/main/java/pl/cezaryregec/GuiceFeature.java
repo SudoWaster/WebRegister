@@ -1,7 +1,5 @@
 package pl.cezaryregec;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import javax.annotation.Priority;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;

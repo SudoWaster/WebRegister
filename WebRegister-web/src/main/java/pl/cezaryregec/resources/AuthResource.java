@@ -1,9 +1,9 @@
 package pl.cezaryregec.resources;
 
 import com.google.inject.servlet.RequestScoped;
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import javax.persistence.EntityManager;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,8 +12,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import pl.cezaryregec.auth.Token;
-import pl.cezaryregec.auth.User;
+import pl.cezaryregec.auth.entities.Token;
+import pl.cezaryregec.auth.entities.User;
 import pl.cezaryregec.auth.UserService;
 
 /**
@@ -25,16 +25,16 @@ import pl.cezaryregec.auth.UserService;
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthResource {
     
-    private UserService us;
+    private UserService userService;
     
     @Inject
-    public AuthResource(UserService us) {
-        this.us = us;
+    public AuthResource(UserService userService) {
+        this.userService = userService;
     }
 
     @GET
     public Response heartbeat() {
-        return Response.ok("{ \"works\": " + (us != null) + " }").build();
+        return Response.ok("{ \"works\": " + (userService != null) + " }").build();
     }
     
     @POST
@@ -45,7 +45,8 @@ public class AuthResource {
         ResponseBuilder result = Response.noContent();
         
         try {
-            Token token = us.registerSession(password, us.getUser(mail));
+            User user = userService.getUser(mail);
+            Token token = userService.registerSession(password, user);
             result = Response.ok("{ \"token\" : \"" + token.getToken() + "\"}");
         } catch(NoResultException ex) {
             result = Response.status(401);
