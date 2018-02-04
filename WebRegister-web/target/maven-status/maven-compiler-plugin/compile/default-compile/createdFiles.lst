@@ -1,5 +1,5 @@
-pl/cezaryregec/resources/AuthResource.class
 pl/cezaryregec/APIServletContextListener.class
 pl/cezaryregec/APIServletModule.class
-pl/cezaryregec/ApplicationConfig.class
 pl/cezaryregec/GuiceFeature.class
+pl/cezaryregec/resources/AuthResource.class
+pl/cezaryregec/ApplicationConfig.class

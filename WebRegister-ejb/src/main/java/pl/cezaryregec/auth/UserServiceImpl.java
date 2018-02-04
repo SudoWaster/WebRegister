@@ -3,16 +3,10 @@ package pl.cezaryregec.auth;
 import pl.cezaryregec.auth.entities.User;
 import pl.cezaryregec.auth.entities.Token;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.inject.Inject;
+import javax.enterprise.inject.Default;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
-import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 import javax.ws.rs.ForbiddenException;
 
@@ -21,10 +15,14 @@ import javax.ws.rs.ForbiddenException;
  * @author SudoWaster <cezaryre@gmail.com>
  */
 @Stateless
+@Default
 public class UserServiceImpl implements UserService {
     
     @PersistenceContext(unitName="pl.cezaryregec_WebRegister-ejb_ejb_1.0-SNAPSHOTPU")
-    EntityManager entityManager;
+    public EntityManager entityManager;
+    
+    public UserServiceImpl() {
+    }
     
     @Override
     public User getUser(String mail) throws NoResultException {
@@ -49,15 +47,12 @@ public class UserServiceImpl implements UserService {
         
         
     private Token createToken(User user) {
-        entityManager.getTransaction().begin();
-
         // TODO: expiration config
         Token token = new Token();
         token.setExpiration(0);
         token.setUser(user.getId());
 
-        entityManager.persist(token);
-        entityManager.getTransaction().commit();
+        entityManager.merge(token);
         
         return token;
     }
