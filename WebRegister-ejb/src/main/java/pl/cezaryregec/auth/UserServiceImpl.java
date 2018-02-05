@@ -1,5 +1,8 @@
 package pl.cezaryregec.auth;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.persist.Transactional;
 import pl.cezaryregec.auth.entities.User;
 import pl.cezaryregec.auth.entities.Token;
 import javax.ejb.Stateless;
@@ -18,22 +21,22 @@ import javax.ws.rs.ForbiddenException;
 @Default
 public class UserServiceImpl implements UserService {
     
-    @PersistenceContext(unitName="pl.cezaryregec_WebRegister-ejb_ejb_1.0-SNAPSHOTPU")
-    public EntityManager entityManager;
-    
-    public UserServiceImpl() {
-    }
+    //@PersistenceContext(unitName="pl.cezaryregec_WebRegister-ejb_ejb_1.0-SNAPSHOTPU")
+    @Inject
+    public Provider<EntityManager> entityManager;
     
     @Override
+    @Transactional
     public User getUser(String mail) throws NoResultException {
         
-        Query q = entityManager.createNamedQuery("User.findByMail");
+        Query q = entityManager.get().createNamedQuery("User.findByMail");
         q.setParameter("mail", mail);
         
         return (User) q.getSingleResult();
     }
     
     @Override
+    @Transactional
     public Token registerSession(String password, User user) throws ForbiddenException {
         
         // TODO: hashes
@@ -46,13 +49,14 @@ public class UserServiceImpl implements UserService {
     }
         
         
+    @Transactional
     private Token createToken(User user) {
         // TODO: expiration config
         Token token = new Token();
         token.setExpiration(0);
         token.setUser(user.getId());
 
-        entityManager.merge(token);
+        entityManager.get().merge(token);
         
         return token;
     }

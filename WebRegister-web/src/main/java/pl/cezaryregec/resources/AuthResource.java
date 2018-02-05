@@ -1,9 +1,14 @@
 package pl.cezaryregec.resources;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.servlet.RequestScoped;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -27,8 +32,14 @@ import pl.cezaryregec.auth.entities.Token;
 @LocalBean
 public class AuthResource {
     
-    @EJB
     private UserService userService;
+    private ObjectMapper objectMapper;
+    
+    @Inject
+    public AuthResource(UserService userService, ObjectMapper objectMapper) {
+        this.userService = userService;
+        this.objectMapper = objectMapper;
+    }
     
     @GET
     public Response heartbeat() {
@@ -45,10 +56,13 @@ public class AuthResource {
         try {
             User user = userService.getUser(mail);
             Token token = userService.registerSession(password, user);
-            result = Response.ok("{ \"token\" : \"" + token.getToken() + "\"}");
+            result = Response.ok(objectMapper.writeValueAsString(token));
         } catch(EJBException ex) {
             result = Response.status(401);
             //result = Response.ok(ex.getCause().toString());
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(AuthResource.class.getName()).log(Level.SEVERE, null, ex);
+            result = Response.status(500);
         }
         
         return result.build();
