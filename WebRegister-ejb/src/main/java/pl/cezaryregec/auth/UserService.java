@@ -2,8 +2,8 @@ package pl.cezaryregec.auth;
 
 import com.google.inject.persist.Transactional;
 import javax.ejb.Local;
-import pl.cezaryregec.auth.entities.User;
-import pl.cezaryregec.auth.entities.Token;
+import pl.cezaryregec.entities.User;
+import pl.cezaryregec.entities.Token;
 
 /**
  *

@@ -18,9 +18,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import pl.cezaryregec.auth.entities.User;
+import pl.cezaryregec.entities.User;
 import pl.cezaryregec.auth.UserService;
-import pl.cezaryregec.auth.entities.Token;
+import pl.cezaryregec.entities.Token;
 
 /**
  *
