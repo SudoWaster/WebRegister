@@ -6,17 +6,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
+import pl.cezaryregec.Config;
 import pl.cezaryregec.entities.Token;
 import pl.cezaryregec.entities.User;
 
@@ -33,6 +30,11 @@ public class UserServiceImpl implements UserService {
     
     @Inject
     public ObjectMapper objectMapper;
+    
+    @Inject
+    public Config config;
+    
+    
     
     @Override
     @Transactional
@@ -103,7 +105,7 @@ public class UserServiceImpl implements UserService {
     private Token createToken(User user, String fingerprint) {
         // TODO: expiration config
         Token token = new Token();
-        token.setExpiration(0);
+        token.setExpiration(config.getSessionTime());
         token.setUser(user.getId());
         token.setFingerprint(fingerprint);
 
