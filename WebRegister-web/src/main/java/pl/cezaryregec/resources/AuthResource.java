@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -15,6 +16,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -39,12 +41,18 @@ public class AuthResource {
     
     @POST
     public Response getUser(@FormParam("mail") String mail, 
-            @FormParam("password") String password) {
+            @FormParam("password") String password,
+            @Context HttpServletRequest request) {
         
         try {
-            return Response.ok(userService.getRegisteredTokenJson(password, userService.getUserJson(mail))).build();
+            
+            String user = userService.getUserJson(mail);
+            String token = userService.getRegisteredTokenJson(password, user, userService.getFingerprint(request));
+            
+            return Response.ok(token).build();
             
         } catch(NoResultException|IOException ex) {
+            
             return exceptionResponse(ex);
             
         }
@@ -57,7 +65,6 @@ public class AuthResource {
         
         return Response.ok().build();
     }
-    
     
     private Response exceptionResponse(Exception ex) {
         Logger.getLogger(AuthResource.class.getName()).log(Level.SEVERE, null, ex);

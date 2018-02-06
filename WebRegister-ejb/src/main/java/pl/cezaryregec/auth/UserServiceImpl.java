@@ -13,6 +13,7 @@ import javax.enterprise.inject.Default;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
@@ -42,6 +43,21 @@ public class UserServiceImpl implements UserService {
         return objectMapper.writeValueAsString(user);
     }
     
+    @Override
+    @Transactional
+    public String getRegisteredTokenJson(String password, String userJson, String fingerprint) 
+            throws NotAuthorizedException, JsonProcessingException, IOException {
+        
+        User actualUser = matchUser(userJson);
+        
+        // TODO: hashes 
+                
+        if(actualUser.checkPassword(password)) {
+            return objectMapper.writeValueAsString(createToken(actualUser, fingerprint));
+        }
+        
+        throw new NotAuthorizedException(Response.status(Response.Status.UNAUTHORIZED));
+    }
     
     private User getUser(String mail) throws NoResultException {
         
@@ -64,39 +80,54 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public String getRegisteredTokenJson(String password, String userJson) throws NotAuthorizedException, JsonProcessingException, IOException {
+    public void removeToken(String tokenId) {
         
-        User actualUser = matchUser(userJson);
+        Token token = getToken(tokenId);
         
-        // TODO: hashes 
-                
-        if(actualUser.checkPassword(password)) {
-            return objectMapper.writeValueAsString(createToken(actualUser));
+        entityManager.get().remove(token);
+    }
+
+    @Override
+    @Transactional
+    public boolean isTokenValid(String tokenId, String fingerprint) {
+        Token token = getToken(tokenId);
+        boolean isValid = token.isValid(fingerprint);
+        
+        if(!token.hasExpired()) {
+            removeToken(tokenId);
         }
         
-        throw new NotAuthorizedException(Response.status(Response.Status.UNAUTHORIZED));
+        return isValid;
     }
-        
-    private Token createToken(User user) {
+    
+    private Token createToken(User user, String fingerprint) {
         // TODO: expiration config
         Token token = new Token();
         token.setExpiration(0);
         token.setUser(user.getId());
+        token.setFingerprint(fingerprint);
 
         entityManager.get().merge(token);
         
         return token;
     }
     
-    @Override
-    @Transactional
-    public void removeToken(String tokenId) {
-        
+    private Token getToken(String tokenId) {
         Query tokenQuery = entityManager.get().createNamedQuery("Token.findById", Token.class);
         tokenQuery.setParameter("id", tokenId);
         
-        Token token = (Token) tokenQuery.getSingleResult();
+        return (Token) tokenQuery.getSingleResult();
+    }
+
+    @Override
+    public String getFingerprint(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        String remoteAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+
+        if (remoteAddress == null) {
+            remoteAddress = request.getRemoteAddr();
+        }
         
-        entityManager.get().remove(token);
+        return userAgent + "\n" + remoteAddress;
     }
 }

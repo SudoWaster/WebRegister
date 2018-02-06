@@ -5,8 +5,7 @@ import com.google.inject.persist.Transactional;
 import java.io.IOException;
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import pl.cezaryregec.entities.User;
-import pl.cezaryregec.entities.Token;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -17,7 +16,15 @@ import pl.cezaryregec.entities.Token;
 @Transactional
 public interface UserService {
     
-    public String getUserJson(String mail) throws JsonProcessingException;
-    public String getRegisteredTokenJson(String password, String userJson) throws IOException, JsonProcessingException;
+    public String getUserJson(String mail) 
+            throws JsonProcessingException;
+    
+    public String getRegisteredTokenJson(String password, String userJson, String fingerprint) 
+            throws IOException, JsonProcessingException;
+    
     public void removeToken(String tokenId);
+    
+    public boolean isTokenValid(String tokenId, String fingerprint);
+    
+    public String getFingerprint(HttpServletRequest request);
 }

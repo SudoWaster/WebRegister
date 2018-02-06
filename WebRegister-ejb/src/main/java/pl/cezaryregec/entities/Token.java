@@ -35,6 +35,9 @@ public class Token implements Serializable {
     @NotNull
     @Column(name = "user_id")
     private Integer user;
+    @Basic(optional = false)
+    @Column(name = "fingerprint")
+    private String fingerprint;
     
     public Token() {
         // TODO: hash-based tokens with client app info to prevent fixation
@@ -50,11 +53,23 @@ public class Token implements Serializable {
     }
     
     public void setExpiration(long time) {
-        this.expiration = new Timestamp(time);
+        this.expiration = new Timestamp(System.currentTimeMillis() + time);
+    }
+    
+    public boolean hasExpired() {
+        return this.expiration.after(new Timestamp(System.currentTimeMillis()));
+    }
+    
+    public boolean isValid(String fingerprint) {
+        return hasExpired() && this.fingerprint.equals(fingerprint);
     }
     
     public void setUser(Integer user_id) {
         this.user = user_id;
+    }
+    
+    public void setFingerprint(String fingerprint) {
+        this.fingerprint = fingerprint;
     }
 
     @Override
