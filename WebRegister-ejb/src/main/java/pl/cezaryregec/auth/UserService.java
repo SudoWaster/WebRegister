@@ -25,6 +25,9 @@ public interface UserService {
     public String getUserJson(String mail) 
             throws JsonProcessingException;
     
+    public String getUserJson(int id) 
+            throws JsonProcessingException;
+    
     public String getRegisteredTokenJson(String password, String userJson, String fingerprint) 
             throws IOException;
     

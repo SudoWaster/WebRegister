@@ -47,10 +47,9 @@ public class UserServiceImpl implements UserService {
     public void createUser(String mail, String password, String firstname, String lastname, UserType type) {
         String hashedPassword = getHashedPassword(mail, password);
         
-        try {
-            User existing = getUser(mail);
+        if(userExists(mail)) {
             throw new ForbiddenException();
-        } catch(NoResultException ex) {}
+        }
         
         User user = new User();
         user.setMail(mail);
@@ -96,6 +95,15 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
+    public String getUserJson(int id) throws NoResultException, JsonProcessingException {
+        
+        User user = getUser(id);
+        
+        return objectMapper.writeValueAsString(user);
+    }
+    
+    @Override
+    @Transactional
     public String getRegisteredTokenJson(String userJson, String password, String fingerprint) 
             throws NotAuthorizedException, IOException {
         
@@ -134,6 +142,19 @@ public class UserServiceImpl implements UserService {
         userQuery.setParameter("mail", passedUser.getMail());
         
         return (User) userQuery.getSingleResult();
+    }
+    
+    private boolean userExists(String mail) {
+        
+        try {
+            User existing = getUser(mail);
+            
+            return existing != null;
+            
+        } catch(NoResultException ex) {
+            
+            return false;
+        }
     }
     
     @Override
