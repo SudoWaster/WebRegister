@@ -1,17 +1,14 @@
 package pl.cezaryregec.resources;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.servlet.RequestScoped;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -55,5 +52,13 @@ public class AuthResource {
         }
         
         return result.build();
+    }
+    
+    @DELETE
+    public Response deleteToken(@PathParam("token") String token) {
+        
+        userService.removeToken(token);
+        
+        return Response.ok().build();
     }
 }

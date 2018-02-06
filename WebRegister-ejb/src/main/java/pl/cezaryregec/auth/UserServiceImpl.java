@@ -75,8 +75,6 @@ public class UserServiceImpl implements UserService {
         throw new ForbiddenException();
     }
         
-        
-    @Transactional
     private Token createToken(User user) {
         // TODO: expiration config
         Token token = new Token();
@@ -86,5 +84,17 @@ public class UserServiceImpl implements UserService {
         entityManager.get().merge(token);
         
         return token;
+    }
+    
+    @Override
+    @Transactional
+    public void removeToken(String tokenId) {
+        
+        Query tokenQuery = entityManager.get().createNamedQuery("Token.findById", Token.class);
+        tokenQuery.setParameter("id", tokenId);
+        
+        Token token = (Token) tokenQuery.getSingleResult();
+        
+        entityManager.get().remove(token);
     }
 }

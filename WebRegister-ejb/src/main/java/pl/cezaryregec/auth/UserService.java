@@ -19,4 +19,5 @@ public interface UserService {
     
     public String getUserJson(String mail) throws JsonProcessingException;
     public String getRegisteredTokenJson(String password, String userJson) throws IOException, JsonProcessingException;
+    public void removeToken(String tokenId);
 }
