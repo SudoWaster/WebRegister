@@ -39,6 +39,8 @@ public interface UserService {
     
     public void removeToken(String tokenId);
     
+    public void refreshToken(String tokenId, String fingerprint);
+    
     public boolean isTokenValid(String tokenId, String fingerprint);
     
     public String getFingerprint(HttpServletRequest request);

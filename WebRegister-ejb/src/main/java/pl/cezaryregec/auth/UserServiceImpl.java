@@ -184,15 +184,28 @@ public class UserServiceImpl implements UserService {
         
         entityManager.get().remove(token);
     }
+    
+    @Override
+    @Transactional
+    public void refreshToken(String tokenId, String fingerprint) {
+        Token token = getToken(tokenId);
+        
+        if(isTokenValid(token, fingerprint)) {
+            token.setExpiration(config.getSessionTime());
+        }
+    }
 
     @Override
     @Transactional
     public boolean isTokenValid(String tokenId, String fingerprint) {
-        Token token = getToken(tokenId);
+        return isTokenValid(getToken(tokenId), fingerprint);
+    }
+    
+    private boolean isTokenValid(Token token, String fingerprint) {
         boolean isValid = token.isValid(fingerprint);
         
         if(!token.hasExpired()) {
-            removeToken(tokenId);
+            removeToken(token.getToken());
         }
         
         return isValid;

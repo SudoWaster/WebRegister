@@ -44,9 +44,12 @@ public class UserResource {
     }
     
     @GET
-    public Response getCurrent(@QueryParam("token") String tokenId) throws JsonProcessingException {
+    public Response getCurrent(@QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) throws JsonProcessingException {
         
         try {
+            userService.refreshToken(tokenId, userService.getFingerprint(request));
+            
             return Response.ok(userService.getUserJsonFromToken(tokenId)).build();
             
         } catch (NoResultException ex) {
@@ -65,6 +68,8 @@ public class UserResource {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
             
+            userService.refreshToken(tokenId, userService.getFingerprint(request));
+            
             return Response.ok(userService.getUserJson(id)).build();
             
         } catch (NoResultException ex) {
@@ -74,7 +79,8 @@ public class UserResource {
     
     @GET
     @Path("all")
-    public Response getAll(@QueryParam("token") String tokenId) throws IOException {
+    public Response getAll(@QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) throws IOException {
         
         User user = objectMapper.readValue(userService.getUserJsonFromToken(tokenId), User.class);
 
@@ -82,6 +88,8 @@ public class UserResource {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
+        userService.refreshToken(tokenId, userService.getFingerprint(request));
+        
         return Response.ok(userService.getUsersJson()).build();
     }
     
