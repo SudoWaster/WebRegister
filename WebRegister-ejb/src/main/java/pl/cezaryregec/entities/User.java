@@ -1,5 +1,6 @@
 package pl.cezaryregec.entities;
 
+import com.google.inject.Inject;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,7 +13,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.ForbiddenException;
 import javax.xml.bind.annotation.XmlRootElement;
+import pl.cezaryregec.Config;
+import pl.cezaryregec.auth.HashGenerator;
 
 /**
  *
@@ -30,6 +34,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "User.findByFirstname", query = "SELECT u FROM User u WHERE u.firstname = :firstname")
     , @NamedQuery(name = "User.findByLastname", query = "SELECT u FROM User u WHERE u.lastname = :lastname")})
 public class User implements Serializable {
+    
+//    @Inject
+//    HashGenerator hashGenerator;
+//    
+//    @Inject
+//    Config config;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -88,14 +98,25 @@ public class User implements Serializable {
         this.mail = mail;
     }
 
-    public boolean checkPassword(String pass) {
-        // TODO: argument salthash
-        return pass.equals(password);
+    public boolean checkPassword(String password) {
+        
+        // hashedPassword = hashGenerator.getSaltHash(getFormatedForHash(mail, password), config.getSaltPhrase());
+        
+        return this.password.equals(password);
     }
 
     public void setPassword(String password) {
-        // TODO: salthash and requirements
+        //if(this.mail != mail) {
+        //    throw new ForbiddenException();
+        //}
+        
+        //String hashedPassword = hashGenerator.getSaltHash(getFormatedForHash(mail, password), config.getSaltPhrase());
+        
         this.password = password;
+    }
+    
+    private String getFormatedForHash(String mail, String password) {
+        return mail + password;
     }
 
     public int getType() {

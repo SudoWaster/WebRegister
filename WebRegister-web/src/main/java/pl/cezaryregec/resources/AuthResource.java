@@ -1,6 +1,5 @@
 package pl.cezaryregec.resources;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.servlet.RequestScoped;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -11,7 +10,6 @@ import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -19,7 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import pl.cezaryregec.auth.UserService;
 
 /**
@@ -47,7 +44,7 @@ public class AuthResource {
         try {
             
             String user = userService.getUserJson(mail);
-            String token = userService.getRegisteredTokenJson(password, user, userService.getFingerprint(request));
+            String token = userService.getRegisteredTokenJson(user, password, userService.getFingerprint(request));
             
             return Response.ok(token).build();
             

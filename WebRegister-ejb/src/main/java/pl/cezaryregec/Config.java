@@ -7,5 +7,6 @@ package pl.cezaryregec;
 public interface Config {
     
     public long getSessionTime();
+    public String getSaltPhrase();
     
 }

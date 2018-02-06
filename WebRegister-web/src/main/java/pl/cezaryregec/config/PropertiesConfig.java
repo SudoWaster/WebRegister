@@ -14,9 +14,18 @@ public class PropertiesConfig implements Config {
     @Named("sessionTime")
     private long sessionTime;
     
+    @Inject
+    @Named("saltPhrase")
+    private String saltPhrase;
+    
     @Override
     public long getSessionTime() {
         return sessionTime;
+    }
+    
+    @Override
+    public String getSaltPhrase() {
+        return saltPhrase;
     }
     
 }

@@ -6,8 +6,8 @@ import com.google.inject.servlet.ServletModule;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import pl.cezaryregec.auth.HashGenerator;
+import pl.cezaryregec.auth.ShaHashGenerator;
 import pl.cezaryregec.auth.UserService;
 import pl.cezaryregec.auth.UserServiceImpl;
 import pl.cezaryregec.config.DefaultConfig;
@@ -25,6 +25,7 @@ public class APIServletModule extends ServletModule {
         tryLoadingConfig();
         
         bind(ObjectMapper.class);
+        bind(HashGenerator.class).to(ShaHashGenerator.class);
         bind(UserService.class).to(UserServiceImpl.class);
     }
     

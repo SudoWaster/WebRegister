@@ -26,13 +26,16 @@ public class UserServiceImpl implements UserService {
     
     //@PersistenceContext(unitName="pl.cezaryregec_WebRegister-ejb_ejb_1.0-SNAPSHOTPU")
     @Inject
-    public Provider<EntityManager> entityManager;
+    private Provider<EntityManager> entityManager;
     
     @Inject
-    public ObjectMapper objectMapper;
+    private HashGenerator hashGenerator;
     
     @Inject
-    public Config config;
+    private ObjectMapper objectMapper;
+    
+    @Inject
+    private Config config;
     
     
     
@@ -47,14 +50,14 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public String getRegisteredTokenJson(String password, String userJson, String fingerprint) 
+    public String getRegisteredTokenJson(String userJson, String password, String fingerprint) 
             throws NotAuthorizedException, JsonProcessingException, IOException {
         
         User actualUser = matchUser(userJson);
         
-        // TODO: hashes 
+        String hashedPassword = hashGenerator.getSaltHash(getFormatedForHash(actualUser.getMail(), password), config.getSaltPhrase());
                 
-        if(actualUser.checkPassword(password)) {
+        if(actualUser.checkPassword(hashedPassword)) {
             return objectMapper.writeValueAsString(createToken(actualUser, fingerprint));
         }
         
@@ -103,7 +106,7 @@ public class UserServiceImpl implements UserService {
     }
     
     private Token createToken(User user, String fingerprint) {
-        // TODO: expiration config
+        
         Token token = new Token();
         token.setExpiration(config.getSessionTime());
         token.setUser(user.getId());
@@ -131,5 +134,9 @@ public class UserServiceImpl implements UserService {
         }
         
         return userAgent + "\n" + remoteAddress;
+    }
+    
+    private String getFormatedForHash(String mail, String password) {
+        return mail + password;
     }
 }
