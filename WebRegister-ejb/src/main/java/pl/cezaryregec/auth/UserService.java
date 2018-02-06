@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.servlet.http.HttpServletRequest;
+import pl.cezaryregec.entities.UserType;
 
 /**
  *
@@ -16,11 +17,16 @@ import javax.servlet.http.HttpServletRequest;
 @Transactional
 public interface UserService {
     
+    public void createUser(String mail, String password, String firstname, String lastname, UserType type);
+    
+    public void setUser(String updatedUserJson, String password, String tokenId)
+            throws IOException;
+    
     public String getUserJson(String mail) 
             throws JsonProcessingException;
     
     public String getRegisteredTokenJson(String password, String userJson, String fingerprint) 
-            throws IOException, JsonProcessingException;
+            throws IOException;
     
     public void removeToken(String tokenId);
     

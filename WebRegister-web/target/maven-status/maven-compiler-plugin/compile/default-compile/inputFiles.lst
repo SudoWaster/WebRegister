@@ -3,5 +3,6 @@
 /Users/cezary/NetBeansProjects/WebRegister/WebRegister/WebRegister-web/src/main/java/pl/cezaryregec/APIServletModule.java
 /Users/cezary/NetBeansProjects/WebRegister/WebRegister/WebRegister-web/src/main/java/pl/cezaryregec/ApplicationConfig.java
 /Users/cezary/NetBeansProjects/WebRegister/WebRegister/WebRegister-web/src/main/java/pl/cezaryregec/config/DefaultConfig.java
+/Users/cezary/NetBeansProjects/WebRegister/WebRegister/WebRegister-web/src/main/java/pl/cezaryregec/resources/UserResource.java
 /Users/cezary/NetBeansProjects/WebRegister/WebRegister/WebRegister-web/src/main/java/pl/cezaryregec/resources/AuthResource.java
 /Users/cezary/NetBeansProjects/WebRegister/WebRegister/WebRegister-web/src/main/java/pl/cezaryregec/GuiceFeature.java

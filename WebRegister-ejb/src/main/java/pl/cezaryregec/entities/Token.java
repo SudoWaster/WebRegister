@@ -52,6 +52,10 @@ public class Token implements Serializable {
         return this.token;
     }
     
+    public int getUserId() {
+        return this.user;
+    }
+    
     public void setExpiration(long time) {
         this.expiration = new Timestamp(System.currentTimeMillis() + time);
     }

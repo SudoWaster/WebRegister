@@ -6,16 +6,19 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import java.io.IOException;
+import java.util.Objects;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.Config;
 import pl.cezaryregec.entities.Token;
 import pl.cezaryregec.entities.User;
+import pl.cezaryregec.entities.UserType;
 
 /**
  *
@@ -38,6 +41,49 @@ public class UserServiceImpl implements UserService {
     private Config config;
     
     
+
+    @Override
+    @Transactional
+    public void createUser(String mail, String password, String firstname, String lastname, UserType type) {
+        String hashedPassword = getHashedPassword(mail, password);
+        
+        try {
+            User existing = getUser(mail);
+            throw new ForbiddenException();
+        } catch(NoResultException ex) {}
+        
+        User user = new User();
+        user.setMail(mail);
+        user.setPassword(hashedPassword);
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
+        user.setType(type);
+        
+        entityManager.get().merge(user);
+    }
+    
+    @Override
+    @Transactional
+    public void setUser(String updatedUserJson, String password, String tokenId) throws IOException {
+        
+        User updatedUser = objectMapper.readValue(updatedUserJson, User.class);
+        User currentUser = getUser(getToken(tokenId).getUserId());
+        
+        String hashedPassword = getHashedPassword(currentUser.getMail(), password);
+        
+        
+        if(currentUser.getType() != UserType.ADMIN
+                && !Objects.equals(currentUser.getId(), updatedUser.getId())) {
+            
+            throw new ForbiddenException();
+        }
+        
+        if(!currentUser.checkPassword(hashedPassword)) {
+            throw new ForbiddenException();
+        }
+        
+        entityManager.get().merge(updatedUser);
+    }
     
     @Override
     @Transactional
@@ -51,11 +97,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public String getRegisteredTokenJson(String userJson, String password, String fingerprint) 
-            throws NotAuthorizedException, JsonProcessingException, IOException {
+            throws NotAuthorizedException, IOException {
         
         User actualUser = matchUser(userJson);
         
-        String hashedPassword = hashGenerator.getSaltHash(getFormatedForHash(actualUser.getMail(), password), config.getSaltPhrase());
+        String hashedPassword = getHashedPassword(actualUser.getMail(), password);
                 
         if(actualUser.checkPassword(hashedPassword)) {
             return objectMapper.writeValueAsString(createToken(actualUser, fingerprint));
@@ -72,6 +118,13 @@ public class UserServiceImpl implements UserService {
         return (User) userQuery.getSingleResult();
     }
     
+    private User getUser(int id) throws NoResultException {
+            
+        Query userQuery = entityManager.get().createNamedQuery("User.findById");
+        userQuery.setParameter("id", id);
+        
+        return (User) userQuery.getSingleResult();
+    }
     
     private User matchUser(String userJson) throws IOException {
         User passedUser = objectMapper.readValue(userJson, User.class);
@@ -134,6 +187,10 @@ public class UserServiceImpl implements UserService {
         }
         
         return userAgent + "\n" + remoteAddress;
+    }
+    
+    private String getHashedPassword(String mail, String password) {
+        return hashGenerator.getSaltHash(getFormatedForHash(mail, password), config.getSaltPhrase());
     }
     
     private String getFormatedForHash(String mail, String password) {

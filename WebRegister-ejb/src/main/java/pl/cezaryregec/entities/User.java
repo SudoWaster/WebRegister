@@ -35,11 +35,6 @@ import pl.cezaryregec.auth.HashGenerator;
     , @NamedQuery(name = "User.findByLastname", query = "SELECT u FROM User u WHERE u.lastname = :lastname")})
 public class User implements Serializable {
     
-//    @Inject
-//    HashGenerator hashGenerator;
-//    
-//    @Inject
-//    Config config;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -99,19 +94,10 @@ public class User implements Serializable {
     }
 
     public boolean checkPassword(String password) {
-        
-        // hashedPassword = hashGenerator.getSaltHash(getFormatedForHash(mail, password), config.getSaltPhrase());
-        
         return this.password.equals(password);
     }
 
     public void setPassword(String password) {
-        //if(this.mail != mail) {
-        //    throw new ForbiddenException();
-        //}
-        
-        //String hashedPassword = hashGenerator.getSaltHash(getFormatedForHash(mail, password), config.getSaltPhrase());
-        
         this.password = password;
     }
     
@@ -119,12 +105,12 @@ public class User implements Serializable {
         return mail + password;
     }
 
-    public int getType() {
-        return type;
+    public UserType getType() {
+        return UserType.cast(this.type);
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setType(UserType type) {
+        this.type = type.getInt();
     }
 
     public String getFirstname() {

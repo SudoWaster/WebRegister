@@ -3,5 +3,6 @@ pl/cezaryregec/config/PropertiesConfig.class
 pl/cezaryregec/APIServletContextListener.class
 pl/cezaryregec/APIServletModule.class
 pl/cezaryregec/GuiceFeature.class
+pl/cezaryregec/resources/UserResource.class
 pl/cezaryregec/resources/AuthResource.class
 pl/cezaryregec/ApplicationConfig.class
