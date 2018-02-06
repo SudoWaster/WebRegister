@@ -28,6 +28,12 @@ public interface UserService {
     public String getUserJson(int id) 
             throws JsonProcessingException;
     
+    public String getUserJsonFromToken(String tokenId) 
+            throws JsonProcessingException;
+    
+    public String getUsersJson()
+            throws JsonProcessingException;
+    
     public String getRegisteredTokenJson(String password, String userJson, String fingerprint) 
             throws IOException;
     

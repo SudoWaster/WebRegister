@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -104,6 +105,24 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
+    public String getUserJsonFromToken(String tokenId) throws NoResultException, JsonProcessingException {
+        
+        User user = getUser(getToken(tokenId).getUserId());
+        
+        return objectMapper.writeValueAsString(user);
+    }
+    
+    @Override
+    @Transactional
+    public String getUsersJson() throws NoResultException, JsonProcessingException {
+        
+        Query userQuery = entityManager.get().createNamedQuery("User.findAll", User.class);
+
+        return objectMapper.writeValueAsString((List<User>) userQuery.getResultList());
+    }
+    
+    @Override
+    @Transactional
     public String getRegisteredTokenJson(String userJson, String password, String fingerprint) 
             throws NotAuthorizedException, IOException {
         
@@ -120,7 +139,7 @@ public class UserServiceImpl implements UserService {
     
     private User getUser(String mail) throws NoResultException {
         
-        Query userQuery = entityManager.get().createNamedQuery("User.findByMail");
+        Query userQuery = entityManager.get().createNamedQuery("User.findByMail", User.class);
         userQuery.setParameter("mail", mail);
         
         return (User) userQuery.getSingleResult();
@@ -128,7 +147,7 @@ public class UserServiceImpl implements UserService {
     
     private User getUser(int id) throws NoResultException {
             
-        Query userQuery = entityManager.get().createNamedQuery("User.findById");
+        Query userQuery = entityManager.get().createNamedQuery("User.findById", User.class);
         userQuery.setParameter("id", id);
         
         return (User) userQuery.getSingleResult();
@@ -137,7 +156,7 @@ public class UserServiceImpl implements UserService {
     private User matchUser(String userJson) throws IOException {
         User passedUser = objectMapper.readValue(userJson, User.class);
         
-        Query userQuery = entityManager.get().createNamedQuery("User.match");
+        Query userQuery = entityManager.get().createNamedQuery("User.match", User.class);
         userQuery.setParameter("id", passedUser.getId());
         userQuery.setParameter("mail", passedUser.getMail());
         

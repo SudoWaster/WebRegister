@@ -5,4 +5,5 @@ pl/cezaryregec/APIServletModule.class
 pl/cezaryregec/GuiceFeature.class
 pl/cezaryregec/resources/UserResource.class
 pl/cezaryregec/resources/AuthResource.class
+.netbeans_automatic_build
 pl/cezaryregec/ApplicationConfig.class

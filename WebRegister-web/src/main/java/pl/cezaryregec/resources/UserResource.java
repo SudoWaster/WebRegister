@@ -1,7 +1,9 @@
 package pl.cezaryregec.resources;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.servlet.RequestScoped;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.LocalBean;
@@ -19,6 +21,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.auth.UserService;
+import pl.cezaryregec.entities.User;
 import pl.cezaryregec.entities.UserType;
 
 /**
@@ -32,24 +35,30 @@ import pl.cezaryregec.entities.UserType;
 public class UserResource {
     
     private final UserService userService;
+    private final ObjectMapper objectMapper;
     
     @Inject
-    public UserResource(UserService userService) {
+    public UserResource(UserService userService, ObjectMapper objectMapper) {
         this.userService = userService;
+        this.objectMapper = objectMapper;
     }
     
     @GET
-    public Response getAll(@QueryParam("token") String tokenId) {
-        // TODO: return all users for admin
+    public Response getCurrent(@QueryParam("token") String tokenId) throws JsonProcessingException {
         
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        try {
+            return Response.ok(userService.getUserJsonFromToken(tokenId)).build();
+            
+        } catch (NoResultException ex) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
     
     @GET
     @Path("{id}")
     public Response getUser(@PathParam("id") Integer id,
             @QueryParam("token") String tokenId,
-            @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) throws JsonProcessingException {
         
         try {
             if(!userService.isTokenValid(tokenId, userService.getFingerprint(request))) {
@@ -58,12 +67,22 @@ public class UserResource {
             
             return Response.ok(userService.getUserJson(id)).build();
             
-        } catch (JsonProcessingException ex) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-            
         } catch (NoResultException ex) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+    }
+    
+    @GET
+    @Path("all")
+    public Response getAll(@QueryParam("token") String tokenId) throws IOException {
+        
+        User user = objectMapper.readValue(userService.getUserJsonFromToken(tokenId), User.class);
+
+        if(user.getType() != UserType.ADMIN) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        return Response.ok(userService.getUsersJson()).build();
     }
     
     @POST
