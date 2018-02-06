@@ -1,48 +1,75 @@
 package pl.cezaryregec.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
-import pl.cezaryregec.entities.User;
-import pl.cezaryregec.entities.Token;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.ws.rs.ForbiddenException;
+import pl.cezaryregec.entities.Token;
+import pl.cezaryregec.entities.User;
 
 /**
  *
  * @author SudoWaster <cezaryre@gmail.com>
  */
 @Stateless
-@Default
 public class UserServiceImpl implements UserService {
     
     //@PersistenceContext(unitName="pl.cezaryregec_WebRegister-ejb_ejb_1.0-SNAPSHOTPU")
     @Inject
     public Provider<EntityManager> entityManager;
     
+    @Inject
+    public ObjectMapper objectMapper;
+    
     @Override
     @Transactional
-    public User getUser(String mail) throws NoResultException {
+    public String getUserJson(String mail) throws NoResultException, JsonProcessingException {
         
-        Query q = entityManager.get().createNamedQuery("User.findByMail");
-        q.setParameter("mail", mail);
+        User user = getUser(mail);
         
-        return (User) q.getSingleResult();
+        return objectMapper.writeValueAsString(user);
+    }
+    
+    
+    private User getUser(String mail) throws NoResultException {
+        
+        Query userQuery = entityManager.get().createNamedQuery("User.findByMail");
+        userQuery.setParameter("mail", mail);
+        
+        return (User) userQuery.getSingleResult();
+    }
+    
+    
+    private User matchUser(String userJson) throws IOException {
+        User passedUser = objectMapper.readValue(userJson, User.class);
+        
+        Query userQuery = entityManager.get().createNamedQuery("User.match");
+        userQuery.setParameter("id", passedUser.getId());
+        userQuery.setParameter("mail", passedUser.getMail());
+        
+        return (User) userQuery.getSingleResult();
     }
     
     @Override
     @Transactional
-    public Token registerSession(String password, User user) throws ForbiddenException {
+    public String getRegisteredTokenJson(String password, String userJson) throws ForbiddenException, JsonProcessingException, IOException {
         
-        // TODO: hashes
+        User actualUser = matchUser(userJson);
         
-        if(user.checkPassword(password)) {
-            return createToken(user);
+        // TODO: hashes 
+                
+        if(actualUser.checkPassword(password)) {
+            return objectMapper.writeValueAsString(createToken(actualUser));
         }
         
         throw new ForbiddenException();

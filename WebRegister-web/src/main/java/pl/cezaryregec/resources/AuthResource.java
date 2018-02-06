@@ -1,15 +1,13 @@
 package pl.cezaryregec.resources;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.servlet.RequestScoped;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,9 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import pl.cezaryregec.entities.User;
 import pl.cezaryregec.auth.UserService;
-import pl.cezaryregec.entities.Token;
 
 /**
  *
@@ -32,13 +28,11 @@ import pl.cezaryregec.entities.Token;
 @LocalBean
 public class AuthResource {
     
-    private UserService userService;
-    private ObjectMapper objectMapper;
+    private final UserService userService;
     
     @Inject
-    public AuthResource(UserService userService, ObjectMapper objectMapper) {
+    public AuthResource(UserService userService) {
         this.userService = userService;
-        this.objectMapper = objectMapper;
     }
     
     @GET
@@ -54,15 +48,10 @@ public class AuthResource {
         ResponseBuilder result = Response.noContent();
         
         try {
-            User user = userService.getUser(mail);
-            Token token = userService.registerSession(password, user);
-            result = Response.ok(objectMapper.writeValueAsString(token));
-        } catch(EJBException ex) {
+            result = Response.ok(userService.getRegisteredTokenJson(password, userService.getUserJson(mail)));
+        } catch(Exception ex) {
             result = Response.status(401);
-            //result = Response.ok(ex.getCause().toString());
-        } catch (JsonProcessingException ex) {
-            Logger.getLogger(AuthResource.class.getName()).log(Level.SEVERE, null, ex);
-            result = Response.status(500);
+            //result = Response.ok(ex.getMessage());
         }
         
         return result.build();
