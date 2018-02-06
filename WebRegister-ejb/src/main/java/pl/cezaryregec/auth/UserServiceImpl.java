@@ -14,6 +14,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.core.Response;
 import pl.cezaryregec.entities.Token;
 import pl.cezaryregec.entities.User;
 
@@ -62,7 +64,7 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public String getRegisteredTokenJson(String password, String userJson) throws ForbiddenException, JsonProcessingException, IOException {
+    public String getRegisteredTokenJson(String password, String userJson) throws NotAuthorizedException, JsonProcessingException, IOException {
         
         User actualUser = matchUser(userJson);
         
@@ -72,7 +74,7 @@ public class UserServiceImpl implements UserService {
             return objectMapper.writeValueAsString(createToken(actualUser));
         }
         
-        throw new ForbiddenException();
+        throw new NotAuthorizedException(Response.status(Response.Status.UNAUTHORIZED));
     }
         
     private Token createToken(User user) {

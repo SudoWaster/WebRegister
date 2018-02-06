@@ -1,8 +1,13 @@
 package pl.cezaryregec.resources;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.servlet.RequestScoped;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -32,26 +37,17 @@ public class AuthResource {
         this.userService = userService;
     }
     
-    @GET
-    public Response heartbeat() {
-        return Response.ok("{ \"works\": " + (userService != null) + " }").build();
-    }
-    
     @POST
     public Response getUser(@FormParam("mail") String mail, 
             @FormParam("password") String password) {
         
-        
-        ResponseBuilder result = Response.noContent();
-        
         try {
-            result = Response.ok(userService.getRegisteredTokenJson(password, userService.getUserJson(mail)));
-        } catch(Exception ex) {
-            result = Response.status(401);
-            //result = Response.ok(ex.getMessage());
+            return Response.ok(userService.getRegisteredTokenJson(password, userService.getUserJson(mail))).build();
+            
+        } catch(NoResultException|IOException ex) {
+            return exceptionResponse(ex);
+            
         }
-        
-        return result.build();
     }
     
     @DELETE
@@ -60,5 +56,12 @@ public class AuthResource {
         userService.removeToken(token);
         
         return Response.ok().build();
+    }
+    
+    
+    private Response exceptionResponse(Exception ex) {
+        Logger.getLogger(AuthResource.class.getName()).log(Level.SEVERE, null, ex);
+        
+        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 }
