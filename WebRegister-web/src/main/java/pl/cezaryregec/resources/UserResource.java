@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -58,8 +59,11 @@ public class UserResource {
             return Response.ok(userService.getUserJson(id)).build();
             
         } catch (JsonProcessingException ex) {
-            return exceptionResponse(ex);
-        } 
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+            
+        } catch (NoResultException ex) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
     
     @POST
@@ -70,13 +74,6 @@ public class UserResource {
         
         userService.createUser(mail, password, firstname, lastname, UserType.STUDENT);
         return Response.ok().build();
-    }
-    
-    
-    private Response exceptionResponse(Exception ex) {
-        Logger.getLogger(AuthResource.class.getName()).log(Level.SEVERE, null, ex);
-        
-        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     
 }
