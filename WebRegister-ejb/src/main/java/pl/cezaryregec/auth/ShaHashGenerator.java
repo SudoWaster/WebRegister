@@ -16,7 +16,7 @@ import pl.cezaryregec.Config;
 public class ShaHashGenerator implements HashGenerator {
     
     @Override
-    public String getHash(String... input) {
+    public String generateHash(String... input) {
         
         String concatenatedString = "";
         
@@ -24,11 +24,11 @@ public class ShaHashGenerator implements HashGenerator {
             concatenatedString += text;
         }
             
-        return getHash(concatenatedString);
+        return generateHash(concatenatedString);
     }
     
     @Override
-    public String getSaltHash(String input, String salt) {
+    public String generateSaltHash(String input, String salt) {
         
         String result = input;
         int j = 0;
@@ -43,18 +43,18 @@ public class ShaHashGenerator implements HashGenerator {
             result += salt.substring(j);
         }
         
-        return getHash(result);
+        return generateHash(result);
     }
 
     @Override
-    public String getHash(String input) {
-        byte[] hash = getHash(input.getBytes(StandardCharsets.UTF_8));
+    public String generateHash(String input) {
+        byte[] hash = generateHash(input.getBytes(StandardCharsets.UTF_8));
         
         return Base64.getEncoder().encodeToString(hash);
     }
     
     @Override
-    public byte[] getHash(byte[] input) {
+    public byte[] generateHash(byte[] input) {
         MessageDigest digest;
         byte[] result = null;
         

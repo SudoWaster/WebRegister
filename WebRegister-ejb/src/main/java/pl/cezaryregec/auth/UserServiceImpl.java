@@ -243,7 +243,7 @@ public class UserServiceImpl implements UserService {
     }
     
     private String getHashedPassword(String mail, String password) {
-        return hashGenerator.getSaltHash(getFormatedForHash(mail, password), config.getSaltPhrase());
+        return hashGenerator.generateSaltHash(getFormatedForHash(mail, password), config.getSaltPhrase());
     }
     
     private String getFormatedForHash(String mail, String password) {

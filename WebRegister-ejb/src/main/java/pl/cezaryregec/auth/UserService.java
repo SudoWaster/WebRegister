@@ -17,31 +17,31 @@ import pl.cezaryregec.entities.UserType;
 @Transactional
 public interface UserService {
     
-    public void createUser(String mail, String password, String firstname, String lastname, UserType type);
+    void createUser(String mail, String password, String firstname, String lastname, UserType type);
     
-    public void setUser(String updatedUserJson, String password, String tokenId)
+    void setUser(String updatedUserJson, String password, String tokenId)
             throws IOException;
     
-    public String getUserJson(String mail) 
+    String getUserJson(String mail) 
             throws JsonProcessingException;
     
-    public String getUserJson(int id) 
+    String getUserJson(int id) 
             throws JsonProcessingException;
     
-    public String getUserJsonFromToken(String tokenId) 
+    String getUserJsonFromToken(String tokenId) 
             throws JsonProcessingException;
     
-    public String getUsersJson()
+    String getUsersJson()
             throws JsonProcessingException;
     
-    public String getRegisteredTokenJson(String password, String userJson, String fingerprint) 
+    String getRegisteredTokenJson(String password, String userJson, String fingerprint) 
             throws IOException;
     
-    public void removeToken(String tokenId);
+    void removeToken(String tokenId);
     
-    public void refreshToken(String tokenId, String fingerprint);
+    void refreshToken(String tokenId, String fingerprint);
     
-    public boolean isTokenValid(String tokenId, String fingerprint);
+    boolean isTokenValid(String tokenId, String fingerprint);
     
-    public String getFingerprint(HttpServletRequest request);
+    String getFingerprint(HttpServletRequest request);
 }

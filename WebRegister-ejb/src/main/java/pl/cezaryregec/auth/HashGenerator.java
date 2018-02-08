@@ -8,12 +8,12 @@ import java.security.NoSuchAlgorithmException;
  */
 public interface HashGenerator {
     
-    public String getHash(String... input);
+    String generateHash(String... input);
     
-    public String getHash(String input);
+    String generateHash(String input);
     
-    public String getSaltHash(String input, String salt);
+    String generateSaltHash(String input, String salt);
     
-    public byte[] getHash(byte[] input);
+    byte[] generateHash(byte[] input);
     
 }
