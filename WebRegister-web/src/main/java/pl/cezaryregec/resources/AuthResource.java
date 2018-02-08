@@ -42,9 +42,7 @@ public class AuthResource {
             @Context HttpServletRequest request) {
         
         try {
-            
-            String user = userService.getUserJson(mail);
-            String token = userService.getRegisteredTokenJson(user, password, userService.getFingerprint(request));
+            String token = userService.getRegisteredTokenJson(mail, password, userService.getFingerprint(request));
             
             return Response.ok(token).build();
             

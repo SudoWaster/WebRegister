@@ -123,15 +123,15 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public String getRegisteredTokenJson(String userJson, String password, String fingerprint) 
+    public String getRegisteredTokenJson(String mail, String password, String fingerprint) 
             throws NotAuthorizedException, IOException {
         
-        User actualUser = matchUser(userJson);
+        User user = getUser(mail);
         
-        String hashedPassword = getHashedPassword(actualUser.getMail(), password);
+        String hashedPassword = getHashedPassword(user.getMail(), password);
                 
-        if(actualUser.checkPassword(hashedPassword)) {
-            return objectMapper.writeValueAsString(createToken(actualUser, fingerprint));
+        if(user.checkPassword(hashedPassword)) {
+            return objectMapper.writeValueAsString(createToken(user, fingerprint));
         }
         
         throw new NotAuthorizedException(Response.status(Response.Status.UNAUTHORIZED));

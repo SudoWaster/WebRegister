@@ -34,7 +34,7 @@ public interface UserService {
     String getUsersJson()
             throws JsonProcessingException;
     
-    String getRegisteredTokenJson(String password, String userJson, String fingerprint) 
+    String getRegisteredTokenJson(String mail, String password, String fingerprint) 
             throws IOException;
     
     void removeToken(String tokenId);
