@@ -12,6 +12,8 @@ public interface HashGenerator {
     
     String generateHash(String input);
     
+    String generateHashedPassword(String mail, String password);
+    
     String generateSaltHash(String input, String salt);
     
     byte[] generateHash(byte[] input);

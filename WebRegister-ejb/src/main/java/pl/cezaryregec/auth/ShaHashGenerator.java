@@ -15,6 +15,9 @@ import pl.cezaryregec.Config;
  */
 public class ShaHashGenerator implements HashGenerator {
     
+    @Inject
+    private Config config;
+    
     @Override
     public String generateHash(String... input) {
         
@@ -25,6 +28,11 @@ public class ShaHashGenerator implements HashGenerator {
         }
             
         return generateHash(concatenatedString);
+    }
+    
+    @Override
+    public String generateHashedPassword(String mail, String password) {
+        return generateSaltHash(getFormatedForHash(mail, password), config.getSaltPhrase());
     }
     
     @Override
@@ -66,6 +74,10 @@ public class ShaHashGenerator implements HashGenerator {
         }
         
         return result;
+    }
+    
+    private String getFormatedForHash(String mail, String password) {
+        return mail + password;
     }
     
 }

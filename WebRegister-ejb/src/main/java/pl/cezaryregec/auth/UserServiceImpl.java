@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void createUser(String mail, String password, String firstname, String lastname, UserType type) {
-        String hashedPassword = getHashedPassword(mail, password);
+        String hashedPassword = hashGenerator.generateHashedPassword(mail, password);
         
         if(userExists(mail)) {
             throw new ForbiddenException();
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
         User updatedUser = objectMapper.readValue(updatedUserJson, User.class);
         User currentUser = getUser(getToken(tokenId).getUserId());
         
-        String hashedPassword = getHashedPassword(currentUser.getMail(), password);
+        String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
         
         
         if(currentUser.getType() != UserType.ADMIN
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
         
         User user = getUser(mail);
         
-        String hashedPassword = getHashedPassword(user.getMail(), password);
+        String hashedPassword = hashGenerator.generateHashedPassword(user.getMail(), password);
                 
         if(user.checkPassword(hashedPassword)) {
             return objectMapper.writeValueAsString(createToken(user, fingerprint));
@@ -240,13 +240,5 @@ public class UserServiceImpl implements UserService {
         }
         
         return userAgent + "\n" + remoteAddress;
-    }
-    
-    private String getHashedPassword(String mail, String password) {
-        return hashGenerator.generateSaltHash(getFormatedForHash(mail, password), config.getSaltPhrase());
-    }
-    
-    private String getFormatedForHash(String mail, String password) {
-        return mail + password;
     }
 }
