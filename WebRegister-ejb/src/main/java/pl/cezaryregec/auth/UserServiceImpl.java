@@ -62,23 +62,45 @@ public class UserServiceImpl implements UserService {
         entityManager.get().merge(user);
     }
     
+    
+    @Override
+    @Transactional
+    public void deleteUser(Integer userId, String password, String tokenId) {
+        User user = getUser(userId);
+        User currentUser = getUserFromToken(tokenId);
+        
+        String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
+        
+        if(currentUser.getType() != UserType.ADMIN
+                && !( 
+                    Objects.equals(currentUser.getId(), user.getId()) 
+                    && currentUser.checkPassword(hashedPassword) 
+                    )
+                ) {
+            
+            throw new ForbiddenException();
+        }
+        
+        entityManager.get().remove(user);
+    }
+    
+    
     @Override
     @Transactional
     public void setUser(String updatedUserJson, String password, String tokenId) throws IOException {
         
         User updatedUser = objectMapper.readValue(updatedUserJson, User.class);
-        User currentUser = getUser(getToken(tokenId).getUserId());
+        User currentUser = getUserFromToken(tokenId);
         
         String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
         
-        
         if(currentUser.getType() != UserType.ADMIN
-                && !Objects.equals(currentUser.getId(), updatedUser.getId())) {
+                && !( 
+                    Objects.equals(currentUser.getId(), updatedUser.getId()) 
+                    && currentUser.checkPassword(hashedPassword) 
+                    )
+                ) {
             
-            throw new ForbiddenException();
-        }
-        
-        if(!currentUser.checkPassword(hashedPassword)) {
             throw new ForbiddenException();
         }
         
@@ -106,10 +128,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public String getUserJsonFromToken(String tokenId) throws NoResultException, JsonProcessingException {
-        
-        User user = getUser(getToken(tokenId).getUserId());
-        
-        return objectMapper.writeValueAsString(user);
+        return objectMapper.writeValueAsString(getUserFromToken(tokenId));
+    }
+    
+    private User getUserFromToken(String tokenId) throws NoResultException {
+        return getUser(getToken(tokenId).getUserId());
     }
     
     @Override
@@ -194,6 +217,14 @@ public class UserServiceImpl implements UserService {
             token.setExpiration(config.getSessionTime());
         }
     }
+    
+    @Override
+    @Transactional
+    public boolean isTokenValid(String tokenId, String fingerprint, UserType type) {
+        User user = getUserFromToken(tokenId);
+        
+        return isTokenValid(tokenId, fingerprint) && user.getType() == type;
+    }
 
     @Override
     @Transactional
@@ -206,6 +237,10 @@ public class UserServiceImpl implements UserService {
         
         if(!token.hasExpired()) {
             removeToken(token.getToken());
+        }
+        
+        if(isValid) {
+            refreshToken(token.getToken(), fingerprint);
         }
         
         return isValid;

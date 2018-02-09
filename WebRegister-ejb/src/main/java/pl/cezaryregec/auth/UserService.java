@@ -22,6 +22,8 @@ public interface UserService {
     void setUser(String updatedUserJson, String password, String tokenId)
             throws IOException;
     
+    void deleteUser(Integer userId, String password, String tokenId);
+    
     String getUserJson(String mail) 
             throws JsonProcessingException;
     
@@ -40,6 +42,8 @@ public interface UserService {
     void removeToken(String tokenId);
     
     void refreshToken(String tokenId, String fingerprint);
+    
+    boolean isTokenValid(String tokenId, String fingerprint, UserType type);
     
     boolean isTokenValid(String tokenId, String fingerprint);
     

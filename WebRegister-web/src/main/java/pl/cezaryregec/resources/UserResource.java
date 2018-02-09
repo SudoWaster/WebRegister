@@ -10,6 +10,7 @@ import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -68,8 +69,6 @@ public class UserResource {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
             
-            userService.refreshToken(tokenId, userService.getFingerprint(request));
-            
             return Response.ok(userService.getUserJson(id)).build();
             
         } catch (NoResultException ex) {
@@ -82,13 +81,11 @@ public class UserResource {
     public Response getAll(@QueryParam("token") String tokenId,
             @Context HttpServletRequest request) throws IOException {
         
-        User user = objectMapper.readValue(userService.getUserJsonFromToken(tokenId), User.class);
+        String fingerprint = userService.getFingerprint(request);
 
-        if(user.getType() != UserType.ADMIN) {
+        if(!userService.isTokenValid(tokenId, fingerprint, UserType.ADMIN)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-
-        userService.refreshToken(tokenId, userService.getFingerprint(request));
         
         return Response.ok(userService.getUsersJson()).build();
     }
@@ -103,4 +100,24 @@ public class UserResource {
         return Response.ok().build();
     }
     
+    @DELETE
+    public Response deleteUser(@FormParam("id") Integer userId,
+            @FormParam("password") String password, 
+            @QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) {
+        
+        try {
+            if(!userService.isTokenValid(tokenId, userService.getFingerprint(request))) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+
+            userService.deleteUser(userId, password, tokenId);
+            
+            return Response.ok().build();
+        
+        } catch(NoResultException ex) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
+    }    
 }
