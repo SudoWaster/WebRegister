@@ -269,7 +269,7 @@ public class UserServiceImpl implements UserService {
         User currentUser = getUserFromToken(tokenId);
         String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
         
-        // if admin or the same as target and authenticated
+        // if current user is admin or the same as target and authenticated
         return (currentUser.getType() == UserType.ADMIN
                 || ( 
                     Objects.equals(currentUser.getId(), targetUser.getId()) 
