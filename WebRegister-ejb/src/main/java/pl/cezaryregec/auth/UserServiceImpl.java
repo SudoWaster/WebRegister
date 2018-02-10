@@ -157,15 +157,6 @@ public class UserServiceImpl implements UserService {
         return (User) userQuery.getSingleResult();
     }
     
-    private User matchUser(User user) throws IOException {
-        
-        Query userQuery = entityManager.get().createNamedQuery("User.match", User.class);
-        userQuery.setParameter("id", user.getId());
-        userQuery.setParameter("mail", user.getMail());
-        
-        return (User) userQuery.getSingleResult();
-    }
-    
     private boolean userExists(String mail) {
         
         try {
@@ -216,7 +207,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean isTokenValid(String tokenId, String fingerprint) {
-        return isTokenValid(getToken(tokenId), fingerprint);
+        try {
+            return isTokenValid(getToken(tokenId), fingerprint);
+        } catch(NoResultException ex) {
+            throw new NotAuthorizedException(Response.Status.UNAUTHORIZED);
+        }
     }
     
     private boolean isTokenValid(Token token, String fingerprint) {

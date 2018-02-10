@@ -3,13 +3,10 @@ package pl.cezaryregec.resources;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.servlet.RequestScoped;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -23,7 +20,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.auth.UserService;
-import pl.cezaryregec.entities.User;
 import pl.cezaryregec.entities.UserType;
 
 /**
