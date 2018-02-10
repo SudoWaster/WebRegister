@@ -8,9 +8,6 @@ import pl.cezaryregec.Config;
  */
 public class DefaultConfig implements Config {
     
-    private long sessionTime = 600000;
-    private String saltPhrase = "WebRegister";
-    
     @Override
     public long getSessionTime() {
         return sessionTime;

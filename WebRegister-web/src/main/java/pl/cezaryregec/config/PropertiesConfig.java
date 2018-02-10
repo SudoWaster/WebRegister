@@ -12,20 +12,20 @@ public class PropertiesConfig implements Config {
 
     @Inject
     @Named("sessionTime")
-    private long sessionTime;
+    private Long sessionTimeProp;
     
     @Inject
     @Named("saltPhrase")
-    private String saltPhrase;
+    private String saltPhraseProp;
     
     @Override
     public long getSessionTime() {
-        return sessionTime;
+        return sessionTimeProp != null ? sessionTimeProp : sessionTime;
     }
     
     @Override
     public String getSaltPhrase() {
-        return saltPhrase;
+        return saltPhraseProp != null ? saltPhraseProp : saltPhrase;
     }
     
 }
