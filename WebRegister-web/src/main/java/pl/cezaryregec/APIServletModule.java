@@ -1,6 +1,5 @@
 package pl.cezaryregec;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import java.io.IOException;
@@ -24,7 +23,6 @@ public class APIServletModule extends ServletModule {
     public void configureServlets() {
         tryLoadingConfig();
         
-        bind(ObjectMapper.class);
         bind(HashGenerator.class).to(ShaHashGenerator.class);
         bind(UserService.class).to(UserServiceImpl.class);
     }

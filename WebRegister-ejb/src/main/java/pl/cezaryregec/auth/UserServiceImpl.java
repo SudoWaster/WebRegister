@@ -1,7 +1,5 @@
 package pl.cezaryregec.auth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
@@ -34,9 +32,6 @@ public class UserServiceImpl implements UserService {
     
     @Inject
     private HashGenerator hashGenerator;
-    
-    @Inject
-    private ObjectMapper objectMapper;
     
     @Inject
     private Config config;
@@ -77,9 +72,7 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public void setUser(String updatedUserJson, String password, String tokenId) throws IOException {
-        
-        User updatedUser = objectMapper.readValue(updatedUserJson, User.class);
+    public void setUser(User updatedUser, String password, String tokenId) {
         
         if(!isUserPermitted(updatedUser, tokenId, password)) {
             throw new ForbiddenException();
@@ -90,58 +83,38 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public String getUserJson(String mail) throws NoResultException, JsonProcessingException {
-        
-        User user = getUser(mail);
-        
-        return objectMapper.writeValueAsString(user);
-    }
-    
-    @Override
-    @Transactional
-    public String getUserJson(int id) throws NoResultException, JsonProcessingException {
-        
-        User user = getUser(id);
-        
-        return objectMapper.writeValueAsString(user);
-    }
-    
-    @Override
-    @Transactional
-    public String getUserJsonFromToken(String tokenId) throws NoResultException, JsonProcessingException {
-        return objectMapper.writeValueAsString(getUserFromToken(tokenId));
-    }
-    
-    private User getUserFromToken(String tokenId) throws NoResultException {
+    public User getUserFromToken(String tokenId) throws NoResultException {
         return getUser(getToken(tokenId).getUserId());
     }
     
     @Override
     @Transactional
-    public String getUsersJson() throws NoResultException, JsonProcessingException {
+    public List<User> getUsers() throws NoResultException {
         
         Query userQuery = entityManager.get().createNamedQuery("User.findAll", User.class);
 
-        return objectMapper.writeValueAsString((List<User>) userQuery.getResultList());
+        return (List<User>) userQuery.getResultList();
     }
     
     @Override
     @Transactional
-    public String getRegisteredTokenJson(String mail, String password, String fingerprint) 
-            throws NotAuthorizedException, IOException {
+    public Token getRegisteredToken(String mail, String password, String fingerprint) 
+            throws NotAuthorizedException {
         
         User user = getUser(mail);
         
         String hashedPassword = hashGenerator.generateHashedPassword(user.getMail(), password);
                 
         if(user.checkPassword(hashedPassword)) {
-            return objectMapper.writeValueAsString(createToken(user, fingerprint));
+            return createToken(user, fingerprint);
         }
         
         throw new NotAuthorizedException(Response.status(Response.Status.UNAUTHORIZED));
     }
     
-    private User getUser(String mail) throws NoResultException {
+    @Override
+    @Transactional
+    public User getUser(String mail) throws NoResultException {
         
         Query userQuery = entityManager.get().createNamedQuery("User.findByMail", User.class);
         userQuery.setParameter("mail", mail);
@@ -149,7 +122,9 @@ public class UserServiceImpl implements UserService {
         return (User) userQuery.getSingleResult();
     }
     
-    private User getUser(int id) throws NoResultException {
+    @Override
+    @Transactional
+    public User getUser(int id) throws NoResultException {
             
         Query userQuery = entityManager.get().createNamedQuery("User.findById", User.class);
         userQuery.setParameter("id", id);
@@ -157,12 +132,11 @@ public class UserServiceImpl implements UserService {
         return (User) userQuery.getSingleResult();
     }
     
-    private User matchUser(String userJson) throws IOException {
-        User passedUser = objectMapper.readValue(userJson, User.class);
+    private User matchUser(User user) throws IOException {
         
         Query userQuery = entityManager.get().createNamedQuery("User.match", User.class);
-        userQuery.setParameter("id", passedUser.getId());
-        userQuery.setParameter("mail", passedUser.getMail());
+        userQuery.setParameter("id", user.getId());
+        userQuery.setParameter("mail", user.getMail());
         
         return (User) userQuery.getSingleResult();
     }
@@ -171,11 +145,9 @@ public class UserServiceImpl implements UserService {
         
         try {
             User existing = getUser(mail);
-            
             return existing != null;
             
         } catch(NoResultException ex) {
-            
             return false;
         }
     }
@@ -194,9 +166,9 @@ public class UserServiceImpl implements UserService {
     public void refreshToken(String tokenId, String fingerprint) {
         Token token = getToken(tokenId);
         
-        if(isTokenValid(token, fingerprint)) {
-            token.setExpiration(config.getSessionTime());
-        }
+        token.setExpiration(config.getSessionTime());
+        
+        entityManager.get().merge(token);
     }
     
     @Override

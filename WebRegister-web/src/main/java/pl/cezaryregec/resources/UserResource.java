@@ -1,11 +1,8 @@
 package pl.cezaryregec.resources;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.servlet.RequestScoped;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
@@ -22,7 +19,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.auth.UserService;
-import pl.cezaryregec.entities.User;
 import pl.cezaryregec.entities.UserType;
 
 /**
@@ -36,12 +32,10 @@ import pl.cezaryregec.entities.UserType;
 public class UserResource {
     
     private final UserService userService;
-    private final ObjectMapper objectMapper;
     
     @Inject
-    public UserResource(UserService userService, ObjectMapper objectMapper) {
+    public UserResource(UserService userService) {
         this.userService = userService;
-        this.objectMapper = objectMapper;
     }
     
     @GET
@@ -51,7 +45,7 @@ public class UserResource {
         try {
             userService.refreshToken(tokenId, userService.getFingerprint(request));
             
-            return Response.ok(userService.getUserJsonFromToken(tokenId)).build();
+            return Response.ok(userService.getUserFromToken(tokenId)).build();
             
         } catch (NoResultException ex) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -69,7 +63,7 @@ public class UserResource {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
             
-            return Response.ok(userService.getUserJson(id)).build();
+            return Response.ok(userService.getUser(id)).build();
             
         } catch (NoResultException ex) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -87,7 +81,7 @@ public class UserResource {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         
-        return Response.ok(userService.getUsersJson()).build();
+        return Response.ok(userService.getUsers()).build();
     }
     
     @POST

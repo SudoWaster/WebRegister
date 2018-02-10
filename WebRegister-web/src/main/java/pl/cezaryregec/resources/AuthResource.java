@@ -18,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.auth.UserService;
+import pl.cezaryregec.entities.Token;
 
 /**
  *
@@ -42,11 +43,11 @@ public class AuthResource {
             @Context HttpServletRequest request) {
         
         try {
-            String token = userService.getRegisteredTokenJson(mail, password, userService.getFingerprint(request));
+            Token token = userService.getRegisteredToken(mail, password, userService.getFingerprint(request));
             
             return Response.ok(token).build();
             
-        } catch(NoResultException|IOException ex) {
+        } catch(NoResultException ex) {
             
             return exceptionResponse(ex);
             
