@@ -67,40 +67,21 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Integer userId, String password, String tokenId) {
         User user = getUser(userId);
-        User currentUser = getUserFromToken(tokenId);
         
-        String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
-        
-        if(currentUser.getType() != UserType.ADMIN
-                && !( 
-                    Objects.equals(currentUser.getId(), user.getId()) 
-                    && currentUser.checkPassword(hashedPassword) 
-                    )
-                ) {
-            
+        if(!isUserPermitted(user, tokenId, password)) {
             throw new ForbiddenException();
         }
         
         entityManager.get().remove(user);
     }
     
-    
     @Override
     @Transactional
     public void setUser(String updatedUserJson, String password, String tokenId) throws IOException {
         
         User updatedUser = objectMapper.readValue(updatedUserJson, User.class);
-        User currentUser = getUserFromToken(tokenId);
         
-        String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
-        
-        if(currentUser.getType() != UserType.ADMIN
-                && !( 
-                    Objects.equals(currentUser.getId(), updatedUser.getId()) 
-                    && currentUser.checkPassword(hashedPassword) 
-                    )
-                ) {
-            
+        if(!isUserPermitted(updatedUser, tokenId, password)) {
             throw new ForbiddenException();
         }
         
@@ -275,5 +256,19 @@ public class UserServiceImpl implements UserService {
         }
         
         return userAgent + "\n" + remoteAddress;
+    }
+    
+    
+    private boolean isUserPermitted(User targetUser, String tokenId, String password) {
+        User currentUser = getUserFromToken(tokenId);
+        String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
+        
+        // if admin or the same as target and authenticated
+        return (currentUser.getType() == UserType.ADMIN
+                || ( 
+                    Objects.equals(currentUser.getId(), targetUser.getId()) 
+                    && currentUser.checkPassword(hashedPassword) 
+                    )
+                );
     }
 }
