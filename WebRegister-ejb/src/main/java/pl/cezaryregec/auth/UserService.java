@@ -21,8 +21,9 @@ public interface UserService {
     
     void createUser(String mail, String password, String firstname, String lastname, UserType type);
     
-    void setUser(User updatedUser, String password, String tokenId)
-            throws IOException;
+    void setUser(int id, String firstname, String lastname, String password, String tokenId);
+    
+    void setUserCredentials(int id, String oldPassword, String mail, String password, String tokenId);
     
     void deleteUser(Integer userId, String password, String tokenId);
     
@@ -39,6 +40,8 @@ public interface UserService {
     void removeToken(String tokenId);
     
     void refreshToken(String tokenId, String fingerprint);
+    
+    void validateToken(String tokenId, HttpServletRequest request);
     
     boolean isTokenValid(String tokenId, String fingerprint, UserType type);
     

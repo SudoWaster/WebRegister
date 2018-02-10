@@ -72,11 +72,36 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public void setUser(User updatedUser, String password, String tokenId) {
+    public void setUser(int id, String firstname, String lastname, String password, String tokenId) 
+        throws NoResultException {
+        
+        User updatedUser = getUser(id);
         
         if(!isUserPermitted(updatedUser, tokenId, password)) {
             throw new ForbiddenException();
         }
+        
+        updatedUser.setFirstname(firstname != null ? firstname : updatedUser.getFirstname());
+        updatedUser.setLastname(lastname != null ? lastname : updatedUser.getLastname());
+        
+        entityManager.get().merge(updatedUser);
+    }
+    
+    @Override
+    @Transactional
+    public void setUserCredentials(int id, String oldPassword, String mail, String password, String tokenId) 
+            throws NoResultException {
+        
+        User updatedUser = getUser(id);
+        
+        if(!isUserPermitted(updatedUser, tokenId, oldPassword)) {
+            throw new ForbiddenException();
+        }
+        
+        String hashedPassword = hashGenerator.generateHashedPassword(mail, password);
+        
+        updatedUser.setMail(mail);
+        updatedUser.setPassword(hashedPassword);
         
         entityManager.get().merge(updatedUser);
     }
@@ -169,6 +194,15 @@ public class UserServiceImpl implements UserService {
         token.setExpiration(config.getSessionTime());
         
         entityManager.get().merge(token);
+    }
+    
+    @Override
+    @Transactional
+    public void validateToken(String tokenId, HttpServletRequest request) {
+        
+        if(!isTokenValid(tokenId, getFingerprint(request))) {
+            throw new NotAuthorizedException(Response.Status.UNAUTHORIZED);
+        }
     }
     
     @Override
