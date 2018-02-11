@@ -1,7 +1,6 @@
 package pl.cezaryregec.resources;
 
 import com.google.inject.servlet.RequestScoped;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.LocalBean;
