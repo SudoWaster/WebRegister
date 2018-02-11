@@ -94,7 +94,8 @@ public class UserServiceImpl implements UserService {
         
         User updatedUser = getUser(id);
         
-        if(!isUserPermitted(updatedUser, tokenId, oldPassword)) {
+        if(!isUserPermitted(updatedUser, tokenId, oldPassword) 
+                || (!updatedUser.getMail().equals(mail)) && userExists(mail)) {
             throw new ForbiddenException();
         }
         
