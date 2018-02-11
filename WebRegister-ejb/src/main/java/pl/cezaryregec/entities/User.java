@@ -130,15 +130,11 @@ public class User implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof User)) {
             return false;
         }
         User other = (User) object;
-        if (this.mail != other.mail || this.firstname != other.firstname || this.lastname != other.lastname || this.type != other.type) {
-            return false;
-        }
-        return true;
+        return this.mail.equals(other.mail) && this.firstname.equals(other.firstname) && this.lastname.equals(other.lastname) && this.type == other.type;
     }
 
     @Override

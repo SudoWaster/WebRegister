@@ -90,15 +90,11 @@ public class Token implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Token)) {
             return false;
         }
         Token other = (Token) object;
-        if ((this.token == null && other.token != null) || (this.token != null && !this.token.equals(other.token))) {
-            return false;
-        }
-        return true;
+        return !((this.token == null && other.token != null) || (this.token != null && !this.token.equals(other.token)));
     }
 
     @Override

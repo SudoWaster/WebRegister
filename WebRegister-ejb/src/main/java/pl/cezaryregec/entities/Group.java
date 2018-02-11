@@ -81,10 +81,7 @@ public class Group implements Serializable {
             return false;
         }
         Group other = (Group) object;
-        if (!(this.name.equals(other.name) && this.description.equals(other.description))) {
-            return false;
-        }
-        return true;
+        return this.name.equals(other.name) && this.description.equals(other.description);
     }
 
     @Override
