@@ -1,6 +1,5 @@
 package pl.cezaryregec.entities;
 
-import com.google.inject.Inject;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -13,10 +12,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.ws.rs.ForbiddenException;
 import javax.xml.bind.annotation.XmlRootElement;
-import pl.cezaryregec.Config;
-import pl.cezaryregec.auth.HashGenerator;
 
 /**
  *
@@ -101,10 +97,6 @@ public class User implements Serializable {
         this.password = password;
     }
     
-    private String getFormatedForHash(String mail, String password) {
-        return mail + password;
-    }
-
     public UserType getType() {
         return UserType.cast(this.type);
     }
@@ -143,7 +135,7 @@ public class User implements Serializable {
             return false;
         }
         User other = (User) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.mail != other.mail || this.firstname != other.firstname || this.lastname != other.lastname || this.type != other.type) {
             return false;
         }
         return true;

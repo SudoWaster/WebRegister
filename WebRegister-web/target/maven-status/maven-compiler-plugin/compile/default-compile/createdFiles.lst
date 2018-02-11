@@ -6,3 +6,4 @@ pl/cezaryregec/GuiceFeature.class
 pl/cezaryregec/resources/UserResource.class
 pl/cezaryregec/resources/AuthResource.class
 pl/cezaryregec/ApplicationConfig.class
+pl/cezaryregec/resources/GroupResource.class
