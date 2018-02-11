@@ -1,7 +1,5 @@
 package pl.cezaryregec.auth;
 
-import java.security.NoSuchAlgorithmException;
-
 /**
  *
  * @author SudoWaster <cezaryre@gmail.com>

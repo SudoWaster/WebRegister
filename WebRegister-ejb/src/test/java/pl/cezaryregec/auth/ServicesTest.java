@@ -87,6 +87,7 @@ public class ServicesTest {
     public void userTest() {
         System.out.println("Comparing user entities");
         Assert.assertEquals(mockUser, currentUser);
+        //Assert.assertTrue(mockUser.checkPassword(password));
     }
     
     @After
