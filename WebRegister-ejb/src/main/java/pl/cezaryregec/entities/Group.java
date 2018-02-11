@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -19,6 +21,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "groups")
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Group.findAll", query = "SELECT g FROM Group g"),
+    @NamedQuery(name = "Group.findById", query = "SELECT g FROM Group g WHERE g.group_id = :id"),
+    @NamedQuery(name = "Group.findOpen", query = "SELECT g FROM Group g WHERE g.group_vacancies > 0")
+})
 public class Group implements Serializable {
     
     private static final long serialVersionUID = 1L;

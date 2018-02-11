@@ -37,6 +37,8 @@ public class GroupResource {
     public Response getAllGroups(@QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
-        return Response.ok().build();
+        userService.validateToken(token, request);
+        
+        return Response.ok(groupService.getGroups()).build();
     }
 }
