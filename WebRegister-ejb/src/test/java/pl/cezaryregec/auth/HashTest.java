@@ -96,8 +96,6 @@ public class HashTest {
         
         System.out.println("Comparing String hashes");
         
-        System.out.println(testStrings[0] != null);
-        System.out.println(hashGenerator != null);
         String testHash = hashGenerator.generateHash(testStrings[0]);
         String controlHash = hashGenerator.generateHash(controlStrings[0]);
         

@@ -3,6 +3,7 @@ package pl.cezaryregec.auth;
 import com.google.inject.Inject;
 import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.NotAuthorizedException;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.After;
@@ -81,13 +82,33 @@ public class ServicesTest {
         System.out.println("Testing token session");
         User tokenUser = userService.getUserFromToken(tokenId);
         Assert.assertEquals(mockUser, tokenUser);
+        
+    }
+    
+    @Test
+    public void tokenRemovalTest() {
+        String tokenId = testToken.getToken();
+        
+        System.out.println("Deleting token");
+        userService.removeToken(tokenId);
+        
+        System.out.println("Checking deleted token validation");
+        Assert.assertFalse(userService.isTokenValid(tokenId, testFingerprint));
+        
+        System.out.println("Regenerating token");
+        testToken = userService.getRegisteredToken(mail, password, testFingerprint);
     }
     
     @Test
     public void userTest() {
         System.out.println("Comparing user entities");
         Assert.assertEquals(mockUser, currentUser);
-        //Assert.assertTrue(mockUser.checkPassword(password));
+        
+        System.out.println("Comparing user getters");
+        Assert.assertEquals(userService.getUser(userId), userService.getUser(mail));
+        
+        System.out.println("Testing all user getter");
+        Assert.assertNotNull(userService.getUsers());
     }
     
     @After

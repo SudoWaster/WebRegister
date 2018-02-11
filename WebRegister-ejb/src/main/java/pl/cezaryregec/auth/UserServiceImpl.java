@@ -199,7 +199,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean isTokenValid(String tokenId, String fingerprint, UserType type) {
-        User user = getUserFromToken(tokenId);
+        User user;
+        try {
+            user = getUserFromToken(tokenId);
+        } catch(NoResultException ex) {
+            return false;
+        }
         
         return isTokenValid(tokenId, fingerprint) && user.getType() == type;
     }
@@ -210,7 +215,7 @@ public class UserServiceImpl implements UserService {
         try {
             return isTokenValid(getToken(tokenId), fingerprint);
         } catch(NoResultException ex) {
-            throw new NotAuthorizedException(Response.Status.UNAUTHORIZED);
+            return false;
         }
     }
     
@@ -261,7 +266,14 @@ public class UserServiceImpl implements UserService {
     
     
     private boolean isUserPermitted(User targetUser, String tokenId, String password) {
-        User currentUser = getUserFromToken(tokenId);
+        User currentUser;
+        
+        try {
+            currentUser = getUserFromToken(tokenId);
+        } catch(NoResultException ex) {
+            return false;
+        }
+        
         String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
         
         // if current user is admin or the same as target and authenticated
