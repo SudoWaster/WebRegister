@@ -115,5 +115,6 @@ public class ServicesTest {
     public void userTearDown() {
         System.out.println("Deleting mock user");
         userService.deleteUser(userId, password, testToken.getToken());
+        userService.removeToken(testToken.getToken());
     }
 }
