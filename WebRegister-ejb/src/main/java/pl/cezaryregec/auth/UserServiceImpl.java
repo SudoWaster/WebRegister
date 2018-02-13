@@ -223,8 +223,9 @@ public class UserServiceImpl implements UserService {
     private boolean isTokenValid(Token token, String fingerprint) {
         boolean isValid = token.isValid(fingerprint);
         
-        if(!token.hasExpired()) {
+        if(token.hasExpired() || getUserFromToken(token.getToken()).getType() == UserType.UNAUTHORIZED) {
             removeToken(token.getToken());
+            return false;
         }
         
         if(isValid) {
@@ -275,14 +276,14 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         
+        return (currentUser.getType() == UserType.ADMIN || isUserLogged(currentUser, targetUser, password));
+    }
+    
+    private boolean isUserLogged(User currentUser, User targetUser, String password) {
+        
         String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
         
-        // if current user is admin or the same as target and authenticated
-        return (currentUser.getType() == UserType.ADMIN
-                || ( 
-                    Objects.equals(currentUser.getId(), targetUser.getId()) 
-                    && currentUser.checkPassword(hashedPassword) 
-                    )
-                );
+        return ( Objects.equals(currentUser.getId(), targetUser.getId()) 
+                    && currentUser.checkPassword(hashedPassword) );
     }
 }

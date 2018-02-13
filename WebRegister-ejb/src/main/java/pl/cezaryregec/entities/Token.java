@@ -66,11 +66,11 @@ public class Token implements Serializable {
     }
     
     public boolean hasExpired() {
-        return this.expiration.after(new Timestamp(System.currentTimeMillis()));
+        return this.expiration.before(new Timestamp(System.currentTimeMillis()));
     }
     
     public boolean isValid(String fingerprint) {
-        return hasExpired() && this.fingerprint.equals(fingerprint);
+        return !hasExpired() && this.fingerprint.equals(fingerprint);
     }
     
     public void setUser(Integer user_id) {
