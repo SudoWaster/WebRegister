@@ -75,6 +75,14 @@ public class Group implements Serializable {
         return vacancies;
     }
     
+    public void setVacancies(Integer vacancies) {
+        if(vacancies < 0) {
+            throw new IllegalArgumentException();
+        }
+        
+        this.vacancies = vacancies;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

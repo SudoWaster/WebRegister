@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         
-        return isTokenValid(tokenId, fingerprint) && user.getType() == type;
+        return isTokenValid(tokenId, fingerprint) && user.getType().getInt() >= type.getInt();
     }
 
     @Override

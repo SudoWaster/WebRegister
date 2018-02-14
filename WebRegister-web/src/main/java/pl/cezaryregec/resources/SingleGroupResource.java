@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import pl.cezaryregec.auth.GroupService;
+import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.auth.UserService;
 
 /**
