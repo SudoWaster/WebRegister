@@ -35,4 +35,6 @@ public interface GroupService {
     boolean isPriviledgedInGroup(User user, int groupId);
     
     List<GroupAssignment> getList(int groupId, GroupRole role);
+    
+    
 }
