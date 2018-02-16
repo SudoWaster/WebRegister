@@ -101,6 +101,6 @@ public class Group implements Serializable {
 
     @Override
     public String toString() {
-        return "pl.cezaryregec.Group[ id=" + id + ", name = " + name + ", description = " + description + ", vacancies = " + vacancies + " ]";
+        return "pl.cezaryregec.entities.Group[ id=" + id + ", name = " + name + ", description = " + description + ", vacancies = " + vacancies + " ]";
     }
 }

@@ -139,7 +139,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "pl.cezaryregec.User[ id=" + id + ", mail=" + mail + " ]";
+        return "pl.cezaryregec.entities.User[ id=" + id + ", mail=" + mail + " ]";
     }
     
 }

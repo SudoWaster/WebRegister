@@ -99,7 +99,7 @@ public class Token implements Serializable {
 
     @Override
     public String toString() {
-        return "pl.cezaryregec.Token[ token=" + token + ", expiration = " + expiration + ", user = " + user + " ]";
+        return "pl.cezaryregec.entities.Token[ token=" + token + ", expiration = " + expiration + ", user = " + user + " ]";
     }
     
 }

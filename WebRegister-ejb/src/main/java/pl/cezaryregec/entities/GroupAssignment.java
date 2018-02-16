@@ -92,6 +92,6 @@ public class GroupAssignment implements Serializable {
 
     @Override
     public String toString() {
-        return "pl.cezaryregec.entities.GroupAssignment[ id=" + id + ", user_id = " + userId + ", groupId = " + groupId + ", role = " + GroupRole.cast(role).name() + " ]";
+        return "pl.cezaryregec.entities.GroupAssignment[ id=" + id + ", user_id = " + userId + ", group_id = " + groupId + ", role = " + GroupRole.cast(role).name() + " ]";
     }
 }
