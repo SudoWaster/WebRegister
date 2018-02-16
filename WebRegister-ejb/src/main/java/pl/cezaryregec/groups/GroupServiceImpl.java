@@ -7,6 +7,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import pl.cezaryregec.entities.Group;
+import pl.cezaryregec.entities.GroupAssignment;
+import pl.cezaryregec.entities.GroupRole;
+import pl.cezaryregec.entities.User;
+import pl.cezaryregec.entities.UserType;
 
 /**
  *
@@ -72,5 +76,44 @@ public class GroupServiceImpl implements GroupService {
         groupQuery.setParameter("id", id);
         
         return (Group) groupQuery.getSingleResult();
+    }
+    
+    @Override
+    @Transactional
+    public boolean isInGroup(User user, int groupId) {
+        List<GroupAssignment> assignment = getGroupAssignment(user.getId());
+        
+        GroupAssignment supposedAssignment = new GroupAssignment();
+        supposedAssignment.setUserId(user.getId());
+        supposedAssignment.setGroupId(groupId);
+        
+        return assignment.contains(supposedAssignment);
+    }
+    
+    private List<GroupAssignment> getGroupAssignment(int userId) {
+        Query groupAssignmentQuery = entityManager.get().createNamedQuery("GroupAssignment.findByUserId", GroupAssignment.class);
+        groupAssignmentQuery.setParameter("id", userId);
+        
+        return (List<GroupAssignment>) groupAssignmentQuery.getResultList();
+    }
+    
+    @Override
+    @Transactional
+    public boolean isPriviledgedInGroup(User user, int groupId) {
+        GroupAssignment supposedAssignment = new GroupAssignment();
+        supposedAssignment.setUserId(user.getId());
+        supposedAssignment.setGroupId(groupId);
+        
+        return getList(groupId, GroupRole.PRIVILEDGED).contains(supposedAssignment) || user.getType() == UserType.ADMIN;
+    }
+    
+    @Override
+    @Transactional
+    public List<GroupAssignment> getList(int groupId, GroupRole role) {
+        Query groupAssignmentQuery = entityManager.get().createNamedQuery("GroupAssignment.findInGroupByRole", GroupAssignment.class);
+        groupAssignmentQuery.setParameter("id", groupId);
+        groupAssignmentQuery.setParameter("role", role.getInt());
+        
+        return (List<GroupAssignment>) groupAssignmentQuery.getResultList();
     }
 }

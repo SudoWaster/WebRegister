@@ -71,7 +71,6 @@ public class ServicesTest {
         Assert.assertTrue(userService.isTokenValid(tokenId, testFingerprint));
         Assert.assertTrue(userService.isTokenValid(tokenId, testFingerprint, type));
         
-        Assert.assertFalse(userService.isTokenValid(tokenId, testFingerprint, UserType.PRIVILEDGED));
         Assert.assertFalse(userService.isTokenValid(tokenId, testFingerprint, UserType.ADMIN));
     }
     

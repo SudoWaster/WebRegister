@@ -88,7 +88,7 @@ public class UserResource {
             @FormParam("lastname") String lastname) {
         
         userService.createUser(mail, password, firstname, lastname, UserType.STUDENT);
-        return Response.ok().build();
+        return Response.status(Response.Status.CREATED).build();
     }
     
     @PUT

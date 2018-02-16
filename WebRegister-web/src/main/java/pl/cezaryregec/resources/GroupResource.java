@@ -71,7 +71,8 @@ public class GroupResource {
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
-        if(!userService.isTokenValid(token, userService.getFingerprint(request), UserType.PRIVILEDGED)) {
+        if(!userService.isTokenValid(token, userService.getFingerprint(request)) 
+                || !groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -84,7 +85,8 @@ public class GroupResource {
     public Response deleteGroup(@FormParam("id") Integer id,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
-        if(!userService.isTokenValid(token, userService.getFingerprint(request), UserType.PRIVILEDGED)) {
+        if(!userService.isTokenValid(token, userService.getFingerprint(request))
+                || !groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
