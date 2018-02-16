@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -17,8 +19,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author SudoWaster <cezaryre@gmail.com>
  */
 @Entity
-@Table(name = "group_assignment")
+@Table(name = "presence")
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Presence.findAll", query = "SELECT p FROM Presence p"),
+    @NamedQuery(name = "Presence.findGroup", query = "SELECT p FROM Presence p WHERE p.group_id = :id"),
+    @NamedQuery(name = "Presence.findByUser", query = "SELECT p FROM Presence p WHERE p.user_id = :id"),
+    @NamedQuery(name = "Presence.findByUserInGroup", query = "SELECT p FROM Presence p WHERE p.user_id = :uid AND p.group_id = :gid")
+})
 public class Presence implements Serializable {
     
     private static final long serialVersionUID = 1L;
