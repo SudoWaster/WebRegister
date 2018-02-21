@@ -4,7 +4,10 @@ import com.google.inject.servlet.RequestScoped;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -64,6 +67,53 @@ public class SingleGroupResource {
         return Response.status(Response.Status.OK).entity(groupService.getList(id, GroupRole.STUDENT)).build();
     }
     
+    @PUT
+    @Path("{id}/members")
+    public Response addMember(@PathParam("id") Integer id,
+            @FormParam("userId") Integer userId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        if(!userService.isTokenValid(token, userService.getFingerprint(request))
+                || !canManageSelfInGroup(token, id)) {
+            
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        
+        if(groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
+            groupService.addToGroup(userService.getUser(userId), id, GroupRole.STUDENT);
+            return Response.status(Response.Status.OK).build();
+        }
+        
+        
+        groupService.addToGroup(userService.getUserFromToken(token), id, GroupRole.STUDENT);
+        return Response.status(Response.Status.OK).build();
+        
+    }
+    
+    @DELETE
+    @Path("{id}/members")
+    public Response removeMember(@PathParam("id") Integer id,
+            @FormParam("userId") Integer userId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+    
+        if(!userService.isTokenValid(token, userService.getFingerprint(request))
+                || !canManageSelfInGroup(token, id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        if(groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
+            groupService.deleteFromGroup(userService.getUser(userId), id);
+            return Response.status(Response.Status.OK).build();
+        }
+        
+        groupService.deleteFromGroup(userService.getUserFromToken(token), id);
+        return Response.status(Response.Status.OK).build();
+    }
+    
+    
     @GET
     @Path("{id}/instructors")
     public Response getInstructors(@PathParam("id") Integer id,
@@ -75,5 +125,44 @@ public class SingleGroupResource {
         }
         
         return Response.status(Response.Status.OK).entity(groupService.getList(id, GroupRole.PRIVILEDGED)).build();
+    }
+    
+    @PUT
+    @Path("{id}/instructors")
+    public Response addInstructor(@PathParam("id") Integer id,
+            @FormParam("userId") Integer userId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        if(!userService.isTokenValid(token, userService.getFingerprint(request))
+                || !groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
+            
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        groupService.addToGroup(userService.getUser(userId), id, GroupRole.PRIVILEDGED);
+        return Response.status(Response.Status.OK).build();
+    }
+    
+    @DELETE
+    @Path("{id}/instructors")
+    public Response removeInstructor(@PathParam("id") Integer id,
+            @FormParam("userId") Integer userId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        if(!userService.isTokenValid(token, userService.getFingerprint(request))
+                || !groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        groupService.setRole(userService.getUser(id), id, GroupRole.STUDENT);
+        return Response.status(Response.Status.OK).build();
+    }
+    
+    
+    private boolean canManageSelfInGroup(String token, Integer id) {
+        return (!groupService.isInGroup(userService.getUserFromToken(token), id)
+                    || groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id));
     }
 }

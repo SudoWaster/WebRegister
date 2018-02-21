@@ -11,7 +11,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -26,6 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "GroupAssignment.findByUserId", query = "SELECT g FROM GroupAssignment g WHERE g.user_id = :id"),
     @NamedQuery(name = "GroupAssignment.findByGroupId", query = "SELECT g FROM GroupAssignment g WHERE g.group_id = :id"),
     @NamedQuery(name = "GroupAssignment.findInGroupByRole", query = "SELECT g FROM GroupAssignment g WHERE g.group_id = :id AND g.group_role = :role"),
+    @NamedQuery(name = "GroupAssignment.findUserInGroup", query = "SELECT g FROM GroupAssignment g WHERE g.user_id = :uid AND g.group_id = :gid")
 })
 public class GroupAssignment implements Serializable {
 

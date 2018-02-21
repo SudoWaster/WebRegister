@@ -6,6 +6,8 @@ import com.google.inject.persist.Transactional;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotFoundException;
 import pl.cezaryregec.entities.Group;
 import pl.cezaryregec.entities.GroupAssignment;
 import pl.cezaryregec.entities.GroupRole;
@@ -115,5 +117,50 @@ public class GroupServiceImpl implements GroupService {
         groupAssignmentQuery.setParameter("role", role.getInt());
         
         return (List<GroupAssignment>) groupAssignmentQuery.getResultList();
+    }
+    
+    @Override
+    @Transactional
+    public void addToGroup(User user, int groupId, GroupRole role) {
+        GroupAssignment assignment = new GroupAssignment();
+        assignment.setUserId(groupId);
+        assignment.setGroupId(groupId);
+        
+        if(getList(groupId, GroupRole.STUDENT).contains(assignment) || getList(groupId, GroupRole.PRIVILEDGED).contains(assignment)) {
+            throw new ForbiddenException("Already in group");
+        }
+        
+        entityManager.get().merge(assignment);
+    }
+
+    @Override
+    public void setRole(User user, int groupId, GroupRole role) {
+        if(!isInGroup(user, groupId)) {
+            throw new NotFoundException();
+        }
+        
+        Query assignmentQuery = entityManager.get().createNamedQuery("GroupAssignment.findUserInGroup", GroupAssignment.class);
+        assignmentQuery.setParameter("uid", user.getId());
+        assignmentQuery.setParameter("gid", groupId);
+        
+        GroupAssignment assignment = (GroupAssignment) assignmentQuery.getSingleResult();
+        assignment.setRole(role);
+        
+        entityManager.get().merge(assignment);
+    }
+
+    @Override
+    public void deleteFromGroup(User user, int groupId) {
+        if(!isInGroup(user, groupId)) {
+            throw new NotFoundException();
+        }
+        
+        Query assignmentQuery = entityManager.get().createNamedQuery("GroupAssignment.findUserInGroup", GroupAssignment.class);
+        assignmentQuery.setParameter("uid", user.getId());
+        assignmentQuery.setParameter("gid", groupId);
+        
+        GroupAssignment assignment = (GroupAssignment) assignmentQuery.getSingleResult();
+        
+        entityManager.get().remove(assignment);
     }
 }
