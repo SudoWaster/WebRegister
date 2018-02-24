@@ -266,7 +266,6 @@ public class UserServiceImpl implements UserService {
         return userAgent + "\n" + remoteAddress;
     }
     
-    
     private boolean isUserPermitted(User targetUser, String tokenId, String password) {
         User currentUser;
         

@@ -24,8 +24,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Presence.findAll", query = "SELECT p FROM Presence p"),
     @NamedQuery(name = "Presence.findGroup", query = "SELECT p FROM Presence p WHERE p.group_id = :id"),
+    @NamedQuery(name = "Presence.findInGroupByDate", query = "SELECT p FROM Presence p WHERE p.group_id = :id AND p.date = :date"),
     @NamedQuery(name = "Presence.findByUser", query = "SELECT p FROM Presence p WHERE p.user_id = :id"),
-    @NamedQuery(name = "Presence.findByUserInGroup", query = "SELECT p FROM Presence p WHERE p.user_id = :uid AND p.group_id = :gid")
+    @NamedQuery(name = "Presence.findByUserInGroup", query = "SELECT p FROM Presence p WHERE p.user_id = :uid AND p.group_id = :gid"),
+    @NamedQuery(name = "Presence.findByUserInGroupByDate", query = "SELECT p FROM Presence p WHERE p.user_id = :uid AND p.group_id = :gid AND p.date = :date")
 })
 public class Presence implements Serializable {
     
