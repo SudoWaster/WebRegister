@@ -1,12 +1,18 @@
 package pl.cezaryregec.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -47,6 +53,14 @@ public class Group implements Serializable {
     @Column(name = "group_vacancies")
     private Integer vacancies;
     
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+        name = "group_assignment",
+        joinColumns = { @JoinColumn(name = "group_id") },
+        inverseJoinColumns = { @JoinColumn(name = "user_id") }
+    )
+    private List<User> members = new ArrayList();
+    
     public Group() {
         
     }
@@ -81,6 +95,18 @@ public class Group implements Serializable {
         }
         
         this.vacancies = vacancies;
+    }
+    
+    public List<User> getMembers() {
+        return members;
+    }
+    
+    public void addMember(User user) {
+        members.add(user);
+    }
+    
+    public void removeMember(User user) {
+        members.remove(user);
     }
     
     @Override
