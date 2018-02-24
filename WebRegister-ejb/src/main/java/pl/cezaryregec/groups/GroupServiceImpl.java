@@ -110,19 +110,18 @@ public class GroupServiceImpl implements GroupService {
     
     @Override
     @Transactional
-    public void addToGroup(User user, int groupId, GroupRole role) {
+    public void addToGroup(User user, int groupId, boolean updateVacancies) {
         Group group = getGroup(groupId);
         
         if(group.getMembers().contains(user)) {
             throw new ForbiddenException("Already in group");
         }
         
-        GroupAssignment assignment = new GroupAssignment();
-        assignment.setUserId(groupId);
-        assignment.setGroupId(groupId);
-        assignment.setRole(role);
-        
-        entityManager.get().merge(assignment);
+        group.addMember(user);
+        if(updateVacancies) {
+            group.setVacancies(group.getVacancies() - 1);
+        }
+        entityManager.get().merge(group);
     }
 
     @Override
@@ -142,7 +141,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void deleteFromGroup(User user, int groupId) {
+    public void deleteFromGroup(User user, int groupId, boolean updateVacancies) {
         if(!isInGroup(user, groupId)) {
             throw new NotFoundException();
         }
@@ -150,5 +149,9 @@ public class GroupServiceImpl implements GroupService {
         Group group = getGroup(groupId);
         
         group.removeMember(user);
+        if(updateVacancies){
+            group.setVacancies(group.getVacancies() + 1);
+        }
+        entityManager.get().merge(group);
     }
 }

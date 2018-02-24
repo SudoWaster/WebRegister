@@ -36,9 +36,9 @@ public interface GroupService {
     
     List<GroupAssignment> getList(int groupId, GroupRole role);
     
-    void addToGroup(User user, int groupId, GroupRole role);
+    void addToGroup(User user, int groupId, boolean updateVacancies);
     
     void setRole(User user, int groupId, GroupRole role);
     
-    void deleteFromGroup(User user, int groupId);
+    void deleteFromGroup(User user, int groupId, boolean updateVacancies);
 }

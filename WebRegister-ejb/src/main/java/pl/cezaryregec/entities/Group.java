@@ -29,8 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Group.findAll", query = "SELECT g FROM Group g"),
-    @NamedQuery(name = "Group.findById", query = "SELECT g FROM Group g WHERE g.group_id = :id"),
-    @NamedQuery(name = "Group.findOpen", query = "SELECT g FROM Group g WHERE g.group_vacancies > 0")
+    @NamedQuery(name = "Group.findById", query = "SELECT g FROM Group g WHERE g.id = :id"),
+    @NamedQuery(name = "Group.findOpen", query = "SELECT g FROM Group g WHERE g.vacancies > 0")
 })
 public class Group implements Serializable {
     
@@ -53,7 +53,10 @@ public class Group implements Serializable {
     @Column(name = "group_vacancies")
     private Integer vacancies;
     
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = { 
+        CascadeType.PERSIST, 
+        CascadeType.MERGE
+    })
     @JoinTable(
         name = "group_assignment",
         joinColumns = { @JoinColumn(name = "group_id") },

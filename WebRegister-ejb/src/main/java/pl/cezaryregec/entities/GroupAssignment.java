@@ -26,10 +26,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "GroupAssignment.findAll", query = "SELECT g FROM GroupAssignment g"),
-    @NamedQuery(name = "GroupAssignment.findByUserId", query = "SELECT g FROM GroupAssignment g WHERE g.user_id = :id"),
-    @NamedQuery(name = "GroupAssignment.findByGroupId", query = "SELECT g FROM GroupAssignment g WHERE g.group_id = :id"),
-    @NamedQuery(name = "GroupAssignment.findInGroupByRole", query = "SELECT g FROM GroupAssignment g WHERE g.group_id = :id AND g.group_role = :role"),
-    @NamedQuery(name = "GroupAssignment.findUserInGroup", query = "SELECT g FROM GroupAssignment g WHERE g.user_id = :uid AND g.group_id = :gid")
+    @NamedQuery(name = "GroupAssignment.findByUserId", query = "SELECT g FROM GroupAssignment g WHERE g.userId = :id"),
+    @NamedQuery(name = "GroupAssignment.findByGroupId", query = "SELECT g FROM GroupAssignment g WHERE g.groupId = :id"),
+    @NamedQuery(name = "GroupAssignment.findInGroupByRole", query = "SELECT g FROM GroupAssignment g WHERE g.groupId = :id AND g.role = :role"),
+    @NamedQuery(name = "GroupAssignment.findUserInGroup", query = "SELECT g FROM GroupAssignment g WHERE g.userId = :uid AND g.groupId = :gid")
 })
 public class GroupAssignment implements Serializable {
 

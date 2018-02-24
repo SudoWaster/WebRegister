@@ -58,7 +58,7 @@ public class User implements Serializable {
     @Size(max = 64)
     @Column(name = "lastname")
     private String lastname;
-
+    
     public User() {
     }
 
@@ -134,7 +134,11 @@ public class User implements Serializable {
             return false;
         }
         User other = (User) object;
-        return this.mail.equals(other.mail) && this.firstname.equals(other.firstname) && this.lastname.equals(other.lastname) && this.type == other.type;
+        
+        return ((this.mail == null && other.mail == null) || this.mail.equals(other.mail))
+                && ((this.firstname == null && other.firstname == null) || this.firstname.equals(other.firstname))
+                && ((this.lastname == null && other.lastname == null) || this.lastname.equals(other.lastname))
+                && this.type == other.type;
     }
 
     @Override

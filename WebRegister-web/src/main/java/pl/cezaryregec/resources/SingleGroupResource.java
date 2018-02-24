@@ -1,6 +1,8 @@
 package pl.cezaryregec.resources;
 
 import com.google.inject.servlet.RequestScoped;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.auth.UserService;
+import pl.cezaryregec.entities.Group;
 import pl.cezaryregec.entities.GroupRole;
 
 /**
@@ -48,8 +51,11 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        return Response.status(Response.Status.OK).entity(groupService.getGroup(id)).build();
+        // a little hack to make jaxb include members
+        List<Group> group = new ArrayList<Group>();
+        group.add(groupService.getGroup(id));
         
+        return Response.status(Response.Status.OK).entity(group).build();
     }
     
     @GET
@@ -64,13 +70,14 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        return Response.status(Response.Status.OK).entity(groupService.getList(id, GroupRole.STUDENT)).build();
+        return Response.status(Response.Status.OK).entity(groupService.getGroup(id).getMembers()).build();
     }
     
     @PUT
     @Path("{id}/members")
     public Response addMember(@PathParam("id") Integer id,
             @FormParam("userId") Integer userId,
+            @FormParam("updateVacancies") Boolean updateVacancies,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
@@ -82,12 +89,11 @@ public class SingleGroupResource {
         
         
         if(groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
-            groupService.addToGroup(userService.getUser(userId), id, GroupRole.STUDENT);
+            groupService.addToGroup(userService.getUser(userId), id, updateVacancies);
             return Response.status(Response.Status.OK).build();
         }
         
-        
-        groupService.addToGroup(userService.getUserFromToken(token), id, GroupRole.STUDENT);
+        groupService.addToGroup(userService.getUserFromToken(token), id, true);
         return Response.status(Response.Status.OK).build();
         
     }
@@ -96,6 +102,7 @@ public class SingleGroupResource {
     @Path("{id}/members")
     public Response removeMember(@PathParam("id") Integer id,
             @FormParam("userId") Integer userId,
+            @FormParam("updateVacancies") Boolean updateVacancies,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
     
@@ -105,11 +112,11 @@ public class SingleGroupResource {
         }
         
         if(groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
-            groupService.deleteFromGroup(userService.getUser(userId), id);
+            groupService.deleteFromGroup(userService.getUser(userId), id, updateVacancies);
             return Response.status(Response.Status.OK).build();
         }
         
-        groupService.deleteFromGroup(userService.getUserFromToken(token), id);
+        groupService.deleteFromGroup(userService.getUserFromToken(token), id, true);
         return Response.status(Response.Status.OK).build();
     }
     
@@ -140,7 +147,7 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        groupService.addToGroup(userService.getUser(userId), id, GroupRole.PRIVILEDGED);
+        groupService.setRole(userService.getUser(id), id, GroupRole.PRIVILEDGED);
         return Response.status(Response.Status.OK).build();
     }
     
