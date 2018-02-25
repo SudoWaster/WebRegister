@@ -1,8 +1,6 @@
 package pl.cezaryregec.resources;
 
 import com.google.inject.servlet.RequestScoped;
-import java.util.ArrayList;
-import java.util.List;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.auth.UserService;
-import pl.cezaryregec.entities.Group;
 import pl.cezaryregec.entities.GroupRole;
 
 /**
@@ -66,7 +63,7 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        return Response.status(Response.Status.OK).entity(groupService.getGroup(id).getMembers()).build();
+        return Response.status(Response.Status.OK).entity(groupService.getList(id, GroupRole.STUDENT)).build();
     }
     
     @PUT

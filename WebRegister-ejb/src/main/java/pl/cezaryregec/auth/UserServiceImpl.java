@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import javax.ejb.Stateless;
@@ -110,7 +111,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User getUserFromToken(String tokenId) throws NoResultException {
-        return getUser(getToken(tokenId).getUserId());
+        return getToken(tokenId).getUser();
     }
     
     @Override
@@ -237,11 +238,14 @@ public class UserServiceImpl implements UserService {
     
     private Token createToken(User user, String fingerprint) {
         
+        String tokenId = hashGenerator.generateHash(user.getId() + fingerprint + new Date().getTime());
+        
         Token token = new Token();
         token.setExpiration(config.getSessionTime());
-        token.setUser(user.getId());
+        token.setUser(user);
         token.setFingerprint(fingerprint);
-
+        token.setToken(tokenId);
+        
         entityManager.get().merge(token);
         
         return token;

@@ -1,18 +1,25 @@
 package pl.cezaryregec.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.inject.Inject;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import pl.cezaryregec.auth.HashGenerator;
 
 /**
  *
@@ -22,10 +29,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "tokens")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Token.findById", query = "SELECT t FROM Token t WHERE t.token = :id")
+    @NamedQuery(name = "Token.findById", query = "SELECT t FROM Token t WHERE t.token = :id"),
+    @NamedQuery(name = "Token.findSessions", query = "SELECT t FROM Token t WHERE t.user.id = :id")
 })
+@JsonIgnoreProperties({"user", "fingerprint"})
 public class Token implements Serializable {
-
+  
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -37,16 +46,18 @@ public class Token implements Serializable {
     @Column(name = "expiration")
     private Timestamp expiration;
     @Basic(optional = false)
-    @NotNull
-    @Column(name = "user_id")
-    private Integer user;
-    @Basic(optional = false)
     @Column(name = "fingerprint")
     private String fingerprint;
     
+    @OneToOne(cascade = { 
+        CascadeType.PERSIST, 
+        CascadeType.MERGE
+    })
+    @JoinColumn(name = "user_id")
+    private User user;
+    
     public Token() {
-        // TODO: hash-based tokens with client app info to prevent fixation
-        this.token = "test" + new Date().getTime();
+        this.token = "null" + new Date().getTime();
     }
     
     public void setToken(String token) {
@@ -57,8 +68,13 @@ public class Token implements Serializable {
         return this.token;
     }
     
-    public int getUserId() {
+    @XmlTransient
+    public User getUser() {
         return this.user;
+    }
+    
+    public void setUser(User user) {
+        this.user = user;
     }
     
     public void setExpiration(long time) {
@@ -73,12 +89,13 @@ public class Token implements Serializable {
         return !hasExpired() && this.fingerprint.equals(fingerprint);
     }
     
-    public void setUser(Integer user_id) {
-        this.user = user_id;
-    }
-    
     public void setFingerprint(String fingerprint) {
         this.fingerprint = fingerprint;
+    }
+    
+    @XmlTransient
+    public String getFingerprint() {
+        return this.fingerprint;
     }
 
     @Override
@@ -99,7 +116,7 @@ public class Token implements Serializable {
 
     @Override
     public String toString() {
-        return "pl.cezaryregec.entities.Token[ token=" + token + ", expiration = " + expiration + ", user = " + user + " ]";
+        return "pl.cezaryregec.entities.Token[ token=" + token + ", expiration = " + expiration + ", user = " + user.getId() + " ]";
     }
     
 }
