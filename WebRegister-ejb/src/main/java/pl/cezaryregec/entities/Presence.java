@@ -3,13 +3,16 @@ package pl.cezaryregec.entities;
 import java.io.Serializable;
 import java.sql.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -25,9 +28,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Presence.findAll", query = "SELECT p FROM Presence p"),
     @NamedQuery(name = "Presence.findGroup", query = "SELECT p FROM Presence p WHERE p.groupId = :id"),
     @NamedQuery(name = "Presence.findInGroupByDate", query = "SELECT p FROM Presence p WHERE p.groupId = :id AND p.date = :date"),
-    @NamedQuery(name = "Presence.findByUser", query = "SELECT p FROM Presence p WHERE p.userId = :id"),
-    @NamedQuery(name = "Presence.findByUserInGroup", query = "SELECT p FROM Presence p WHERE p.userId = :uid AND p.groupId = :gid"),
-    @NamedQuery(name = "Presence.findByUserInGroupByDate", query = "SELECT p FROM Presence p WHERE p.userId = :uid AND p.groupId = :gid AND p.date = :date")
+    @NamedQuery(name = "Presence.findByUser", query = "SELECT p FROM Presence p WHERE p.user.id = :id"),
+    @NamedQuery(name = "Presence.findByUserInGroup", query = "SELECT p FROM Presence p WHERE p.user.id = :uid AND p.groupId = :gid"),
+    @NamedQuery(name = "Presence.findByUserInGroupByDate", query = "SELECT p FROM Presence p WHERE p.user.id = :uid AND p.groupId = :gid AND p.date = :date")
 })
 public class Presence implements Serializable {
     
@@ -38,10 +41,6 @@ public class Presence implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @NotNull
-    @Column(name = "user_id")
-    private Integer userId;
-    @Basic(optional = false)
     @Column(name = "group_id")
     private Integer groupId;
     @Basic(optional = false)
@@ -50,6 +49,13 @@ public class Presence implements Serializable {
     @Basic(optional = false)
     @Column(name = "presence")
     private Boolean presence;
+
+    @OneToOne(cascade = { 
+        CascadeType.PERSIST, 
+        CascadeType.MERGE
+    })
+    @JoinColumn(name = "user_id")
+    private User user;
     
     public Presence() {
         
@@ -59,12 +65,12 @@ public class Presence implements Serializable {
         return id;
     }
     
-    public Integer getUserId() {
-        return userId;
+    public void setUser(User user) {
+        this.user = user;
     }
     
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public User getUser() {
+        return user;
     }
     
     public Integer getGroupId() {
@@ -104,11 +110,11 @@ public class Presence implements Serializable {
             return false;
         }
         Presence other = (Presence) object;
-        return this.id.equals(other.id) || (this.userId.equals(other.userId) && this.groupId.equals(other.groupId) && this.date.equals(other.date));
+        return this.id.equals(other.id) || (this.user.getId().equals(other.user.getId()) && this.groupId.equals(other.groupId) && this.date.equals(other.date));
     }
 
     @Override
     public String toString() {
-        return "pl.cezaryregec.entities.Presence[ id=" + id + ", user_id = " + userId + ", group_id = " + groupId + ", date = " + date + ", presence = " + presence + " ]";
+        return "pl.cezaryregec.entities.Presence[ id=" + id + ", user_id = " + user.getId() + ", group_id = " + groupId + ", date = " + date + ", presence = " + presence + " ]";
     }
 }

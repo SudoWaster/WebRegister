@@ -51,11 +51,7 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        // a little hack to make jaxb include members
-        List<Group> group = new ArrayList<Group>();
-        group.add(groupService.getGroup(id));
-        
-        return Response.status(Response.Status.OK).entity(group).build();
+        return Response.status(Response.Status.OK).entity(groupService.getGroup(id)).build();
     }
     
     @GET

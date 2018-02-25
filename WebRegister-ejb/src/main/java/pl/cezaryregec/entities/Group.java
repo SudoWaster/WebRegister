@@ -1,5 +1,6 @@
 package pl.cezaryregec.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +16,12 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -32,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Group.findById", query = "SELECT g FROM Group g WHERE g.id = :id"),
     @NamedQuery(name = "Group.findOpen", query = "SELECT g FROM Group g WHERE g.vacancies > 0")
 })
+@JsonIgnoreProperties({"members", "presence"})
 public class Group implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -63,6 +67,16 @@ public class Group implements Serializable {
         inverseJoinColumns = { @JoinColumn(name = "user_id") }
     )
     private List<User> members = new ArrayList();
+    
+    @OneToMany(
+        cascade = { 
+            CascadeType.PERSIST, 
+            CascadeType.MERGE
+        },
+        orphanRemoval = true
+    )
+    @JoinColumn(name = "group_id")
+    private List<Presence> presence = new ArrayList();
     
     public Group() {
         
@@ -110,6 +124,10 @@ public class Group implements Serializable {
     
     public void removeMember(User user) {
         members.remove(user);
+    }
+   
+    public List<Presence> getPresence() {
+        return presence;
     }
     
     @Override
