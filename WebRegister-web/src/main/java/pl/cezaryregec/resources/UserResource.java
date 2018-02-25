@@ -3,6 +3,7 @@ package pl.cezaryregec.resources;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.servlet.RequestScoped;
 import java.io.IOException;
+import java.util.List;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
@@ -20,7 +21,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.auth.UserService;
+import pl.cezaryregec.entities.Group;
+import pl.cezaryregec.entities.User;
 import pl.cezaryregec.entities.UserType;
+import pl.cezaryregec.groups.GroupService;
 
 /**
  *
@@ -45,11 +49,16 @@ public class UserResource {
         
         userService.validateToken(tokenId, request);
         
-        try {
-            return Response.ok(userService.getUserFromToken(tokenId)).build();
-        } catch (NoResultException ex) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        return Response.ok(userService.getUserFromToken(tokenId)).build();
+    }
+    
+    @GET
+    @Path("groups")
+    public Response getGroupsOfCurrent(@QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) {
+        userService.validateToken(tokenId, request);
+        
+        return Response.ok(userService.getUserFromToken(tokenId).getGroups()).build();
     }
     
     @GET
@@ -139,7 +148,23 @@ public class UserResource {
         userService.validateToken(tokenId, request);
         
         try {
-            userService.deleteUser(userId, password, tokenId);
+            User user = userService.getUser(userId);
+            
+            if(!userService.isTokenValid(tokenId, userService.getFingerprint(request), UserType.ADMIN)) {
+                user = userService.getUserFromToken(tokenId);
+                
+                if(user != null) {
+                    return Response.status(Response.Status.UNAUTHORIZED).build();
+                }
+            }
+            
+            List<Group> groups = user.getGroups();
+            
+            for(Group group : groups) {
+                group.removeMember(user);
+            }
+            
+            userService.deleteUser(user.getId(), password, tokenId);
         } catch(NoResultException ex) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }

@@ -2,6 +2,7 @@ package pl.cezaryregec.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
@@ -21,7 +22,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -120,14 +120,68 @@ public class Group implements Serializable {
     
     public void addMember(User user) {
         members.add(user);
+        user.getGroups().add(this);
     }
     
     public void removeMember(User user) {
+        List<Presence> userPresence = getUserPresence(user);
+        
+        for(Presence singlePresence : userPresence) {
+            removePresence(user, singlePresence.getDate());
+        }
+        
         members.remove(user);
+        user.getGroups().remove(this);
     }
    
     public List<Presence> getPresence() {
         return presence;
+    }
+    
+    public List<Presence> getUserPresence(User user) {
+        List<Presence> result = new ArrayList<Presence>();
+        
+        for(Presence userPresence : presence) {
+            if(userPresence.getUser().equals(user)) {
+                result.add(userPresence);
+            }
+        }
+        
+        return result;
+    }
+    
+    public List<Presence> getDatePresence(Date date) {
+        List<Presence> result = new ArrayList<Presence>();
+        
+        for(Presence userPresence : presence) {
+            if(userPresence.getDate().equals(date)) {
+                result.add(userPresence);
+            }
+        }
+        
+        return result;
+    }
+    
+    public void setPresence(User user, Date date, Boolean presence) {
+        Presence newPresence = new Presence();
+        newPresence.setGroupId(this.id);
+        newPresence.setUser(user);
+        newPresence.setDate(date);
+        
+        if(!this.presence.contains(newPresence)) {
+            this.presence.add(newPresence);
+        }
+        
+        this.presence.get(this.presence.indexOf(newPresence)).setPresence(presence);
+    }
+    
+    public void removePresence(User user, Date date) {
+        Presence existingPresence = new Presence();
+        existingPresence.setGroupId(this.id);
+        existingPresence.setUser(user);
+        existingPresence.setDate(date);
+        
+        this.presence.remove(existingPresence);
     }
     
     @Override

@@ -239,6 +239,7 @@ public class UserServiceImpl implements UserService {
     private Token createToken(User user, String fingerprint) {
         
         String tokenId = hashGenerator.generateHash(user.getId() + fingerprint + new Date().getTime());
+        tokenId = tokenId.substring(0, tokenId.length() - 1);
         
         Token token = new Token();
         token.setExpiration(config.getSessionTime());

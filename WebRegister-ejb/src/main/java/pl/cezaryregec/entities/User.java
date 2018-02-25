@@ -1,12 +1,16 @@
 package pl.cezaryregec.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -58,6 +62,9 @@ public class User implements Serializable {
     @Size(max = 64)
     @Column(name = "lastname")
     private String lastname;
+    
+    @ManyToMany(mappedBy = "members")
+    private List<Group> groups = new ArrayList();
     
     public User() {
     }
@@ -120,6 +127,10 @@ public class User implements Serializable {
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
+    
+    public List<Group> getGroups() {
+        return groups;
+    }
 
     @Override
     public int hashCode() {
@@ -135,7 +146,7 @@ public class User implements Serializable {
         }
         User other = (User) object;
         
-        return ((this.mail == null && other.mail == null) || this.mail.equals(other.mail))
+        return this.mail.equals(other.mail)
                 && ((this.firstname == null && other.firstname == null) || this.firstname.equals(other.firstname))
                 && ((this.lastname == null && other.lastname == null) || this.lastname.equals(other.lastname))
                 && this.type == other.type;

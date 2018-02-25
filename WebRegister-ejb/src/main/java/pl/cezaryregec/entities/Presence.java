@@ -110,7 +110,8 @@ public class Presence implements Serializable {
             return false;
         }
         Presence other = (Presence) object;
-        return this.id.equals(other.id) || (this.user.getId().equals(other.user.getId()) && this.groupId.equals(other.groupId) && this.date.equals(other.date));
+        return ((this.id == null && other.id == null) || this.id.equals(other.id)) 
+                || (this.user.equals(other.user) && this.groupId.equals(other.groupId) && this.date.equals(other.date));
     }
 
     @Override

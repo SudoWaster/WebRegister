@@ -1,7 +1,6 @@
 package pl.cezaryregec.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.google.inject.Inject;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -19,7 +18,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import pl.cezaryregec.auth.HashGenerator;
 
 /**
  *

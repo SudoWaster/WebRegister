@@ -4,10 +4,10 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>java:app/postgres</jta-data-source>
     <class>pl.cezaryregec.entities.Token</class>
-    <class>pl.cezaryregec.entities.User</class>
     <class>pl.cezaryregec.entities.Group</class>
     <class>pl.cezaryregec.entities.GroupAssignment</class>
     <class>pl.cezaryregec.entities.Presence</class>
+    <class>pl.cezaryregec.entities.User</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
