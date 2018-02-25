@@ -92,8 +92,8 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public boolean isPriviledgedInGroup(User user, int groupId) {
         GroupAssignment supposedAssignment = new GroupAssignment();
-        supposedAssignment.setUserId(user.getId());
-        supposedAssignment.setGroupId(groupId);
+        supposedAssignment.setUser(user);
+        supposedAssignment.setGroup(getGroup(groupId));
         
         return getList(groupId, GroupRole.PRIVILEDGED).contains(supposedAssignment) || user.getType() == UserType.ADMIN;
     }
@@ -117,11 +117,18 @@ public class GroupServiceImpl implements GroupService {
             throw new ForbiddenException("Already in group");
         }
         
-        group.addMember(user);
+        GroupAssignment assignment = new GroupAssignment();
+        assignment.setUser(user);
+        assignment.setGroup(getGroup(groupId));
+        assignment.setRole(GroupRole.STUDENT);
+        
         if(updateVacancies) {
             group.setVacancies(group.getVacancies() - 1);
         }
+        entityManager.get().merge(assignment);
         entityManager.get().merge(group);
+        
+        group.addMember(user, GroupRole.STUDENT);
     }
 
     @Override
@@ -152,6 +159,8 @@ public class GroupServiceImpl implements GroupService {
         if(updateVacancies){
             group.setVacancies(group.getVacancies() + 1);
         }
+        
         entityManager.get().merge(group);
+        entityManager.get().merge(user);
     }
 }

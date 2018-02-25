@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.auth.UserService;
+import pl.cezaryregec.entities.Group;
 import pl.cezaryregec.entities.GroupRole;
 
 /**
@@ -68,9 +69,7 @@ public class SingleGroupResource {
     
     @PUT
     @Path("{id}/members")
-    public Response addMember(@PathParam("id") Integer id,
-            @FormParam("userId") Integer userId,
-            @FormParam("updateVacancies") Boolean updateVacancies,
+    public Response addSelf(@PathParam("id") Integer id,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
@@ -80,36 +79,57 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        
-        if(groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
-            groupService.addToGroup(userService.getUser(userId), id, updateVacancies);
-            return Response.status(Response.Status.OK).build();
-        }
-        
         groupService.addToGroup(userService.getUserFromToken(token), id, true);
         return Response.status(Response.Status.OK).build();
         
     }
     
+    @PUT
+    @Path("{id}/members/{user_id}")
+    public Response addMember(@PathParam("id") Integer id,
+            @PathParam("user_id") Integer userId,
+            @QueryParam("updateVacancies") Boolean updateVacancies,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        if(!groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        
+        groupService.addToGroup(userService.getUser(userId), id, updateVacancies);
+        return Response.status(Response.Status.OK).build();
+    }
+    
     @DELETE
     @Path("{id}/members")
+    public Response removeSelf(@PathParam("id") Integer id,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        if(!userService.isTokenValid(token, userService.getFingerprint(request))
+                || !canManageSelfInGroup(token, id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }       
+        
+        groupService.deleteFromGroup(userService.getUserFromToken(token), id, true);
+        return Response.status(Response.Status.OK).build();
+    }
+    
+    @DELETE
+    @Path("{id}/members/{user_id}")
     public Response removeMember(@PathParam("id") Integer id,
-            @FormParam("userId") Integer userId,
-            @FormParam("updateVacancies") Boolean updateVacancies,
+            @PathParam("user_id") Integer userId,
+            @QueryParam("updateVacancies") Boolean updateVacancies,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
     
         if(!userService.isTokenValid(token, userService.getFingerprint(request))
-                || !canManageSelfInGroup(token, id)) {
+                || !groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        if(groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
-            groupService.deleteFromGroup(userService.getUser(userId), id, updateVacancies);
-            return Response.status(Response.Status.OK).build();
-        }
-        
-        groupService.deleteFromGroup(userService.getUserFromToken(token), id, true);
+        groupService.deleteFromGroup(userService.getUser(userId), id, updateVacancies);
         return Response.status(Response.Status.OK).build();
     }
     
@@ -145,9 +165,9 @@ public class SingleGroupResource {
     }
     
     @DELETE
-    @Path("{id}/instructors")
+    @Path("{id}/instructors/{user_id}")
     public Response removeInstructor(@PathParam("id") Integer id,
-            @FormParam("userId") Integer userId,
+            @PathParam("user_id") Integer userId,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         

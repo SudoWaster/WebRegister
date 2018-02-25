@@ -51,8 +51,8 @@ public class Presence implements Serializable {
     private Boolean presence;
 
     @OneToOne(cascade = { 
-        CascadeType.PERSIST, 
-        CascadeType.MERGE
+        CascadeType.MERGE, 
+        CascadeType.PERSIST 
     })
     @JoinColumn(name = "user_id")
     private User user;
@@ -110,8 +110,8 @@ public class Presence implements Serializable {
             return false;
         }
         Presence other = (Presence) object;
-        return ((this.id == null && other.id == null) || this.id.equals(other.id)) 
-                || (this.user.equals(other.user) && this.groupId.equals(other.groupId) && this.date.equals(other.date));
+        return (this.user.equals(other.user) && this.groupId.equals(other.groupId) && this.date.equals(other.date)) 
+                || ((this.id == null && other.id == null) || this.id.equals(other.id)) ;
     }
 
     @Override

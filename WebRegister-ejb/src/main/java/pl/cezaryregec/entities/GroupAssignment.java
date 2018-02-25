@@ -4,13 +4,11 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.IdClass;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -18,30 +16,28 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author SudoWaster <cezaryre@gmail.com>
  */
 @Entity
-@Table(name = "group_assignment")
+@Table(name = "assignment")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "GroupAssignment.findAll", query = "SELECT g FROM GroupAssignment g"),
-    @NamedQuery(name = "GroupAssignment.findByUserId", query = "SELECT g FROM GroupAssignment g WHERE g.userId = :id"),
-    @NamedQuery(name = "GroupAssignment.findByGroupId", query = "SELECT g FROM GroupAssignment g WHERE g.groupId = :id"),
-    @NamedQuery(name = "GroupAssignment.findInGroupByRole", query = "SELECT g FROM GroupAssignment g WHERE g.groupId = :id AND g.role = :role"),
-    @NamedQuery(name = "GroupAssignment.findUserInGroup", query = "SELECT g FROM GroupAssignment g WHERE g.userId = :uid AND g.groupId = :gid")
-})
+@IdClass(GroupAssignmentId.class)
 public class GroupAssignment implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "user_id")
     private Integer userId;
-    @Basic(optional = false)
+    
+    @Id
     @Column(name = "group_id")
     private Integer groupId;
+    
+    @ManyToOne
+    @PrimaryKeyJoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user_assignment;
+    
+    @ManyToOne
+    @PrimaryKeyJoinColumn(name = "group_id", referencedColumnName = "id")
+    private Group group_assignment;
+    
     @Basic(optional = false)
     @Column(name = "group_role")
     private Integer role;
@@ -50,20 +46,20 @@ public class GroupAssignment implements Serializable {
         
     }
     
-    public Integer getUserId() {
-        return userId;
+    public User getUser() {
+        return user_assignment;
     }
     
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user_assignment = user;
     }
     
-    public Integer getGroupId() {
-        return groupId;
+    public Group getGroup() {
+        return group_assignment;
     }
     
-    public void setGroupId(Integer groupId) {
-        this.groupId = groupId;
+    public void setGroup(Group group) {
+        this.group_assignment = group;
     }
     
     public GroupRole getRole() {
@@ -77,7 +73,9 @@ public class GroupAssignment implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (userId != null ? userId.hashCode() : 0);
+        hash += (groupId != null ? groupId.hashCode() : 0);
+        
         return hash;
     }
 
@@ -87,11 +85,11 @@ public class GroupAssignment implements Serializable {
             return false;
         }
         GroupAssignment other = (GroupAssignment) object;
-        return this.id.equals(other.id) || (this.userId.equals(other.userId) && this.groupId.equals(other.groupId));
+        return (this.user_assignment.equals(other.user_assignment) && this.group_assignment.equals(other.group_assignment));
     }
 
     @Override
     public String toString() {
-        return "pl.cezaryregec.entities.GroupAssignment[ id=" + id + ", user_id = " + userId + ", group_id = " + groupId + ", role = " + GroupRole.cast(role).name() + " ]";
+        return "pl.cezaryregec.entities.GroupAssignment[ user_id = " + user_assignment.getId() + ", group_id = " + group_assignment.getId() + ", role = " + GroupRole.cast(role).name() + " ]";
     }
 }

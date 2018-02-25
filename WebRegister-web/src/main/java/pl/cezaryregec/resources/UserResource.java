@@ -154,7 +154,7 @@ public class UserResource {
                 user = userService.getUserFromToken(tokenId);
                 
                 if(user != null) {
-                    return Response.status(Response.Status.UNAUTHORIZED).build();
+                    return Response.status(Response.Status.FORBIDDEN).build();
                 }
             }
             

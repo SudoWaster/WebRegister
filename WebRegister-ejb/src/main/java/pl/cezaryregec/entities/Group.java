@@ -13,8 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -57,21 +55,13 @@ public class Group implements Serializable {
     @Column(name = "group_vacancies")
     private Integer vacancies;
     
-    @ManyToMany(cascade = { 
-        CascadeType.PERSIST, 
-        CascadeType.MERGE
-    })
-    @JoinTable(
-        name = "group_assignment",
-        joinColumns = { @JoinColumn(name = "group_id") },
-        inverseJoinColumns = { @JoinColumn(name = "user_id") }
-    )
-    private List<User> members = new ArrayList();
+    @OneToMany(mappedBy = "group_assignment")
+    private List<GroupAssignment> members = new ArrayList();
     
     @OneToMany(
-        cascade = { 
-            CascadeType.PERSIST, 
-            CascadeType.MERGE
+        cascade = {
+            CascadeType.MERGE,
+            CascadeType.PERSIST
         },
         orphanRemoval = true
     )
@@ -115,23 +105,33 @@ public class Group implements Serializable {
     }
     
     public List<User> getMembers() {
-        return members;
+        List<User> result = new ArrayList<User>();
+        
+        for(GroupAssignment assignment : members) {
+            result.add(assignment.getUser());
+        }
+        
+        return result;
     }
     
-    public void addMember(User user) {
-        members.add(user);
-        user.getGroups().add(this);
+    public void addMember(User user, GroupRole role) {
+        GroupAssignment assignment = new GroupAssignment();
+        assignment.setGroup(this);
+        assignment.setUser(user);
+        assignment.setRole(role);
+        
+        members.add(assignment);
+        user.getGroupAssignment().add(assignment);
     }
     
     public void removeMember(User user) {
-        List<Presence> userPresence = getUserPresence(user);
+        GroupAssignment assignment = new GroupAssignment();
+        assignment.setGroup(this);
+        assignment.setUser(user);
+        assignment.setRole(GroupRole.STUDENT);
         
-        for(Presence singlePresence : userPresence) {
-            removePresence(user, singlePresence.getDate());
-        }
-        
-        members.remove(user);
-        user.getGroups().remove(this);
+        members.remove(assignment);
+        user.getGroupAssignment().remove(assignment);
     }
    
     public List<Presence> getPresence() {
