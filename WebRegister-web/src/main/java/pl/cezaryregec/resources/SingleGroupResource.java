@@ -64,7 +64,7 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        return Response.status(Response.Status.OK).entity(groupService.getList(id, GroupRole.STUDENT)).build();
+        return Response.status(Response.Status.OK).entity(groupService.getGroup(id).getMembers(GroupRole.STUDENT)).build();
     }
     
     @PUT
@@ -144,7 +144,7 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        return Response.status(Response.Status.OK).entity(groupService.getList(id, GroupRole.PRIVILEDGED)).build();
+        return Response.status(Response.Status.OK).entity(groupService.getGroup(id).getMembers(GroupRole.PRIVILEDGED)).build();
     }
     
     @PUT

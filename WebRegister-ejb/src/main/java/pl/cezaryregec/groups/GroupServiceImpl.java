@@ -68,6 +68,10 @@ public class GroupServiceImpl implements GroupService {
     public void deleteGroup(int id) {
         Group group = getGroup(id);
         
+        for(User user : group.getMembers()) {
+            group.removeMember(user);
+        }
+        
         entityManager.get().remove(group);
     }
     
@@ -91,21 +95,9 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public boolean isPriviledgedInGroup(User user, int groupId) {
-        GroupAssignment supposedAssignment = new GroupAssignment();
-        supposedAssignment.setUser(user);
-        supposedAssignment.setGroup(getGroup(groupId));
+        Group group = getGroup(groupId);
         
-        return getList(groupId, GroupRole.PRIVILEDGED).contains(supposedAssignment) || user.getType() == UserType.ADMIN;
-    }
-    
-    @Override
-    @Transactional
-    public List<GroupAssignment> getList(int groupId, GroupRole role) {
-        Query groupAssignmentQuery = entityManager.get().createNamedQuery("GroupAssignment.findInGroupByRole", GroupAssignment.class);
-        groupAssignmentQuery.setParameter("id", groupId);
-        groupAssignmentQuery.setParameter("role", role.getInt());
-        
-        return (List<GroupAssignment>) groupAssignmentQuery.getResultList();
+        return user.getType() == UserType.ADMIN || group.getMembers(GroupRole.PRIVILEDGED).contains(user);
     }
     
     @Override
@@ -113,22 +105,24 @@ public class GroupServiceImpl implements GroupService {
     public void addToGroup(User user, int groupId, boolean updateVacancies) {
         Group group = getGroup(groupId);
         
-        if(group.getMembers().contains(user)) {
+        if(!group.getMembers().isEmpty()
+                && group.getMembers().contains(user)) {
             throw new ForbiddenException("Already in group");
         }
         
         GroupAssignment assignment = new GroupAssignment();
         assignment.setUser(user);
-        assignment.setGroup(getGroup(groupId));
+        assignment.setGroup(group);
         assignment.setRole(GroupRole.STUDENT);
         
         if(updateVacancies) {
             group.setVacancies(group.getVacancies() - 1);
         }
-        entityManager.get().merge(assignment);
-        entityManager.get().merge(group);
         
         group.addMember(user, GroupRole.STUDENT);
+        
+        entityManager.get().merge(group);
+        entityManager.get().merge(user);
     }
 
     @Override
@@ -156,6 +150,7 @@ public class GroupServiceImpl implements GroupService {
         Group group = getGroup(groupId);
         
         group.removeMember(user);
+        
         if(updateVacancies){
             group.setVacancies(group.getVacancies() + 1);
         }

@@ -1,5 +1,6 @@
 package pl.cezaryregec.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -34,7 +36,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "User.findByLastname", query = "SELECT u FROM User u WHERE u.lastname = :lastname")})
 public class User implements Serializable {
     
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -137,6 +138,8 @@ public class User implements Serializable {
         return result;
     }
     
+    @XmlTransient
+    @JsonIgnore
     public List<GroupAssignment> getGroupAssignment() {
         return groups;
     }

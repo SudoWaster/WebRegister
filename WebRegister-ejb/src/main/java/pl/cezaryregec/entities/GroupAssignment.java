@@ -1,13 +1,16 @@
 package pl.cezaryregec.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -18,24 +21,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "assignment")
 @XmlRootElement
-@IdClass(GroupAssignmentId.class)
 public class GroupAssignment implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @Column(name = "user_id")
-    private Integer userId;
-    
-    @Id
-    @Column(name = "group_id")
-    private Integer groupId;
+    @EmbeddedId
+    private GroupAssignmentId id;
     
     @ManyToOne
-    @PrimaryKeyJoinColumn(name = "user_id", referencedColumnName = "id")
+    @MapsId("userId")
+    @JoinColumn(name = "user_id")
     private User user_assignment;
     
     @ManyToOne
-    @PrimaryKeyJoinColumn(name = "group_id", referencedColumnName = "id")
+    @MapsId("groupId")
+    @JoinColumn(name = "group_id")
     private Group group_assignment;
     
     @Basic(optional = false)
@@ -72,11 +71,7 @@ public class GroupAssignment implements Serializable {
     
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (userId != null ? userId.hashCode() : 0);
-        hash += (groupId != null ? groupId.hashCode() : 0);
-        
-        return hash;
+        return id.hashCode();
     }
 
     @Override

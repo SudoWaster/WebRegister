@@ -50,10 +50,7 @@ public class Presence implements Serializable {
     @Column(name = "presence")
     private Boolean presence;
 
-    @OneToOne(cascade = { 
-        CascadeType.MERGE, 
-        CascadeType.PERSIST 
-    })
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
     

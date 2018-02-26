@@ -1,19 +1,25 @@
 package pl.cezaryregec.entities;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 /**
  *
  * @author SudoWaster <cezaryre@gmail.com>
  */
+@Embeddable
 public class GroupAssignmentId implements Serializable {
     
+    @Column(name = "user_id")
     private Integer userId;
-    private Integer projectId;
+    
+    @Column(name = "group_id")
+    private Integer groupId;
     
     @Override
     public int hashCode() {
-        return userId.hashCode() + projectId.hashCode();
+        return userId.hashCode() + groupId.hashCode();
     }
     
     @Override
@@ -24,6 +30,6 @@ public class GroupAssignmentId implements Serializable {
         
         GroupAssignmentId other = (GroupAssignmentId) object;
         
-        return this.userId.equals(other.userId) && this.projectId.equals(other.projectId);
+        return this.userId.equals(other.userId) && this.groupId.equals(other.groupId);
     }
 }

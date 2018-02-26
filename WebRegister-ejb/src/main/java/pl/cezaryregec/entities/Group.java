@@ -1,5 +1,6 @@
 package pl.cezaryregec.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.sql.Date;
@@ -55,14 +56,11 @@ public class Group implements Serializable {
     @Column(name = "group_vacancies")
     private Integer vacancies;
     
-    @OneToMany(mappedBy = "group_assignment")
+    @OneToMany(cascade = { CascadeType.ALL }, mappedBy = "group_assignment")
     private List<GroupAssignment> members = new ArrayList();
     
     @OneToMany(
-        cascade = {
-            CascadeType.MERGE,
-            CascadeType.PERSIST
-        },
+        cascade = { CascadeType.ALL },
         orphanRemoval = true
     )
     @JoinColumn(name = "group_id")
@@ -105,10 +103,22 @@ public class Group implements Serializable {
     }
     
     public List<User> getMembers() {
-        List<User> result = new ArrayList<User>();
+        List<User> result = new ArrayList<>();
         
         for(GroupAssignment assignment : members) {
             result.add(assignment.getUser());
+        }
+        
+        return result;
+    }
+    
+    public List<User> getMembers(GroupRole role) {
+        List<User> result = new ArrayList<>();
+        
+        for(GroupAssignment assignment : members) {
+            if(assignment.getRole().equals(role)) {
+                result.add(assignment.getUser());
+            }
         }
         
         return result;
@@ -132,6 +142,11 @@ public class Group implements Serializable {
         
         members.remove(assignment);
         user.getGroupAssignment().remove(assignment);
+    }
+    
+    @JsonIgnore
+    public List<GroupAssignment> getGroupAssignment() {
+        return members;
     }
    
     public List<Presence> getPresence() {
