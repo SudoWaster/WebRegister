@@ -68,7 +68,11 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user_assignment")
     private List<GroupAssignment> groups = new ArrayList();
     
-    @OneToMany(cascade = { CascadeType.ALL })
+    @OneToMany(cascade = { 
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REMOVE
+    })
     @JoinColumn(name = "user_id")
     private List<Token> sessions;
     

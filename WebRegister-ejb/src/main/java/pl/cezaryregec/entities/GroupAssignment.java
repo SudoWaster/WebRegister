@@ -1,10 +1,7 @@
 package pl.cezaryregec.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -24,6 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GroupAssignment implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @EmbeddedId
     private GroupAssignmentId id;
     

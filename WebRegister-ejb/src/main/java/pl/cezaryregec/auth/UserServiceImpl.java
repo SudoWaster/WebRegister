@@ -69,14 +69,12 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Integer userId) {
         User user = getUser(userId);
         
-        List<Group> groups = user.getGroups();
-        
-        for(Group group : groups) {
+        for(Group group : user.getGroups()) {
             groupService.removeFromGroup(user, group.getId(), true);
         }
-        user.getSessions().clear();
-        
-        entityManager.get().merge(user);
+        for(Token token : user.getSessions()) {
+            entityManager.get().remove(token);
+        }
         
         entityManager.get().remove(user);
     }

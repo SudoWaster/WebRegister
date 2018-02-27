@@ -140,14 +140,17 @@ public class GroupServiceImpl implements GroupService {
             throw new NotFoundException("Not in group");
         }
         
-        Query assignmentQuery = entityManager.get().createNamedQuery("GroupAssignment.findUserInGroup", GroupAssignment.class);
-        assignmentQuery.setParameter("uid", user.getId());
-        assignmentQuery.setParameter("gid", groupId);
+        Group group = getGroup(groupId);
+        List<GroupAssignment> groupAssignment = group.getGroupAssignment();
         
-        GroupAssignment assignment = (GroupAssignment) assignmentQuery.getSingleResult();
-        assignment.setRole(role);
+        for(GroupAssignment assignment : groupAssignment) {
+            if(assignment.getUser().equals(user)) {
+                assignment.setRole(role);
+                entityManager.get().merge(assignment);
+            }
+        }
         
-        entityManager.get().merge(assignment);
+        entityManager.get().merge(group);
     }
 
     @Override
@@ -159,7 +162,7 @@ public class GroupServiceImpl implements GroupService {
         
         Group group = getGroup(groupId);
         
-        group.removeMember(user);
+        entityManager.get().remove(group.removeMember(user));
         
         if(updateVacancies){
             group.setVacancies(group.getVacancies() + 1);

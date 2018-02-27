@@ -56,11 +56,19 @@ public class Group implements Serializable {
     @Column(name = "group_vacancies")
     private Integer vacancies;
     
-    @OneToMany(cascade = { CascadeType.ALL }, mappedBy = "group_assignment")
+    @OneToMany(cascade = { 
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REMOVE
+    }, mappedBy = "group_assignment")
     private List<GroupAssignment> members = new ArrayList();
     
     @OneToMany(
-        cascade = { CascadeType.ALL },
+        cascade = { 
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REMOVE
+    },
         orphanRemoval = true
     )
     @JoinColumn(name = "group_id")
@@ -134,14 +142,19 @@ public class Group implements Serializable {
         user.getGroupAssignment().add(assignment);
     }
     
-    public void removeMember(User user) {
-        GroupAssignment assignment = new GroupAssignment();
-        assignment.setGroup(this);
-        assignment.setUser(user);
-        assignment.setRole(GroupRole.STUDENT);
+    public GroupAssignment removeMember(User user) {
+        GroupAssignment targetAssignment = new GroupAssignment();
         
-        members.remove(assignment);
-        user.getGroupAssignment().remove(assignment);
+        for(GroupAssignment assignment : members) {
+            if(assignment.getUser().equals(user)) {
+                targetAssignment = assignment;
+            }
+        }
+        
+        members.remove(targetAssignment);
+        user.getGroupAssignment().remove(targetAssignment);
+        
+        return targetAssignment;
     }
     
     @JsonIgnore
