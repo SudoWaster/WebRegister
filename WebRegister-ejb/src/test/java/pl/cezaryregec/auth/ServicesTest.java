@@ -61,6 +61,7 @@ public class ServicesTest {
         
         currentUser = userService.getUser(mail);
         userId = currentUser.getId();
+        System.out.println("USER: " + userId);
     }
     
     @Test
@@ -114,6 +115,5 @@ public class ServicesTest {
     public void userTearDown() {
         System.out.println("Deleting mock user");
         userService.deleteUser(userId);
-        userService.removeToken(testToken.getToken());
     }
 }

@@ -74,6 +74,9 @@ public class UserServiceImpl implements UserService {
         for(Group group : groups) {
             groupService.removeFromGroup(user, group.getId(), true);
         }
+        user.getSessions().clear();
+        
+        entityManager.get().merge(user);
         
         entityManager.get().remove(user);
     }
@@ -147,15 +150,15 @@ public class UserServiceImpl implements UserService {
         Query userQuery = entityManager.get().createNamedQuery("User.findByMail", User.class);
         userQuery.setParameter("mail", mail);
         
-        User result;
+        User user;
         
         try {
-            result = (User) userQuery.getSingleResult();
+            user = (User) userQuery.getSingleResult();
         } catch(NoResultException ex) {
             throw new NotFoundException("User does not exist");
         }
         
-        return result;
+        return user;
     }
     
     @Override
@@ -165,15 +168,15 @@ public class UserServiceImpl implements UserService {
         Query userQuery = entityManager.get().createNamedQuery("User.findById", User.class);
         userQuery.setParameter("id", id);
         
-        User result;
+        User user;
         
         try {
-            result = (User) userQuery.getSingleResult();
+            user = (User) userQuery.getSingleResult();
         } catch(NoResultException ex) {
             throw new NotFoundException("User does not exist");
         }
         
-        return result;
+        return user;
     }
     
     private boolean userExists(String mail) {
@@ -182,7 +185,7 @@ public class UserServiceImpl implements UserService {
             User existing = getUser(mail);
             return existing != null;
             
-        } catch(NoResultException ex) {
+        } catch(NotFoundException ex) {
             return false;
         }
     }
@@ -221,7 +224,7 @@ public class UserServiceImpl implements UserService {
         User user;
         try {
             user = getUserFromToken(tokenId);
-        } catch(NoResultException ex) {
+        } catch(NotFoundException ex) {
             return false;
         }
         
@@ -233,13 +236,13 @@ public class UserServiceImpl implements UserService {
     public boolean isTokenValid(String tokenId, String fingerprint) {
         try {
             return isTokenValid(getToken(tokenId), fingerprint);
-        } catch(NoResultException ex) {
+        } catch(NotFoundException ex) {
             return false;
         }
     }
     
     private boolean isTokenValid(Token token, String fingerprint) {
-        boolean isValid = token.isValid(fingerprint) && token.getToken().equals(generateTokenId(token.getUser(), fingerprint));
+        boolean isValid = token.isValid(fingerprint);
         
         if(token.hasExpired() || token.getUser().getType() == UserType.UNAUTHORIZED) {
             removeToken(token.getToken());
@@ -297,7 +300,7 @@ public class UserServiceImpl implements UserService {
         
         try {
             currentUser = getUserFromToken(tokenId);
-        } catch(NoResultException ex) {
+        } catch(NotFoundException ex) {
             return false;
         }
         
@@ -314,6 +317,6 @@ public class UserServiceImpl implements UserService {
     
     private String generateTokenId(User user, String fingerprint) {
         String tokenId = hashGenerator.generateHash(user.getId() + fingerprint + new Date().getTime());
-        return tokenId.replaceAll("[^a-zA-Z0-9]+", "");
+        return tokenId.replaceAll("[^a-zA-Z0-9]+", "-");
     }
 }
