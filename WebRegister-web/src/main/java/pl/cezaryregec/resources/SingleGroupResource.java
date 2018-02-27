@@ -148,9 +148,9 @@ public class SingleGroupResource {
     }
     
     @PUT
-    @Path("{id}/instructors")
+    @Path("{id}/instructors/{user_id}")
     public Response addInstructor(@PathParam("id") Integer id,
-            @FormParam("userId") Integer userId,
+            @PathParam("user_id") Integer userId,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         

@@ -39,10 +39,22 @@ public class GroupResource {
     }
     
     @GET
-    public Response getAllGroups(@QueryParam("token") String token,
+    public Response getOpenGroups(@QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
         userService.validateToken(token, request);
+        
+        return Response.ok(groupService.getOpenGroups()).build();
+    }
+    
+    @GET
+    @Path("all")
+    public Response getAllGroups(@QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        if(!userService.isTokenValid(token, userService.getFingerprint(request), UserType.PRIVILEDGED)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
         
         return Response.ok(groupService.getGroups()).build();
     }
