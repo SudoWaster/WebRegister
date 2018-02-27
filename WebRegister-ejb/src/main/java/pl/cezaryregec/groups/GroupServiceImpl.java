@@ -22,7 +22,7 @@ import pl.cezaryregec.entities.UserType;
 public class GroupServiceImpl implements GroupService {
     
     @Inject
-    Provider<EntityManager> entityManager;
+    private Provider<EntityManager> entityManager;
 
     @Override
     @Transactional
@@ -152,7 +152,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public void deleteFromGroup(User user, int groupId, boolean updateVacancies) {
+    public void removeFromGroup(User user, int groupId, boolean updateVacancies) {
         if(!isInGroup(user, groupId)) {
             throw new NotFoundException("Not in group");
         }

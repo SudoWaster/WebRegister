@@ -45,10 +45,9 @@ public class UserResource {
     
     @GET
     public Response getCurrent(@QueryParam("token") String tokenId,
-            @Context HttpServletRequest request) throws JsonProcessingException {
+            @Context HttpServletRequest request) {
         
         userService.validateToken(tokenId, request);
-        
         return Response.ok(userService.getUserFromToken(tokenId)).build();
     }
     
@@ -56,8 +55,8 @@ public class UserResource {
     @Path("groups")
     public Response getGroupsOfCurrent(@QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
-        userService.validateToken(tokenId, request);
         
+        userService.validateToken(tokenId, request);
         return Response.ok(userService.getUserFromToken(tokenId).getGroups()).build();
     }
     
@@ -65,10 +64,20 @@ public class UserResource {
     @Path("{id}")
     public Response getUser(@PathParam("id") Integer id,
             @QueryParam("token") String tokenId,
-            @Context HttpServletRequest request) throws JsonProcessingException {
+            @Context HttpServletRequest request) {
         
         userService.validateToken(tokenId, request);
         return Response.ok(userService.getUser(id)).build();
+    }
+    
+    @GET
+    @Path("{id}/groups")
+    public Response getGroupsOfUser(@PathParam("id") Integer id,
+            @QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) {
+     
+        userService.validateToken(tokenId, request);
+        return Response.ok(userService.getUser(id).getGroups()).build();
     }
     
     @GET
@@ -104,7 +113,13 @@ public class UserResource {
             @Context HttpServletRequest request) {
         
         userService.validateToken(tokenId, request);
-        userService.setUser(id, firstname, lastname, password, tokenId);
+        
+        if(!(userService.getUserFromToken(tokenId).getId().equals(id)
+                && userService.getUserFromToken(tokenId).getType().equals(UserType.ADMIN))) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        userService.setUser(id, firstname, lastname);
         
         return Response.ok().build();
     }
@@ -125,30 +140,28 @@ public class UserResource {
     }
     
     @DELETE
-    public Response deleteUser(@FormParam("id") Integer userId,
-            @FormParam("password") String password, 
+    public Response deleteSelf(@QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) {
+        
+        userService.validateToken(tokenId, request);
+        userService.deleteUser(userService.getUserFromToken(tokenId).getId());
+        
+        return Response.ok().build();
+    }
+    
+    @DELETE
+    @Path("{id}")
+    public Response deleteUser(@PathParam("id") Integer userId,
             @QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
         userService.validateToken(tokenId, request);
-        
-        User user = userService.getUser(userId);
 
         if(!userService.isTokenValid(tokenId, userService.getFingerprint(request), UserType.ADMIN)) {
-            user = userService.getUserFromToken(tokenId);
-
-            if(user != null) {
-                return Response.status(Response.Status.FORBIDDEN).build();
-            }
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        List<Group> groups = user.getGroups();
-
-        for(Group group : groups) {
-            group.removeMember(user);
-        }
-
-        userService.deleteUser(user.getId(), password, tokenId);
+        userService.deleteUser(userId);
         
         return Response.ok().build();
     }    

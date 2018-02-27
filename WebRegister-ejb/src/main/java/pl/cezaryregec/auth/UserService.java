@@ -21,11 +21,11 @@ public interface UserService {
     
     void createUser(String mail, String password, String firstname, String lastname, UserType type);
     
-    void setUser(int id, String firstname, String lastname, String password, String tokenId);
+    void setUser(int id, String firstname, String lastname);
     
     void setUserCredentials(int id, String oldPassword, String mail, String password, String tokenId);
     
-    void deleteUser(Integer userId, String password, String tokenId);
+    void deleteUser(Integer userId);
     
     User getUser(String mail);
     

@@ -16,9 +16,11 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.Config;
+import pl.cezaryregec.entities.Group;
 import pl.cezaryregec.entities.Token;
 import pl.cezaryregec.entities.User;
 import pl.cezaryregec.entities.UserType;
+import pl.cezaryregec.groups.GroupService;
 
 /**
  *
@@ -30,6 +32,9 @@ public class UserServiceImpl implements UserService {
     //@PersistenceContext(unitName="pl.cezaryregec_WebRegister-ejb_ejb_1.0-SNAPSHOTPU")
     @Inject
     private Provider<EntityManager> entityManager;
+    
+    @Inject
+    private GroupService groupService;
     
     @Inject
     private HashGenerator hashGenerator;
@@ -61,11 +66,13 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public void deleteUser(Integer userId, String password, String tokenId) {
+    public void deleteUser(Integer userId) {
         User user = getUser(userId);
         
-        if(!isUserPermitted(user, tokenId, password)) {
-            throw new ForbiddenException();
+        List<Group> groups = user.getGroups();
+        
+        for(Group group : groups) {
+            groupService.removeFromGroup(user, group.getId(), true);
         }
         
         entityManager.get().remove(user);
@@ -73,14 +80,9 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public void setUser(int id, String firstname, String lastname, String password, String tokenId) 
-        throws NoResultException {
+    public void setUser(int id, String firstname, String lastname) {
         
         User updatedUser = getUser(id);
-        
-        if(!isUserPermitted(updatedUser, tokenId, password)) {
-            throw new ForbiddenException();
-        }
         
         updatedUser.setFirstname(firstname != null ? firstname : updatedUser.getFirstname());
         updatedUser.setLastname(lastname != null ? lastname : updatedUser.getLastname());
@@ -90,8 +92,7 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public void setUserCredentials(int id, String oldPassword, String mail, String password, String tokenId) 
-            throws NoResultException {
+    public void setUserCredentials(int id, String oldPassword, String mail, String password, String tokenId) {
         
         User updatedUser = getUser(id);
         

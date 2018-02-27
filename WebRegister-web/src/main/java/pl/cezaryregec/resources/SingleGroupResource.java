@@ -112,7 +112,7 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }       
         
-        groupService.deleteFromGroup(userService.getUserFromToken(token), id, true);
+        groupService.removeFromGroup(userService.getUserFromToken(token), id, true);
         return Response.status(Response.Status.OK).build();
     }
     
@@ -129,7 +129,7 @@ public class SingleGroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        groupService.deleteFromGroup(userService.getUser(userId), id, updateVacancies);
+        groupService.removeFromGroup(userService.getUser(userId), id, updateVacancies);
         return Response.status(Response.Status.OK).build();
     }
     

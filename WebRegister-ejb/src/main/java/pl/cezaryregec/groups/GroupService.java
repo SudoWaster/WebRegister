@@ -38,5 +38,5 @@ public interface GroupService {
     
     void setRole(User user, int groupId, GroupRole role);
     
-    void deleteFromGroup(User user, int groupId, boolean updateVacancies);
+    void removeFromGroup(User user, int groupId, boolean updateVacancies);
 }

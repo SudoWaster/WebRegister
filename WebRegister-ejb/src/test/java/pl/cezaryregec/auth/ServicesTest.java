@@ -113,7 +113,7 @@ public class ServicesTest {
     @After
     public void userTearDown() {
         System.out.println("Deleting mock user");
-        userService.deleteUser(userId, password, testToken.getToken());
+        userService.deleteUser(userId);
         userService.removeToken(testToken.getToken());
     }
 }
