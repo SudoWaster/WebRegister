@@ -120,6 +120,7 @@ public class UserResource {
         }
         
         userService.setUser(id, firstname, lastname);
+        userService.getToken(tokenId).setUser(userService.getUser(id));
         
         return Response.ok().build();
     }
@@ -135,6 +136,7 @@ public class UserResource {
         
         userService.validateToken(tokenId, request);
         userService.setUserCredentials(id, oldPasssword, mail, password, tokenId);
+        userService.getToken(tokenId).setUser(userService.getUser(id));
         
         return Response.ok().build();
     }

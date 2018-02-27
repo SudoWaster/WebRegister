@@ -41,6 +41,8 @@ public interface UserService {
     
     void refreshToken(String tokenId, String fingerprint);
     
+    Token getToken(String tokenId);
+    
     void validateToken(String tokenId, HttpServletRequest request);
     
     boolean isTokenValid(String tokenId, String fingerprint, UserType type);

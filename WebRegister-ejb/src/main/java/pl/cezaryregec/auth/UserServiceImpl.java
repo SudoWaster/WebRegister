@@ -266,7 +266,10 @@ public class UserServiceImpl implements UserService {
         return token;
     }
     
-    private Token getToken(String tokenId) {
+    
+    @Override
+    @Transactional
+    public Token getToken(String tokenId) {
         Query tokenQuery = entityManager.get().createNamedQuery("Token.findById", Token.class);
         tokenQuery.setParameter("id", tokenId);
         
