@@ -68,12 +68,7 @@ public class UserResource {
             @Context HttpServletRequest request) throws JsonProcessingException {
         
         userService.validateToken(tokenId, request);
-        
-        try {
-            return Response.ok(userService.getUser(id)).build();
-        } catch (NoResultException ex) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        return Response.ok(userService.getUser(id)).build();
     }
     
     @GET
@@ -109,12 +104,7 @@ public class UserResource {
             @Context HttpServletRequest request) {
         
         userService.validateToken(tokenId, request);
-        
-        try {
-            userService.setUser(id, firstname, lastname, password, tokenId);
-        } catch (NoResultException ex) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        userService.setUser(id, firstname, lastname, password, tokenId);
         
         return Response.ok().build();
     }
@@ -129,12 +119,7 @@ public class UserResource {
             @Context HttpServletRequest request) {
         
         userService.validateToken(tokenId, request);
-        
-        try {
-            userService.setUserCredentials(id, oldPasssword, mail, password, tokenId);
-        } catch(NoResultException ex) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        userService.setUserCredentials(id, oldPasssword, mail, password, tokenId);
         
         return Response.ok().build();
     }
@@ -147,27 +132,23 @@ public class UserResource {
         
         userService.validateToken(tokenId, request);
         
-        try {
-            User user = userService.getUser(userId);
-            
-            if(!userService.isTokenValid(tokenId, userService.getFingerprint(request), UserType.ADMIN)) {
-                user = userService.getUserFromToken(tokenId);
-                
-                if(user != null) {
-                    return Response.status(Response.Status.FORBIDDEN).build();
-                }
+        User user = userService.getUser(userId);
+
+        if(!userService.isTokenValid(tokenId, userService.getFingerprint(request), UserType.ADMIN)) {
+            user = userService.getUserFromToken(tokenId);
+
+            if(user != null) {
+                return Response.status(Response.Status.FORBIDDEN).build();
             }
-            
-            List<Group> groups = user.getGroups();
-            
-            for(Group group : groups) {
-                group.removeMember(user);
-            }
-            
-            userService.deleteUser(user.getId(), password, tokenId);
-        } catch(NoResultException ex) {
-            return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+        List<Group> groups = user.getGroups();
+
+        for(Group group : groups) {
+            group.removeMember(user);
+        }
+
+        userService.deleteUser(user.getId(), password, tokenId);
         
         return Response.ok().build();
     }    

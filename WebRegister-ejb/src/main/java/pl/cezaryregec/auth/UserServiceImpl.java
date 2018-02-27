@@ -3,7 +3,6 @@ package pl.cezaryregec.auth;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +13,7 @@ import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.Config;
 import pl.cezaryregec.entities.Token;
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         String hashedPassword = hashGenerator.generateHashedPassword(mail, password);
         
         if(userExists(mail)) {
-            throw new ForbiddenException();
+            throw new ForbiddenException("User mail is taken");
         }
         
         User user = new User();
@@ -141,22 +141,38 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public User getUser(String mail) throws NoResultException {
+    public User getUser(String mail) {
         
         Query userQuery = entityManager.get().createNamedQuery("User.findByMail", User.class);
         userQuery.setParameter("mail", mail);
         
-        return (User) userQuery.getSingleResult();
+        User result;
+        
+        try {
+            result = (User) userQuery.getSingleResult();
+        } catch(NoResultException ex) {
+            throw new NotFoundException("User does not exist");
+        }
+        
+        return result;
     }
     
     @Override
     @Transactional
-    public User getUser(int id) throws NoResultException {
+    public User getUser(int id) {
             
         Query userQuery = entityManager.get().createNamedQuery("User.findById", User.class);
         userQuery.setParameter("id", id);
         
-        return (User) userQuery.getSingleResult();
+        User result;
+        
+        try {
+            result = (User) userQuery.getSingleResult();
+        } catch(NoResultException ex) {
+            throw new NotFoundException("User does not exist");
+        }
+        
+        return result;
     }
     
     private boolean userExists(String mail) {
@@ -222,9 +238,9 @@ public class UserServiceImpl implements UserService {
     }
     
     private boolean isTokenValid(Token token, String fingerprint) {
-        boolean isValid = token.isValid(fingerprint);
+        boolean isValid = token.isValid(fingerprint) && token.getToken().equals(generateTokenId(token.getUser(), fingerprint));
         
-        if(token.hasExpired() || getUserFromToken(token.getToken()).getType() == UserType.UNAUTHORIZED) {
+        if(token.hasExpired() || token.getUser().getType() == UserType.UNAUTHORIZED) {
             removeToken(token.getToken());
             return false;
         }
@@ -238,14 +254,11 @@ public class UserServiceImpl implements UserService {
     
     private Token createToken(User user, String fingerprint) {
         
-        String tokenId = hashGenerator.generateHash(user.getId() + fingerprint + new Date().getTime());
-        tokenId = tokenId.replaceAll("[^a-zA-Z0-9]+", "");
-        
         Token token = new Token();
         token.setExpiration(config.getSessionTime());
         token.setUser(user);
         token.setFingerprint(fingerprint);
-        token.setToken(tokenId);
+        token.setToken(generateTokenId(user, fingerprint));
         
         entityManager.get().merge(token);
         
@@ -256,7 +269,11 @@ public class UserServiceImpl implements UserService {
         Query tokenQuery = entityManager.get().createNamedQuery("Token.findById", Token.class);
         tokenQuery.setParameter("id", tokenId);
         
-        return (Token) tokenQuery.getSingleResult();
+        try {
+            return (Token) tokenQuery.getSingleResult();
+        } catch(NoResultException ex) {
+            throw new NotFoundException("Token does not exist");
+        }
     }
 
     @Override
@@ -289,5 +306,10 @@ public class UserServiceImpl implements UserService {
         
         return ( Objects.equals(currentUser.getId(), targetUser.getId()) 
                     && currentUser.checkPassword(hashedPassword) );
+    }
+    
+    private String generateTokenId(User user, String fingerprint) {
+        String tokenId = hashGenerator.generateHash(user.getId() + fingerprint + new Date().getTime());
+        return tokenId.replaceAll("[^a-zA-Z0-9]+", "");
     }
 }

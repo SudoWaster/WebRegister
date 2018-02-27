@@ -41,29 +41,14 @@ public class AuthResource {
             @FormParam("password") String password,
             @Context HttpServletRequest request) {
         
-        try {
-            Token token = userService.getRegisteredToken(mail, password, userService.getFingerprint(request));
-            
-            return Response.ok(token).build();
-            
-        } catch(NoResultException ex) {
-            
-            return exceptionResponse(ex);
-            
-        }
+        Token token = userService.getRegisteredToken(mail, password, userService.getFingerprint(request));
+        return Response.ok(token).build();
     }
     
     @DELETE
     public Response deleteToken(@PathParam("token") String token) {
         
         userService.removeToken(token);
-        
         return Response.ok().build();
-    }
-    
-    private Response exceptionResponse(Exception ex) {
-        Logger.getLogger(AuthResource.class.getName()).log(Level.SEVERE, null, ex);
-        
-        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 }

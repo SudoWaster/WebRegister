@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
@@ -81,7 +82,15 @@ public class GroupServiceImpl implements GroupService {
         Query groupQuery = entityManager.get().createNamedQuery("Group.findById", Group.class);
         groupQuery.setParameter("id", id);
         
-        return (Group) groupQuery.getSingleResult();
+        Group group;
+        
+        try {
+            group = (Group) groupQuery.getSingleResult();
+        } catch(NoResultException ex) {
+            throw new NotFoundException("Group does not exist");
+        }
+        
+        return group;
     }
     
     @Override
@@ -89,7 +98,7 @@ public class GroupServiceImpl implements GroupService {
     public boolean isInGroup(User user, int groupId) {
         Group group = getGroup(groupId);
         
-        return group.getMembers().contains(user);
+        return !group.getMembers().isEmpty() && group.getMembers().contains(user);
     }
     
     @Override
@@ -105,8 +114,7 @@ public class GroupServiceImpl implements GroupService {
     public void addToGroup(User user, int groupId, boolean updateVacancies) {
         Group group = getGroup(groupId);
         
-        if(!group.getMembers().isEmpty()
-                && group.getMembers().contains(user)) {
+        if(isInGroup(user, groupId)) {
             throw new ForbiddenException("Already in group");
         }
         
@@ -126,9 +134,10 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public void setRole(User user, int groupId, GroupRole role) {
         if(!isInGroup(user, groupId)) {
-            throw new NotFoundException();
+            throw new NotFoundException("Not in group");
         }
         
         Query assignmentQuery = entityManager.get().createNamedQuery("GroupAssignment.findUserInGroup", GroupAssignment.class);
@@ -142,9 +151,10 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public void deleteFromGroup(User user, int groupId, boolean updateVacancies) {
         if(!isInGroup(user, groupId)) {
-            throw new NotFoundException();
+            throw new NotFoundException("Not in group");
         }
         
         Group group = getGroup(groupId);
