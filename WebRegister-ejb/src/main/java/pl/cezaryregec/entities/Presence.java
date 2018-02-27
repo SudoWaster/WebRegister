@@ -1,9 +1,9 @@
 package pl.cezaryregec.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.sql.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,8 +14,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Presence.findAll", query = "SELECT p FROM Presence p"),
-    @NamedQuery(name = "Presence.findGroup", query = "SELECT p FROM Presence p WHERE p.groupId = :id"),
-    @NamedQuery(name = "Presence.findInGroupByDate", query = "SELECT p FROM Presence p WHERE p.groupId = :id AND p.date = :date"),
+    @NamedQuery(name = "Presence.findGroup", query = "SELECT p FROM Presence p WHERE p.group.id = :id"),
+    @NamedQuery(name = "Presence.findInGroupByDate", query = "SELECT p FROM Presence p WHERE p.group.id = :id AND p.date = :date"),
     @NamedQuery(name = "Presence.findByUser", query = "SELECT p FROM Presence p WHERE p.user.id = :id"),
-    @NamedQuery(name = "Presence.findByUserInGroup", query = "SELECT p FROM Presence p WHERE p.user.id = :uid AND p.groupId = :gid"),
-    @NamedQuery(name = "Presence.findByUserInGroupByDate", query = "SELECT p FROM Presence p WHERE p.user.id = :uid AND p.groupId = :gid AND p.date = :date")
+    @NamedQuery(name = "Presence.findByUserInGroup", query = "SELECT p FROM Presence p WHERE p.user.id = :uid AND p.group.id = :gid"),
+    @NamedQuery(name = "Presence.findByUserInGroupByDate", query = "SELECT p FROM Presence p WHERE p.user.id = :uid AND p.group.id = :gid AND p.date = :date")
 })
 public class Presence implements Serializable {
     
@@ -40,9 +40,9 @@ public class Presence implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
-    @Column(name = "group_id")
-    private Integer groupId;
+//    @Basic(optional = false)
+//    @Column(name = "group_id")
+//    private Integer groupId;
     @Basic(optional = false)
     @Column(name = "date")
     private Date date;
@@ -53,6 +53,11 @@ public class Presence implements Serializable {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+    
+    @OneToOne
+    @JoinColumn(name = "group_id")
+    @JsonIgnore
+    private Group group;
     
     public Presence() {
         
@@ -70,12 +75,14 @@ public class Presence implements Serializable {
         return user;
     }
     
-    public Integer getGroupId() {
-        return groupId;
+    @XmlTransient
+    @JsonIgnore
+    public Group getGroup() {
+        return group;
     }
     
-    public void setGroupId(Integer groupId) {
-        this.groupId = groupId;
+    public void setGroup(Group group) {
+        this.group = group;
     }
     
     public Date getDate() {
@@ -107,12 +114,12 @@ public class Presence implements Serializable {
             return false;
         }
         Presence other = (Presence) object;
-        return (this.user.equals(other.user) && this.groupId.equals(other.groupId) && this.date.equals(other.date)) 
+        return (this.user.equals(other.user) && this.group.equals(other.group) && this.date.equals(other.date)) 
                 || ((this.id == null && other.id == null) || this.id.equals(other.id)) ;
     }
 
     @Override
     public String toString() {
-        return "pl.cezaryregec.entities.Presence[ id=" + id + ", user_id = " + user.getId() + ", group_id = " + groupId + ", date = " + date + ", presence = " + presence + " ]";
+        return "pl.cezaryregec.entities.Presence[ id=" + id + ", user_id = " + user.getId() + ", group_id = " + group.getId() + ", date = " + date + ", presence = " + presence + " ]";
     }
 }

@@ -3,6 +3,7 @@ package pl.cezaryregec.groups;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
+import java.sql.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -12,6 +13,7 @@ import javax.ws.rs.NotFoundException;
 import pl.cezaryregec.entities.Group;
 import pl.cezaryregec.entities.GroupAssignment;
 import pl.cezaryregec.entities.GroupRole;
+import pl.cezaryregec.entities.Presence;
 import pl.cezaryregec.entities.User;
 import pl.cezaryregec.entities.UserType;
 
@@ -162,6 +164,10 @@ public class GroupServiceImpl implements GroupService {
         
         Group group = getGroup(groupId);
         
+        for(Presence userPresence : group.getUserPresence(user)) {
+            entityManager.get().remove(userPresence);
+        }
+        
         entityManager.get().remove(group.removeMember(user));
         
         if(updateVacancies){
@@ -170,5 +176,25 @@ public class GroupServiceImpl implements GroupService {
         
         entityManager.get().merge(group);
         entityManager.get().merge(user);
+    }
+    
+    @Override
+    @Transactional
+    public void setPresence(User user, Date date, int groupId, boolean presence) {
+        Group group = getGroup(groupId);
+        Presence presenceEntity = group.setPresence(user, date, presence);
+        
+        entityManager.get().merge(presenceEntity);
+        entityManager.get().merge(group);
+    }
+    
+    @Override
+    @Transactional
+    public void removePresence(User user, Date date, int groupId) {
+        Group group = getGroup(groupId);
+        Presence presence = group.removePresence(user, date);
+        
+        entityManager.get().remove(presence);
+        entityManager.get().merge(group);
     }
 }

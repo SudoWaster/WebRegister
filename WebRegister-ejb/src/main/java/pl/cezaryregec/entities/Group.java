@@ -180,9 +180,11 @@ public class Group implements Serializable {
     
     public List<Presence> getDatePresence(Date date) {
         List<Presence> result = new ArrayList<Presence>();
+        List<User> instructors = getMembers(GroupRole.PRIVILEDGED);
         
         for(Presence userPresence : presence) {
-            if(userPresence.getDate().equals(date)) {
+            if(userPresence.getDate().equals(date)
+                    && !instructors.contains(userPresence.getUser())) {
                 result.add(userPresence);
             }
         }
@@ -190,9 +192,9 @@ public class Group implements Serializable {
         return result;
     }
     
-    public void setPresence(User user, Date date, Boolean presence) {
+    public Presence setPresence(User user, Date date, Boolean presence) {
         Presence newPresence = new Presence();
-        newPresence.setGroupId(this.id);
+        newPresence.setGroup(this);
         newPresence.setUser(user);
         newPresence.setDate(date);
         
@@ -201,15 +203,19 @@ public class Group implements Serializable {
         }
         
         this.presence.get(this.presence.indexOf(newPresence)).setPresence(presence);
+        
+        return newPresence;
     }
     
-    public void removePresence(User user, Date date) {
+    public Presence removePresence(User user, Date date) {
         Presence existingPresence = new Presence();
-        existingPresence.setGroupId(this.id);
+        existingPresence.setGroup(this);
         existingPresence.setUser(user);
         existingPresence.setDate(date);
         
         this.presence.remove(existingPresence);
+        
+        return existingPresence;
     }
     
     @Override
