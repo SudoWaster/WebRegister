@@ -17,9 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.auth.UserService;
-import pl.cezaryregec.entities.Group;
 import pl.cezaryregec.entities.GroupRole;
-import pl.cezaryregec.entities.UserType;
 
 /**
  *

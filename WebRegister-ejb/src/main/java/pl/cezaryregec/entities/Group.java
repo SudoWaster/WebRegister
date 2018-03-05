@@ -61,7 +61,7 @@ public class Group implements Serializable {
         CascadeType.PERSIST,
         CascadeType.REMOVE
     }, mappedBy = "group_assignment")
-    private List<GroupAssignment> members = new ArrayList();
+    private List<GroupAssignment> members = new ArrayList<>();
     
     @OneToMany(
         cascade = { 
@@ -72,7 +72,15 @@ public class Group implements Serializable {
         orphanRemoval = true
     )
     @JoinColumn(name = "group_id")
-    private List<Presence> presence = new ArrayList();
+    private List<Presence> presence = new ArrayList<>();
+    
+    @OneToMany(cascade = {
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REMOVE
+    })
+    @JoinColumn(name = "group_id")
+    private List<Achievement> achievements = new ArrayList<>();
     
     public Group() {
         
@@ -216,6 +224,30 @@ public class Group implements Serializable {
         this.presence.remove(existingPresence);
         
         return existingPresence;
+    }
+    
+    public List<Achievement> getAchievements() {
+        return achievements;
+    }
+    
+    public void addAchievement(String name, String description) {
+        Achievement achievement = new Achievement();
+        achievement.setGroup(this);
+        achievement.setName(name);
+        achievement.setDescription(description);
+        
+        this.achievements.add(achievement);
+    }
+    
+    public Achievement removeAchievement(String name, String description) {
+        Achievement achievement = new Achievement();
+        achievement.setGroup(this);
+        achievement.setName(name);
+        achievement.setDescription(description);
+        
+        this.achievements.remove(achievement);
+        
+        return achievement;
     }
     
     @Override
