@@ -84,7 +84,10 @@ public class Token implements Serializable {
     }
     
     public boolean isValid(String fingerprint) {
-        return !hasExpired() && this.fingerprint.equals(fingerprint);
+        
+        Boolean isUnauthorised = user.getType() == UserType.UNAUTHORIZED;
+        
+        return !hasExpired() && !isUnauthorised && this.fingerprint.equals(fingerprint);
     }
     
     public void setFingerprint(String fingerprint) {

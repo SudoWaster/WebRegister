@@ -214,12 +214,16 @@ public class UserServiceImpl implements UserService {
         if(!isTokenValid(tokenId, getFingerprint(request))) {
             throw new NotAuthorizedException(Response.Status.UNAUTHORIZED);
         }
+        
+        refreshToken(tokenId, getFingerprint(request));
     }
     
     @Override
     @Transactional
     public boolean isTokenValid(String tokenId, String fingerprint, UserType type) {
+        
         User user;
+        
         try {
             user = getUserFromToken(tokenId);
         } catch(NotFoundException ex) {
@@ -233,29 +237,18 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public boolean isTokenValid(String tokenId, String fingerprint) {
         try {
-            return isTokenValid(getToken(tokenId), fingerprint);
+            if(!getToken(tokenId).hasExpired()) {
+                removeToken(tokenId);
+                return false;
+            }
+            
+            return getToken(tokenId).isValid(fingerprint);
         } catch(NotFoundException ex) {
             return false;
         }
     }
     
-    private boolean isTokenValid(Token token, String fingerprint) {
-        boolean isValid = token.isValid(fingerprint);
-        
-        if(token.hasExpired() || token.getUser().getType() == UserType.UNAUTHORIZED) {
-            removeToken(token.getToken());
-            return false;
-        }
-        
-        if(isValid) {
-            refreshToken(token.getToken(), fingerprint);
-        }
-        
-        return isValid;
-    }
-    
     private Token createToken(User user, String fingerprint) {
-        
         Token token = new Token();
         token.setExpiration(config.getSessionTime());
         token.setUser(user);
@@ -266,7 +259,6 @@ public class UserServiceImpl implements UserService {
         
         return token;
     }
-    
     
     @Override
     @Transactional
@@ -308,9 +300,10 @@ public class UserServiceImpl implements UserService {
     private boolean isUserLogged(User currentUser, User targetUser, String password) {
         
         String hashedPassword = hashGenerator.generateHashedPassword(currentUser.getMail(), password);
+        Boolean isThisTargetUser = Objects.equals(currentUser, targetUser);
+        Boolean isAuthenticated = currentUser.checkPassword(hashedPassword);
         
-        return ( Objects.equals(currentUser.getId(), targetUser.getId()) 
-                    && currentUser.checkPassword(hashedPassword) );
+        return isThisTargetUser && isAuthenticated;
     }
     
     private String generateTokenId(User user, String fingerprint) {
