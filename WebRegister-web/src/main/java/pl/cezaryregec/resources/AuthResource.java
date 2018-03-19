@@ -1,11 +1,8 @@
 package pl.cezaryregec.resources;
 
 import com.google.inject.servlet.RequestScoped;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;

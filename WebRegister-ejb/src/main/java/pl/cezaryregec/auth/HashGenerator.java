@@ -10,6 +10,8 @@ public interface HashGenerator {
     
     String generateHash(String input);
     
+    String encodeToString(byte[] input);
+    
     String generateHashedPassword(String mail, String password);
     
     String generateSaltHash(String input, String salt);

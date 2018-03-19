@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pl.cezaryregec.Config;
@@ -58,7 +57,7 @@ public class ShaHashGenerator implements HashGenerator {
     public String generateHash(String input) {
         byte[] hash = generateHash(input.getBytes(StandardCharsets.UTF_8));
         
-        return Base64.getEncoder().encodeToString(hash);
+        return encodeToString(hash);
     }
     
     @Override
@@ -71,6 +70,17 @@ public class ShaHashGenerator implements HashGenerator {
             result = digest.digest(input);
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(ShaHashGenerator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return result;
+    }
+    
+    @Override
+    public String encodeToString(byte[] input) {
+        String result = "";
+        
+        for(byte b : input) {
+            result += Integer.toString((b & 0xff) + 0x100, 16).substring(1);
         }
         
         return result;
