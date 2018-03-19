@@ -9,6 +9,8 @@ import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.groups.GroupServiceImpl;
 import pl.cezaryregec.auth.HashGenerator;
 import pl.cezaryregec.auth.ShaHashGenerator;
+import pl.cezaryregec.auth.TokenService;
+import pl.cezaryregec.auth.TokenServiceImpl;
 import pl.cezaryregec.auth.UserService;
 import pl.cezaryregec.auth.UserServiceImpl;
 import pl.cezaryregec.config.DefaultConfig;
@@ -26,6 +28,7 @@ public class APIServletModule extends ServletModule {
         tryLoadingConfig();
         
         bind(HashGenerator.class).to(ShaHashGenerator.class);
+        bind(TokenService.class).to(TokenServiceImpl.class);
         bind(UserService.class).to(UserServiceImpl.class);
         bind(GroupService.class).to(GroupServiceImpl.class);
     }

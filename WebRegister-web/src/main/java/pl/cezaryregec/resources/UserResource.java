@@ -17,7 +17,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import pl.cezaryregec.auth.TokenService;
 import pl.cezaryregec.auth.UserService;
+import pl.cezaryregec.entities.Token;
 import pl.cezaryregec.entities.UserType;
 
 /**
@@ -30,10 +32,12 @@ import pl.cezaryregec.entities.UserType;
 @LocalBean
 public class UserResource {
     
+    private final TokenService tokenService;
     private final UserService userService;
     
     @Inject
-    public UserResource(UserService userService) {
+    public UserResource(TokenService tokenService, UserService userService) {
+        this.tokenService = tokenService;
         this.userService = userService;
     }
     
@@ -41,8 +45,8 @@ public class UserResource {
     public Response getCurrent(@QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
-        userService.validateToken(tokenId, request);
-        return Response.ok(userService.getUserFromToken(tokenId)).build();
+        tokenService.validateToken(tokenId, request);
+        return Response.ok(tokenService.getToken(tokenId).getUser()).build();
     }
     
     @GET
@@ -50,8 +54,8 @@ public class UserResource {
     public Response getGroupsOfCurrent(@QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
-        userService.validateToken(tokenId, request);
-        return Response.ok(userService.getUserFromToken(tokenId).getGroups()).build();
+        tokenService.validateToken(tokenId, request);
+        return Response.ok(tokenService.getToken(tokenId).getUser().getGroups()).build();
     }
     
     @GET
@@ -60,7 +64,7 @@ public class UserResource {
             @QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
-        userService.validateToken(tokenId, request);
+        tokenService.validateToken(tokenId, request);
         return Response.ok(userService.getUser(id)).build();
     }
     
@@ -70,7 +74,7 @@ public class UserResource {
             @QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
      
-        userService.validateToken(tokenId, request);
+        tokenService.validateToken(tokenId, request);
         return Response.ok(userService.getUser(id).getGroups()).build();
     }
     
@@ -79,9 +83,11 @@ public class UserResource {
     public Response getAll(@QueryParam("token") String tokenId,
             @Context HttpServletRequest request) throws IOException {
         
-        String fingerprint = userService.getFingerprint(request);
+        tokenService.validateToken(tokenId, request);
+        
+        String fingerprint = tokenService.getFingerprint(request);
 
-        if(!userService.isTokenValid(tokenId, fingerprint, UserType.ADMIN)) {
+        if(!tokenService.isTokenValid(tokenId, fingerprint, UserType.ADMIN)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         
@@ -106,15 +112,17 @@ public class UserResource {
             @QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
-        userService.validateToken(tokenId, request);
+        tokenService.validateToken(tokenId, request);
         
-        if(!(userService.getUserFromToken(tokenId).getId().equals(id)
-                && userService.getUserFromToken(tokenId).getType().equals(UserType.ADMIN))) {
+        if(!(tokenService.getToken(tokenId).getUser().getId().equals(id)
+                && tokenService.getToken(tokenId).getUser().getType().equals(UserType.ADMIN))) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
         userService.setUser(id, firstname, lastname);
-        userService.getToken(tokenId).setUser(userService.getUser(id));
+        Token token = tokenService.getToken(tokenId);
+        token.setUser(userService.getUser(id));
+        tokenService.refreshToken(token);
         
         return Response.ok().build();
     }
@@ -128,9 +136,9 @@ public class UserResource {
             @QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
-        userService.validateToken(tokenId, request);
+        tokenService.validateToken(tokenId, request);
         userService.setUserCredentials(id, oldPasssword, mail, password, tokenId);
-        userService.getToken(tokenId).setUser(userService.getUser(id));
+        tokenService.getToken(tokenId).setUser(userService.getUser(id));
         
         return Response.ok().build();
     }
@@ -139,8 +147,8 @@ public class UserResource {
     public Response deleteSelf(@QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
-        userService.validateToken(tokenId, request);
-        userService.deleteUser(userService.getUserFromToken(tokenId).getId());
+        tokenService.validateToken(tokenId, request);
+        userService.deleteUser(tokenService.getToken(tokenId).getUser().getId());
         
         return Response.ok().build();
     }
@@ -151,9 +159,9 @@ public class UserResource {
             @QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
-        userService.validateToken(tokenId, request);
+        tokenService.validateToken(tokenId, request);
 
-        if(!userService.isTokenValid(tokenId, userService.getFingerprint(request), UserType.ADMIN)) {
+        if(!tokenService.isTokenValid(tokenId, tokenService.getFingerprint(request), UserType.ADMIN)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 

@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import pl.cezaryregec.auth.TokenService;
 import pl.cezaryregec.auth.UserService;
 import pl.cezaryregec.entities.Token;
 
@@ -26,11 +27,11 @@ import pl.cezaryregec.entities.Token;
 @LocalBean
 public class AuthResource {
     
-    private final UserService userService;
+    private final TokenService tokenService;
     
     @Inject
-    public AuthResource(UserService userService) {
-        this.userService = userService;
+    public AuthResource(TokenService tokenService) {
+        this.tokenService = tokenService;
     }
     
     @POST
@@ -38,14 +39,14 @@ public class AuthResource {
             @FormParam("password") String password,
             @Context HttpServletRequest request) {
         
-        Token token = userService.getRegisteredToken(mail, password, userService.getFingerprint(request));
+        Token token = tokenService.getRegisteredToken(mail, password, tokenService.getFingerprint(request));
         return Response.ok(token).build();
     }
     
     @DELETE
     public Response deleteToken(@PathParam("token") String token) {
         
-        userService.removeToken(token);
+        tokenService.removeToken(token);
         return Response.ok().build();
     }
 }

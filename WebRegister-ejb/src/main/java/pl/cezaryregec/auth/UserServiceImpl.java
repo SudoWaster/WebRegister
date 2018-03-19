@@ -37,12 +37,13 @@ public class UserServiceImpl implements UserService {
     private GroupService groupService;
     
     @Inject
-    private HashGenerator hashGenerator;
+    private TokenService tokenService;
     
     @Inject
     private Config config;
     
-    
+    @Inject
+    private HashGenerator hashGenerator;
 
     @Override
     @Transactional
@@ -112,33 +113,11 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public User getUserFromToken(String tokenId) throws NoResultException {
-        return getToken(tokenId).getUser();
-    }
-    
-    @Override
-    @Transactional
     public List<User> getUsers() throws NoResultException {
         
         Query userQuery = entityManager.get().createNamedQuery("User.findAll", User.class);
 
         return (List<User>) userQuery.getResultList();
-    }
-    
-    @Override
-    @Transactional
-    public Token getRegisteredToken(String mail, String password, String fingerprint) 
-            throws NotAuthorizedException {
-        
-        User user = getUser(mail);
-        
-        String hashedPassword = hashGenerator.generateHashedPassword(user.getMail(), password);
-                
-        if(user.checkPassword(hashedPassword)) {
-            return createToken(user, fingerprint);
-        }
-        
-        throw new NotAuthorizedException(Response.status(Response.Status.UNAUTHORIZED));
     }
     
     @Override
@@ -178,7 +157,6 @@ public class UserServiceImpl implements UserService {
     }
     
     private boolean userExists(String mail) {
-        
         try {
             User existing = getUser(mail);
             return existing != null;
@@ -186,110 +164,13 @@ public class UserServiceImpl implements UserService {
         } catch(NotFoundException ex) {
             return false;
         }
-    }
-    
-    @Override
-    @Transactional
-    public void removeToken(String tokenId) {
-        
-        Token token = getToken(tokenId);
-        
-        entityManager.get().remove(token);
-    }
-    
-    @Override
-    @Transactional
-    public void refreshToken(String tokenId, String fingerprint) {
-        Token token = getToken(tokenId);
-        
-        token.setExpiration(config.getSessionTime());
-        
-        entityManager.get().merge(token);
-    }
-    
-    @Override
-    @Transactional
-    public void validateToken(String tokenId, HttpServletRequest request) {
-        
-        if(!isTokenValid(tokenId, getFingerprint(request))) {
-            throw new NotAuthorizedException(Response.Status.UNAUTHORIZED);
-        }
-        
-        refreshToken(tokenId, getFingerprint(request));
-    }
-    
-    @Override
-    @Transactional
-    public boolean isTokenValid(String tokenId, String fingerprint, UserType type) {
-        
-        User user;
-        
-        try {
-            user = getUserFromToken(tokenId);
-        } catch(NotFoundException ex) {
-            return false;
-        }
-        
-        return isTokenValid(tokenId, fingerprint) && user.getType().getInt() >= type.getInt();
-    }
-
-    @Override
-    @Transactional
-    public boolean isTokenValid(String tokenId, String fingerprint) {
-        try {
-            if(!getToken(tokenId).hasExpired()) {
-                removeToken(tokenId);
-                return false;
-            }
-            
-            return getToken(tokenId).isValid(fingerprint);
-        } catch(NotFoundException ex) {
-            return false;
-        }
-    }
-    
-    private Token createToken(User user, String fingerprint) {
-        Token token = new Token();
-        token.setExpiration(config.getSessionTime());
-        token.setUser(user);
-        token.setFingerprint(fingerprint);
-        token.setToken(generateTokenId(user, fingerprint));
-        
-        entityManager.get().merge(token);
-        
-        return token;
-    }
-    
-    @Override
-    @Transactional
-    public Token getToken(String tokenId) {
-        Query tokenQuery = entityManager.get().createNamedQuery("Token.findById", Token.class);
-        tokenQuery.setParameter("id", tokenId);
-        
-        try {
-            return (Token) tokenQuery.getSingleResult();
-        } catch(NoResultException ex) {
-            throw new NotFoundException("Token does not exist");
-        }
-    }
-
-    @Override
-    public String getFingerprint(HttpServletRequest request) {
-        String userAgent = request.getHeader("User-Agent");
-        String remoteAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
-
-        if (remoteAddress == null) {
-            remoteAddress = request.getRemoteAddr();
-        }
-        
-        return userAgent + "\n" + remoteAddress;
-    }
+    }    
     
     private boolean isUserPermitted(User targetUser, String tokenId, String password) {
         User currentUser;
         
         try {
-            currentUser = getUserFromToken(tokenId);
+            currentUser = tokenService.getToken(tokenId).getUser();
         } catch(NotFoundException ex) {
             return false;
         }
@@ -306,8 +187,4 @@ public class UserServiceImpl implements UserService {
         return isThisTargetUser && isAuthenticated;
     }
     
-    private String generateTokenId(User user, String fingerprint) {
-        String tokenId = hashGenerator.generateHash(user.getId() + fingerprint + new Date().getTime());
-        return tokenId.replaceAll("[^a-zA-Z0-9]+", "-");
-    }
 }

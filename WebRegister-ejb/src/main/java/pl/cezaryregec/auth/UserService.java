@@ -31,23 +31,5 @@ public interface UserService {
     
     User getUser(int id);
     
-    User getUserFromToken(String tokenId);
-    
     List<User> getUsers();
-    
-    Token getRegisteredToken(String mail, String password, String fingerprint);
-    
-    void removeToken(String tokenId);
-    
-    void refreshToken(String tokenId, String fingerprint);
-    
-    Token getToken(String tokenId);
-    
-    void validateToken(String tokenId, HttpServletRequest request);
-    
-    boolean isTokenValid(String tokenId, String fingerprint, UserType type);
-    
-    boolean isTokenValid(String tokenId, String fingerprint);
-    
-    String getFingerprint(HttpServletRequest request);
 }

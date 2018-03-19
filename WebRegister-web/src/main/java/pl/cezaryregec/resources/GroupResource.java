@@ -15,6 +15,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import pl.cezaryregec.auth.TokenService;
 import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.auth.UserService;
 import pl.cezaryregec.entities.UserType;
@@ -29,12 +30,12 @@ import pl.cezaryregec.entities.UserType;
 @LocalBean
 public class GroupResource {
     
-    private final UserService userService;
+    private final TokenService tokenService;
     private final GroupService groupService;
     
     @Inject
-    public GroupResource(UserService userService, GroupService groupService) {
-        this.userService = userService;
+    public GroupResource(TokenService tokenService, GroupService groupService) {
+        this.tokenService = tokenService;
         this.groupService = groupService;
     }
     
@@ -42,7 +43,7 @@ public class GroupResource {
     public Response getOpenGroups(@QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
-        userService.validateToken(token, request);
+        tokenService.validateToken(token, request);
         
         return Response.ok(groupService.getOpenGroups()).build();
     }
@@ -52,7 +53,9 @@ public class GroupResource {
     public Response getAllGroups(@QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
-        if(!userService.isTokenValid(token, userService.getFingerprint(request), UserType.PRIVILEDGED)) {
+        tokenService.validateToken(token, request);
+        
+        if(!tokenService.isTokenValid(token, tokenService.getFingerprint(request), UserType.PRIVILEDGED)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -66,7 +69,9 @@ public class GroupResource {
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
-        if(!userService.isTokenValid(token, userService.getFingerprint(request), UserType.PRIVILEDGED)) {
+        tokenService.validateToken(token, request);
+        
+        if(!tokenService.isTokenValid(token, tokenService.getFingerprint(request), UserType.PRIVILEDGED)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -82,9 +87,10 @@ public class GroupResource {
             @FormParam("vacancies") Integer vacancies,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
+
+        tokenService.validateToken(token, request);
         
-        if(!userService.isTokenValid(token, userService.getFingerprint(request)) 
-                || !groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -97,8 +103,10 @@ public class GroupResource {
     public Response deleteGroup(@FormParam("id") Integer id,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
-        if(!userService.isTokenValid(token, userService.getFingerprint(request))
-                || !groupService.isPriviledgedInGroup(userService.getUserFromToken(token), id)) {
+        
+        tokenService.validateToken(token, request);
+        
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         

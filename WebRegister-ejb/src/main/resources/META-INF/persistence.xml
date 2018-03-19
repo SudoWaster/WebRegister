@@ -8,6 +8,7 @@
     <class>pl.cezaryregec.entities.GroupAssignment</class>
     <class>pl.cezaryregec.entities.Presence</class>
     <class>pl.cezaryregec.entities.User</class>
+    <class>pl.cezaryregec.entities.Achievement</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
