@@ -48,8 +48,7 @@ public class Token implements Serializable {
     private String fingerprint;
     
     @OneToOne(cascade = { 
-        CascadeType.MERGE,
-        CascadeType.PERSIST
+        CascadeType.MERGE
     })
     @JoinColumn(name = "user_id")
     private User user;

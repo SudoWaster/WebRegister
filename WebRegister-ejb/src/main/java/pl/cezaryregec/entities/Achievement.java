@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author SudoWaster <cezaryre@gmail.com>
  */
 @Entity
-@Table(name = "groups")
+@Table(name = "achievements")
 @XmlRootElement
 public class Achievement implements Serializable {
     

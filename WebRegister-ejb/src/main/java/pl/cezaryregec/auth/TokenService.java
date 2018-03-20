@@ -21,8 +21,6 @@ public interface TokenService {
     
     void validateToken(String tokenId, HttpServletRequest request);
     
-    boolean isTokenValid(String tokenId, String fingerprint, UserType type);
-    
     boolean isTokenValid(String tokenId, String fingerprint);
     
     String getFingerprint(HttpServletRequest request);

@@ -55,7 +55,9 @@ public class TokenServiceImpl implements TokenService {
     public void removeToken(String tokenId) {
         
         Token token = getToken(tokenId);
+        token.setUser(null);
         
+        entityManager.get().merge(token);
         entityManager.get().remove(token);
     }
     
@@ -90,24 +92,9 @@ public class TokenServiceImpl implements TokenService {
     
     @Override
     @Transactional
-    public boolean isTokenValid(String tokenId, String fingerprint, UserType type) {
-        
-        User user;
-        
-        try {
-            user = getToken(tokenId).getUser();
-        } catch(NotFoundException ex) {
-            return false;
-        }
-        
-        return isTokenValid(tokenId, fingerprint) && user.getType().getInt() >= type.getInt();
-    }
-
-    @Override
-    @Transactional
     public boolean isTokenValid(String tokenId, String fingerprint) {
         try {
-            if(!getToken(tokenId).hasExpired()) {
+            if(getToken(tokenId).hasExpired()) {
                 removeToken(tokenId);
                 return false;
             }

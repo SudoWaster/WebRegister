@@ -55,7 +55,7 @@ public class GroupResource {
         
         tokenService.validateToken(token, request);
         
-        if(!tokenService.isTokenValid(token, tokenService.getFingerprint(request), UserType.PRIVILEDGED)) {
+        if(!tokenService.getToken(token).getUser().hasPriviledge(UserType.PRIVILEDGED)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -71,7 +71,7 @@ public class GroupResource {
         
         tokenService.validateToken(token, request);
         
-        if(!tokenService.isTokenValid(token, tokenService.getFingerprint(request), UserType.PRIVILEDGED)) {
+        if(!tokenService.getToken(token).getUser().hasPriviledge(UserType.PRIVILEDGED)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         

@@ -84,10 +84,8 @@ public class UserResource {
             @Context HttpServletRequest request) throws IOException {
         
         tokenService.validateToken(tokenId, request);
-        
-        String fingerprint = tokenService.getFingerprint(request);
 
-        if(!tokenService.isTokenValid(tokenId, fingerprint, UserType.ADMIN)) {
+        if(!tokenService.getToken(tokenId).getUser().hasPriviledge(UserType.ADMIN)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         
@@ -115,7 +113,7 @@ public class UserResource {
         tokenService.validateToken(tokenId, request);
         
         if(!(tokenService.getToken(tokenId).getUser().getId().equals(id)
-                && tokenService.getToken(tokenId).getUser().getType().equals(UserType.ADMIN))) {
+                && tokenService.getToken(tokenId).getUser().hasPriviledge(UserType.ADMIN))) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -161,7 +159,7 @@ public class UserResource {
         
         tokenService.validateToken(tokenId, request);
 
-        if(!tokenService.isTokenValid(tokenId, tokenService.getFingerprint(request), UserType.ADMIN)) {
+        if(!tokenService.getToken(tokenId).getUser().hasPriviledge(UserType.ADMIN)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 

@@ -138,6 +138,10 @@ public class User implements Serializable {
         this.lastname = lastname;
     }
     
+    public boolean hasPriviledge(UserType type) {
+        return this.type >= type.getInt();
+    }
+    
     public List<Group> getGroups() {
         List<Group> result = new ArrayList<Group>();
         
