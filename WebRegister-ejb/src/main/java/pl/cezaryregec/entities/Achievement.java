@@ -1,5 +1,6 @@
 package pl.cezaryregec.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -75,6 +77,8 @@ public class Achievement implements Serializable {
         this.group = group;
     }
     
+    @XmlTransient
+    @JsonIgnore
     public Group getGroup() {
         return group;
     }

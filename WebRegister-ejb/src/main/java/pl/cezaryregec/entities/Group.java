@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -175,7 +176,7 @@ public class Group implements Serializable {
     }
     
     public List<Presence> getUserPresence(User user) {
-        List<Presence> result = new ArrayList<Presence>();
+        List<Presence> result = new ArrayList<>();
         
         for(Presence userPresence : presence) {
             if(userPresence.getUser().equals(user)) {
@@ -187,7 +188,7 @@ public class Group implements Serializable {
     }
     
     public List<Presence> getDatePresence(Date date) {
-        List<Presence> result = new ArrayList<Presence>();
+        List<Presence> result = new ArrayList<>();
         List<User> instructors = getMembers(GroupRole.PRIVILEDGED);
         
         for(Presence userPresence : presence) {
@@ -226,6 +227,8 @@ public class Group implements Serializable {
         return existingPresence;
     }
     
+    @XmlTransient
+    @JsonIgnore
     public List<Achievement> getAchievements() {
         return achievements;
     }

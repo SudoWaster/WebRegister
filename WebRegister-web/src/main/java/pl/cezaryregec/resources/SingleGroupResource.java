@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -19,6 +20,7 @@ import pl.cezaryregec.auth.TokenService;
 import pl.cezaryregec.auth.UserService;
 import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.entities.GroupRole;
+import pl.cezaryregec.entities.User;
 
 /**
  *
@@ -259,7 +261,7 @@ public class SingleGroupResource {
         
         tokenService.validateToken(token, request);
         
-        if(!groupService.isPriviledgedInGroup(userService.getUser(userId), id)) {
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -277,7 +279,7 @@ public class SingleGroupResource {
      
         tokenService.validateToken(token, request);
         
-        if(!groupService.isPriviledgedInGroup(userService.getUser(userId), id)) {
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -285,6 +287,101 @@ public class SingleGroupResource {
         return Response.ok().build();
     }
     
+    
+    @GET
+    @Path("{id}/achievements")
+    public Response getGroupAchievements(@PathParam("id") Integer id,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(token, request);
+        
+        return Response.ok(groupService.getGroup(id).getAchievements()).build();
+    }
+    
+    @POST
+    @Path("{id}/achievements")
+    public Response addGroupAchievement(@PathParam("id") Integer id,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        tokenService.validateToken(token, request);
+        
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        return Response.ok().build();
+    }
+    
+    @PUT
+    @Path("{id}/achievements/{aid}")
+    public Response updateGroupAchievement(@PathParam("id") Integer id,
+            @PathParam("aid") Integer achievementId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        tokenService.validateToken(token, request);
+        
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        return Response.ok().build();
+    }
+    
+    @DELETE
+    @Path("{id}/achievements/{aid}")
+    public Response removeGroupAchievement(@PathParam("id") Integer id,
+            @PathParam("aid") Integer achievementId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        tokenService.validateToken(token, request);
+        
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        return Response.ok().build();
+    }
+    
+    @GET
+    @Path("{id}/achievements/user/{uid}")
+    public Response getUserAchievements(@PathParam("id") Integer id,
+            @PathParam("uid") Integer userId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(token, request);
+        
+        User user = userService.getUser(userId);
+        
+        if(!groupService.isInGroup(user, id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
+        return Response.ok(user.getGroupAchievements(userId)).build();
+    }
+    
+    @POST
+    @Path("{id}/achievements/user/{uid}")
+    public Response giveUserAchievement(@PathParam("id") Integer id,
+            @PathParam("uid") Integer userId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(token, request);
+        
+        User user = userService.getUser(userId);
+        
+        if(!groupService.isInGroup(user, id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        return Response.ok().build();
+    }
     
     private boolean canManageSelfInGroup(String token, Integer id) {
         return (!groupService.isInGroup(tokenService.getToken(token).getUser(), id)

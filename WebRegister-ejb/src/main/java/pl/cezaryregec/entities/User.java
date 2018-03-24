@@ -12,6 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -66,7 +68,7 @@ public class User implements Serializable {
     private String lastname;
     
     @OneToMany(mappedBy = "user_assignment")
-    private List<GroupAssignment> groups = new ArrayList();
+    private List<GroupAssignment> groups = new ArrayList<>();
     
     @OneToMany(cascade = { 
         CascadeType.MERGE,
@@ -74,7 +76,16 @@ public class User implements Serializable {
         CascadeType.REMOVE
     })
     @JoinColumn(name = "user_id")
-    private List<Token> sessions;
+    private List<Token> sessions = new ArrayList<>();
+    
+    @ManyToMany(cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE
+    })
+    @JoinTable(name = "user_achievements",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "achievement_id"))
+    private List<Achievement> achievements = new ArrayList<>();
     
     public User() {
     }
@@ -143,7 +154,7 @@ public class User implements Serializable {
     }
     
     public List<Group> getGroups() {
-        List<Group> result = new ArrayList<Group>();
+        List<Group> result = new ArrayList<>();
         
         for(GroupAssignment assignment : groups) {
             result.add(assignment.getGroup());
@@ -162,6 +173,18 @@ public class User implements Serializable {
     @JsonIgnore
     public List<Token> getSessions() {
         return sessions;
+    }
+    
+    public List<Achievement> getGroupAchievements(Integer groupId) {
+        List<Achievement> result = new ArrayList<>();
+        
+        for(Achievement achievement : achievements) {
+            if(achievement.getGroup().equals(groupId)) {
+                result.add(achievement);
+            }
+        }
+        
+        return result;
     }
     
     @Override
