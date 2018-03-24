@@ -2,7 +2,6 @@ package pl.cezaryregec.auth;
 
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsEqual;
-import org.jukito.JukitoRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,13 +9,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import pl.cezaryregec.Config;
 
 /**
  *
  * @author SudoWaster <cezaryre@gmail.com>
  */
-@RunWith(JukitoRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class ShaHashGeneratorTest {
     
     @Mock
