@@ -6,6 +6,7 @@ import javax.ejb.LocalBean;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -21,6 +22,7 @@ import pl.cezaryregec.auth.UserService;
 import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.entities.GroupRole;
 import pl.cezaryregec.entities.User;
+import pl.cezaryregec.groups.AchievementService;
 
 /**
  *
@@ -35,12 +37,17 @@ public class SingleGroupResource {
     private final TokenService tokenService;
     private final UserService userService;
     private final GroupService groupService;
+    private final AchievementService achievementService;
     
     @Inject
-    public SingleGroupResource(TokenService tokenService, UserService userService, GroupService groupService) {
+    public SingleGroupResource(TokenService tokenService, 
+            UserService userService, 
+            GroupService groupService,
+            AchievementService achievementService) {
         this.tokenService = tokenService;
         this.userService = userService;
         this.groupService = groupService;
+        this.achievementService = achievementService;
     }
     
     @GET
@@ -302,6 +309,8 @@ public class SingleGroupResource {
     @POST
     @Path("{id}/achievements")
     public Response addGroupAchievement(@PathParam("id") Integer id,
+            @FormParam("name") String name,
+            @FormParam("desc") String description,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         tokenService.validateToken(token, request);
@@ -309,6 +318,8 @@ public class SingleGroupResource {
         if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+        
+        achievementService.addAchievement(name, description, id);
         
         return Response.ok().build();
     }
@@ -317,6 +328,8 @@ public class SingleGroupResource {
     @Path("{id}/achievements/{aid}")
     public Response updateGroupAchievement(@PathParam("id") Integer id,
             @PathParam("aid") Integer achievementId,
+            @FormParam("name") String name,
+            @FormParam("desc") String description,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         tokenService.validateToken(token, request);
@@ -324,6 +337,8 @@ public class SingleGroupResource {
         if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+        
+        achievementService.setAchievement(achievementId, id, name, description);
         
         return Response.ok().build();
     }
@@ -339,6 +354,8 @@ public class SingleGroupResource {
         if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+        
+        achievementService.removeAchievement(achievementId, id);
         
         return Response.ok().build();
     }
@@ -364,6 +381,28 @@ public class SingleGroupResource {
     @POST
     @Path("{id}/achievements/user/{uid}")
     public Response giveUserAchievement(@PathParam("id") Integer id,
+            @PathParam("uid") Integer userId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(token, request);
+        
+        User user = userService.getUser(userId);
+        
+        if(!groupService.isInGroup(user, id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        return Response.ok().build();
+    }
+    
+    @DELETE
+    @Path("{id}/achievements/user/{uid}")
+    public Response deleteUserAchievement(@PathParam("id") Integer id,
             @PathParam("uid") Integer userId,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {

@@ -79,6 +79,18 @@ public class UserResource {
     }
     
     @GET
+    @Path("{id}/groups/{gid}/achievements")
+    public Response getAllAchievements(@PathParam("id") Integer id,
+            @PathParam("gid") Integer groupId,
+            @QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(tokenId, request);
+        
+        return Response.ok(userService.getUser(id).getGroupAchievements(groupId)).build();
+    }
+    
+    @GET
     @Path("all")
     public Response getAll(@QueryParam("token") String tokenId,
             @Context HttpServletRequest request) throws IOException {

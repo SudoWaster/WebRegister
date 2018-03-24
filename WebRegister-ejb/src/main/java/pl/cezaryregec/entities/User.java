@@ -187,6 +187,19 @@ public class User implements Serializable {
         return result;
     }
     
+    public void giveAchievement(Achievement achievement) {
+        achievements.add(achievement);
+    }
+    
+    public Achievement denyAchievement(Integer id) {
+        Achievement achievement = new Achievement();
+        achievement.setId(id);
+        
+        achievements.remove(achievement);
+        
+        return achievement;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

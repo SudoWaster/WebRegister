@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -23,6 +25,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name = "achievements")
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Achievement.findAll", query = "SELECT a FROM Achievement a"),
+    @NamedQuery(name = "Achievement.findById", query = "SELECT a FROM Achievement a WHERE a.id = :id"),
+})
 public class Achievement implements Serializable {
     
     private static final long serialVersionUID = 1L;

@@ -15,6 +15,8 @@ import pl.cezaryregec.auth.UserService;
 import pl.cezaryregec.auth.UserServiceImpl;
 import pl.cezaryregec.config.DefaultConfig;
 import pl.cezaryregec.config.PropertiesConfig;
+import pl.cezaryregec.groups.AchievementService;
+import pl.cezaryregec.groups.AchievementServiceImpl;
 
 
 /**
@@ -31,6 +33,7 @@ public class APIServletModule extends ServletModule {
         bind(TokenService.class).to(TokenServiceImpl.class);
         bind(UserService.class).to(UserServiceImpl.class);
         bind(GroupService.class).to(GroupServiceImpl.class);
+        bind(AchievementService.class).to(AchievementServiceImpl.class);
     }
     
     private void tryLoadingConfig() {

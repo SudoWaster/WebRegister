@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.NotFoundException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -35,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Group.findById", query = "SELECT g FROM Group g WHERE g.id = :id"),
     @NamedQuery(name = "Group.findOpen", query = "SELECT g FROM Group g WHERE g.vacancies > 0")
 })
-@JsonIgnoreProperties({"members", "presence"})
+@JsonIgnoreProperties({"members", "presence", "achievements"})
 public class Group implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -233,13 +234,25 @@ public class Group implements Serializable {
         return achievements;
     }
     
-    public void addAchievement(String name, String description) {
+    @XmlTransient
+    @JsonIgnore
+    public Achievement getAchievement(Integer id) {
+        for(Achievement achievement : achievements) {
+            return achievement;
+        }
+        
+        throw new NotFoundException("Achievement not found");
+    }
+    
+    public Achievement addAchievement(String name, String description) {
         Achievement achievement = new Achievement();
         achievement.setGroup(this);
         achievement.setName(name);
         achievement.setDescription(description);
         
         this.achievements.add(achievement);
+        
+        return achievement;
     }
     
     public Achievement removeAchievement(String name, String description) {
@@ -247,6 +260,15 @@ public class Group implements Serializable {
         achievement.setGroup(this);
         achievement.setName(name);
         achievement.setDescription(description);
+        
+        this.achievements.remove(achievement);
+        
+        return achievement;
+    }
+    
+    public Achievement removeAchievement(Integer id) {
+        Achievement achievement = new Achievement();
+        achievement.setId(id);
         
         this.achievements.remove(achievement);
         
