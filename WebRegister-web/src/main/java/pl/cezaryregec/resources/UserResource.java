@@ -75,12 +75,12 @@ public class UserResource {
             @Context HttpServletRequest request) {
      
         tokenService.validateToken(tokenId, request);
-        return Response.ok(userService.getUser(id).getGroups()).build();
+        return Response.ok(userService.getUser(id).getGroupAssignment()).build();
     }
     
     @GET
     @Path("{id}/groups/{gid}/achievements")
-    public Response getAllAchievements(@PathParam("id") Integer id,
+    public Response getGroupAchievements(@PathParam("id") Integer id,
             @PathParam("gid") Integer groupId,
             @QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
@@ -88,6 +88,18 @@ public class UserResource {
         tokenService.validateToken(tokenId, request);
         
         return Response.ok(userService.getUser(id).getGroupAchievements(groupId)).build();
+    }
+    
+    @GET
+    @Path("{id}/groups/{gid}/achievements/progress")
+    public Response getGroupProgress(@PathParam("id") Integer id,
+            @PathParam("gid") Integer groupId,
+            @QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(tokenId, request);
+        
+        return Response.ok(userService.getUser(id).getProgressInGroup(groupId)).build();
     }
     
     @GET

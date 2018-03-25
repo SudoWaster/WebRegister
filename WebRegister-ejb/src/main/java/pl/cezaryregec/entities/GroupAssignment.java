@@ -90,7 +90,7 @@ public class GroupAssignment implements Serializable {
         for(Presence presence : group_assignment.getUserPresence(user_assignment)) {
             all++;
             
-            if(presence.getPresence()) {
+            if(presence.getPresence().equals(true)) { // do not question, getPresence might be null
                 present++;
             }
         }
