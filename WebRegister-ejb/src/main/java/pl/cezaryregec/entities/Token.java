@@ -54,7 +54,7 @@ public class Token implements Serializable {
     private User user;
     
     public Token() {
-        this.token = "null" + new Date().getTime();
+        this.token = "null" + System.currentTimeMillis();
     }
     
     public void setToken(String token) {
@@ -78,15 +78,8 @@ public class Token implements Serializable {
         this.expiration = new Timestamp(System.currentTimeMillis() + time);
     }
     
-    public boolean hasExpired() {
-        return this.expiration.before(new Timestamp(System.currentTimeMillis()));
-    }
-    
-    public boolean isValid(String fingerprint) {
-        
-        Boolean isUnauthorised = user.getType() == UserType.UNAUTHORIZED;
-        
-        return !hasExpired() && !isUnauthorised && this.fingerprint.equals(fingerprint);
+    public Timestamp getExpiration() {
+        return expiration;
     }
     
     public void setFingerprint(String fingerprint) {

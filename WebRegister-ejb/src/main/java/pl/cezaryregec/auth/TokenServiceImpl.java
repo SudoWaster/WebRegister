@@ -14,7 +14,6 @@ import javax.ws.rs.core.Response;
 import pl.cezaryregec.Config;
 import pl.cezaryregec.entities.Token;
 import pl.cezaryregec.entities.User;
-import pl.cezaryregec.entities.UserType;
 
 /**
  *
@@ -94,12 +93,14 @@ public class TokenServiceImpl implements TokenService {
     @Transactional
     public boolean isTokenValid(String tokenId, String fingerprint) {
         try {
-            if(getToken(tokenId).hasExpired()) {
+            TokenValidator validator = new TokenValidator(getToken(tokenId));
+            
+            if(validator.hasTokenExpired()) {
                 removeToken(tokenId);
                 return false;
             }
             
-            return getToken(tokenId).isValid(fingerprint);
+            return validator.isTokenValid(fingerprint);
         } catch(NotFoundException ex) {
             return false;
         }

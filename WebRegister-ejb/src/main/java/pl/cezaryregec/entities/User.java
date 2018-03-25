@@ -94,11 +94,11 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public User(Integer id, String mail, String password, int type) {
+    public User(Integer id, String mail, String password, UserType type) {
         this.id = id;
         this.mail = mail;
         this.password = password;
-        this.type = type;
+        this.type = type.getInt();
     }
 
     public Integer getId() {
