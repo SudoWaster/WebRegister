@@ -1,5 +1,6 @@
 package pl.cezaryregec.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -76,6 +78,27 @@ public class GroupAssignment implements Serializable {
             return achievementCount / maximumAchievements;
         }
 
+        return 0.0;
+    }
+    
+    @XmlTransient
+    @JsonIgnore
+    public Double getAttendance() {
+        Double present = 0.0;
+        Double all = 0.0;
+        
+        for(Presence presence : group_assignment.getUserPresence(user_assignment)) {
+            all++;
+            
+            if(presence.getPresence()) {
+                present++;
+            }
+        }
+        
+        if(all > 0) {
+            return present / all;
+        }
+        
         return 0.0;
     }
     

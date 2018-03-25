@@ -85,7 +85,7 @@ public class SingleGroupResource {
         
         tokenService.validateToken(token, request);
         
-        if(!canManageSelfInGroup(token, id)) {
+        if(!canManageSelfInGroup(token, tokenService.getToken(token).getUser().getId(), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -104,7 +104,7 @@ public class SingleGroupResource {
         
         tokenService.validateToken(token, request);
         
-        if(!canManageSelfInGroup(token, id)) {
+        if(!canManageSelfInGroup(token, userId, id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
@@ -120,7 +120,7 @@ public class SingleGroupResource {
         
         tokenService.validateToken(token, request);
         
-        if(!canManageSelfInGroup(token, id)) {
+        if(!canManageSelfInGroup(token, tokenService.getToken(token).getUser().getId(), id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }       
         
@@ -245,17 +245,33 @@ public class SingleGroupResource {
     @GET
     @Path("{id}/presence/user/{user_id}")
     public Response getUserPresence(@PathParam("id") Integer id,
-            @PathParam("user_id") String userId,
+            @PathParam("user_id") Integer userId,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
         tokenService.validateToken(token, request);
         
-        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
+        if(!canManageSelfInGroup(token, userId, id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
         return Response.ok(groupService.getGroup(id).getUserPresence(userService.getUser(userId))).build();
+    }
+    
+    @GET
+    @Path("{id}/presence/user/{user_id}/attendance")
+    public Response getUserAttendance(@PathParam("id") Integer id,
+            @PathParam("user_id") Integer userId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(token, request);
+        
+        if(!canManageSelfInGroup(token, userId, id)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        return Response.ok(userService.getUser(userId).getAttendanceInGroup(id)).build();
     }
     
     @PUT
@@ -449,8 +465,8 @@ public class SingleGroupResource {
         return Response.ok().build();
     }
     
-    private boolean canManageSelfInGroup(String token, Integer id) {
-        return (!groupService.isInGroup(tokenService.getToken(token).getUser(), id)
-                    || groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id));
+    private boolean canManageSelfInGroup(String token, Integer userId, Integer id) {
+        return (groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id) || 
+                    tokenService.getToken(token).getUser().getId().equals(userId));
     }
 }

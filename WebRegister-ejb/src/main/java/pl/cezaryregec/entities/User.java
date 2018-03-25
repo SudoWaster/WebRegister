@@ -197,6 +197,7 @@ public class User implements Serializable {
         return null;
     }
     
+    
     public void giveAchievement(Achievement achievement) {
         achievements.add(achievement);
         achievement.getUsers().add(this);
@@ -205,6 +206,16 @@ public class User implements Serializable {
     public void denyAchievement(Achievement achievement) {
         achievements.remove(achievement);
         achievement.getUsers().remove(this);
+    }
+    
+    public Double getAttendanceInGroup(Integer groupId) {
+        for(GroupAssignment group : groups) {
+            if(group.getGroup().getId().equals(groupId)) {
+                return group.getAttendance();
+            }
+        }
+        
+        return null;
     }
     
     @Override
