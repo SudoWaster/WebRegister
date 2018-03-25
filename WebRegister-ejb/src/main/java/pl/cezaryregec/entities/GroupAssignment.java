@@ -67,6 +67,18 @@ public class GroupAssignment implements Serializable {
         this.role = role.getInt();
     }
     
+    public Double getProgress() {
+        if(group_assignment.getAchievementCount() > 0) {
+
+            Double achievementCount = (double) user_assignment.getGroupAchievements(group_assignment.getId()).size();
+            Double maximumAchievements = (double) group_assignment.getAchievementCount();
+
+            return achievementCount / maximumAchievements;
+        }
+
+        return 0.0;
+    }
+    
     @Override
     public int hashCode() {
         return id.hashCode();

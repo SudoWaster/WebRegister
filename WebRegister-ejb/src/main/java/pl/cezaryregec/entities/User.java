@@ -187,6 +187,16 @@ public class User implements Serializable {
         return result;
     }
     
+    public Double getProgressInGroup(Integer groupId) {
+        for(GroupAssignment group : groups) {
+            if(group.getGroup().getId().equals(groupId)) {
+                return group.getProgress();
+            }
+        }
+        
+        return null;
+    }
+    
     public void giveAchievement(Achievement achievement) {
         achievements.add(achievement);
         achievement.getUsers().add(this);

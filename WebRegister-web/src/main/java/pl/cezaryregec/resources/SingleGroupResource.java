@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.auth.TokenService;
 import pl.cezaryregec.auth.UserService;
+import pl.cezaryregec.entities.Group;
 import pl.cezaryregec.groups.GroupService;
 import pl.cezaryregec.entities.GroupRole;
 import pl.cezaryregec.entities.User;
@@ -376,6 +377,24 @@ public class SingleGroupResource {
         }
         
         return Response.ok(user.getGroupAchievements(id)).build();
+    }
+    
+    @GET
+    @Path("{id}/achievements/user/{uid}/progress")
+    public Response getUserProgress(@PathParam("id") Integer id,
+            @PathParam("uid") Integer userId,
+            @QueryParam("token") String token,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(token, request);
+        
+        User user = userService.getUser(userId);
+        
+        if(!groupService.isInGroup(user, id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
+        return Response.ok(user.getProgressInGroup(id)).build();
     }
     
     @POST
