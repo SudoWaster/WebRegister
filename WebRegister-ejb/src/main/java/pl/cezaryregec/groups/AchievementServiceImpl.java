@@ -59,14 +59,30 @@ public class AchievementServiceImpl implements AchievementService {
         
         entityManager.get().remove(achievement);
     }
+    
+    @Override
+    public boolean isInGroup(Integer id, Integer groupId) {
+        return getAchievement(id).getGroup().getId().equals(groupId);
+    }
 
     @Override
     public void giveAchievement(Integer id, User user) {
+        Achievement achievement = getAchievement(id);
+        
+        user.giveAchievement(achievement);
+        
+        entityManager.get().merge(user);
+        entityManager.get().merge(achievement);
     }
 
     @Override
     public void denyAchievement(Integer id, User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Achievement achievement = getAchievement(id);
+        
+        user.denyAchievement(achievement);
+        
+        entityManager.get().merge(user);
+        entityManager.get().merge(achievement);
     }
     
 }

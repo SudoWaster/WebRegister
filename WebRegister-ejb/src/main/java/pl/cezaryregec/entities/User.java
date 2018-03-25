@@ -179,7 +179,7 @@ public class User implements Serializable {
         List<Achievement> result = new ArrayList<>();
         
         for(Achievement achievement : achievements) {
-            if(achievement.getGroup().equals(groupId)) {
+            if(achievement.getGroup().getId().equals(groupId)) {
                 result.add(achievement);
             }
         }
@@ -189,15 +189,12 @@ public class User implements Serializable {
     
     public void giveAchievement(Achievement achievement) {
         achievements.add(achievement);
+        achievement.getUsers().add(this);
     }
     
-    public Achievement denyAchievement(Integer id) {
-        Achievement achievement = new Achievement();
-        achievement.setId(id);
-        
+    public void denyAchievement(Achievement achievement) {
         achievements.remove(achievement);
-        
-        return achievement;
+        achievement.getUsers().remove(this);
     }
     
     @Override

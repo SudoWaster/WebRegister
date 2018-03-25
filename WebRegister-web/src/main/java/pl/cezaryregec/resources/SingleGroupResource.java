@@ -375,13 +375,14 @@ public class SingleGroupResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         
-        return Response.ok(user.getGroupAchievements(userId)).build();
+        return Response.ok(user.getGroupAchievements(id)).build();
     }
     
     @POST
     @Path("{id}/achievements/user/{uid}")
     public Response giveUserAchievement(@PathParam("id") Integer id,
             @PathParam("uid") Integer userId,
+            @QueryParam("achievement") Integer achievementId,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
@@ -393,9 +394,12 @@ public class SingleGroupResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         
-        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)
+                || !achievementService.isInGroup(achievementId, id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+        
+        achievementService.giveAchievement(achievementId, user);
         
         return Response.ok().build();
     }
@@ -404,6 +408,7 @@ public class SingleGroupResource {
     @Path("{id}/achievements/user/{uid}")
     public Response deleteUserAchievement(@PathParam("id") Integer id,
             @PathParam("uid") Integer userId,
+            @QueryParam("achievement") Integer achievementId,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
         
@@ -415,9 +420,12 @@ public class SingleGroupResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         
-        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)) {
+        if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)
+                || !achievementService.isInGroup(achievementId, id)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+        
+        achievementService.denyAchievement(achievementId, user);
         
         return Response.ok().build();
     }

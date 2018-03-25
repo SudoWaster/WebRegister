@@ -234,6 +234,10 @@ public class Group implements Serializable {
         return achievements;
     }
     
+    public Integer getAchievementCount() {
+        return achievements.size();
+    }
+    
     @XmlTransient
     @JsonIgnore
     public Achievement getAchievement(Integer id) {

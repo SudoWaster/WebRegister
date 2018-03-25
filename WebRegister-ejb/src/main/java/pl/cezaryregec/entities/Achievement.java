@@ -1,7 +1,10 @@
 package pl.cezaryregec.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -29,6 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Achievement.findAll", query = "SELECT a FROM Achievement a"),
     @NamedQuery(name = "Achievement.findById", query = "SELECT a FROM Achievement a WHERE a.id = :id"),
 })
+@JsonIgnoreProperties({"users"})
 public class Achievement implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -50,6 +55,9 @@ public class Achievement implements Serializable {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
+    
+    @ManyToMany(mappedBy = "achievements")
+    private List<User> users = new ArrayList<>();
     
     public Achievement() {
         
@@ -81,6 +89,12 @@ public class Achievement implements Serializable {
     
     public void setGroup(Group group) {
         this.group = group;
+    }
+    
+    @XmlTransient
+    @JsonIgnore
+    public List<User> getUsers() {
+        return users;
     }
     
     @XmlTransient
