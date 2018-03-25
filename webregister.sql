@@ -5,7 +5,7 @@
 -- Dumped from database version 10.1
 -- Dumped by pg_dump version 10.1
 
--- Started on 2018-03-20 02:01:40 CET
+-- Started on 2018-03-26 00:22:49 CEST
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -17,7 +17,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3158 (class 1262 OID 16393)
+-- TOC entry 3164 (class 1262 OID 16393)
 -- Name: register; Type: DATABASE; Schema: -; Owner: -
 --
 
@@ -44,7 +44,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 3160 (class 0 OID 0)
+-- TOC entry 3166 (class 0 OID 0)
 -- Dependencies: 1
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
@@ -84,7 +84,7 @@ CREATE SEQUENCE achievements_id_seq
 
 
 --
--- TOC entry 3161 (class 0 OID 0)
+-- TOC entry 3167 (class 0 OID 0)
 -- Dependencies: 204
 -- Name: achievements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -132,7 +132,7 @@ CREATE SEQUENCE groups_group_id_seq
 
 
 --
--- TOC entry 3162 (class 0 OID 0)
+-- TOC entry 3168 (class 0 OID 0)
 -- Dependencies: 198
 -- Name: groups_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -169,7 +169,7 @@ CREATE SEQUENCE presence_id_seq
 
 
 --
--- TOC entry 3163 (class 0 OID 0)
+-- TOC entry 3169 (class 0 OID 0)
 -- Dependencies: 200
 -- Name: presence_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -187,6 +187,17 @@ CREATE TABLE tokens (
     expiration timestamp(4) with time zone NOT NULL,
     user_id integer DEFAULT 0,
     fingerprint character varying(128)
+);
+
+
+--
+-- TOC entry 206 (class 1259 OID 16680)
+-- Name: user_achievements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE user_achievements (
+    user_id integer NOT NULL,
+    achievement_id integer NOT NULL
 );
 
 
@@ -220,7 +231,7 @@ CREATE SEQUENCE users_id_seq1
 
 
 --
--- TOC entry 3164 (class 0 OID 0)
+-- TOC entry 3170 (class 0 OID 0)
 -- Dependencies: 202
 -- Name: users_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
@@ -229,7 +240,7 @@ ALTER SEQUENCE users_id_seq1 OWNED BY users.id;
 
 
 --
--- TOC entry 3019 (class 2604 OID 16669)
+-- TOC entry 3023 (class 2604 OID 16669)
 -- Name: achievements id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -237,7 +248,7 @@ ALTER TABLE ONLY achievements ALTER COLUMN id SET DEFAULT nextval('achievements_
 
 
 --
--- TOC entry 3016 (class 2604 OID 16549)
+-- TOC entry 3020 (class 2604 OID 16549)
 -- Name: groups group_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -245,7 +256,7 @@ ALTER TABLE ONLY groups ALTER COLUMN group_id SET DEFAULT nextval('groups_group_
 
 
 --
--- TOC entry 3017 (class 2604 OID 16557)
+-- TOC entry 3021 (class 2604 OID 16557)
 -- Name: presence id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -253,7 +264,7 @@ ALTER TABLE ONLY presence ALTER COLUMN id SET DEFAULT nextval('presence_id_seq':
 
 
 --
--- TOC entry 3018 (class 2604 OID 16565)
+-- TOC entry 3022 (class 2604 OID 16565)
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -261,7 +272,7 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq1'::regc
 
 
 --
--- TOC entry 3031 (class 2606 OID 16674)
+-- TOC entry 3035 (class 2606 OID 16674)
 -- Name: achievements achievements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -270,7 +281,7 @@ ALTER TABLE ONLY achievements
 
 
 --
--- TOC entry 3023 (class 2606 OID 16512)
+-- TOC entry 3027 (class 2606 OID 16512)
 -- Name: assignment assignment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -279,7 +290,7 @@ ALTER TABLE ONLY assignment
 
 
 --
--- TOC entry 3025 (class 2606 OID 16551)
+-- TOC entry 3029 (class 2606 OID 16551)
 -- Name: groups groups_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -288,7 +299,7 @@ ALTER TABLE ONLY groups
 
 
 --
--- TOC entry 3027 (class 2606 OID 16559)
+-- TOC entry 3031 (class 2606 OID 16559)
 -- Name: presence presence_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -297,7 +308,7 @@ ALTER TABLE ONLY presence
 
 
 --
--- TOC entry 3021 (class 2606 OID 16447)
+-- TOC entry 3025 (class 2606 OID 16447)
 -- Name: tokens tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -306,7 +317,16 @@ ALTER TABLE ONLY tokens
 
 
 --
--- TOC entry 3029 (class 2606 OID 16567)
+-- TOC entry 3037 (class 2606 OID 16684)
+-- Name: user_achievements user_achievements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY user_achievements
+    ADD CONSTRAINT user_achievements_pkey PRIMARY KEY (user_id, achievement_id);
+
+
+--
+-- TOC entry 3033 (class 2606 OID 16567)
 -- Name: users users_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -315,7 +335,7 @@ ALTER TABLE ONLY users
 
 
 --
--- TOC entry 3032 (class 2606 OID 16675)
+-- TOC entry 3038 (class 2606 OID 16675)
 -- Name: achievements fk_achievements_group_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -323,7 +343,7 @@ ALTER TABLE ONLY achievements
     ADD CONSTRAINT fk_achievements_group_id FOREIGN KEY (group_id) REFERENCES groups(group_id);
 
 
--- Completed on 2018-03-20 02:01:40 CET
+-- Completed on 2018-03-26 00:22:50 CEST
 
 --
 -- PostgreSQL database dump complete
