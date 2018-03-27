@@ -1,4 +1,5 @@
-/WebRegister-ejb/target/
-/WebRegister-ear/target/
-/WebRegister-ejb/nbproject/
-/WebRegister-web/target/
+WebRegister-ejb/target/
+WebRegister-ear/target/
+WebRegister-web/target/
+WebRegister-ejb/nbproject/
+.DS_Store
