@@ -388,10 +388,6 @@ public class SingleGroupResource {
         
         User user = userService.getUser(userId);
         
-        if(!groupService.isInGroup(user, id)) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        
         return Response.ok(user.getGroupAchievements(id)).build();
     }
     
@@ -405,10 +401,6 @@ public class SingleGroupResource {
         tokenService.validateToken(token, request);
         
         User user = userService.getUser(userId);
-        
-        if(!groupService.isInGroup(user, id)) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         
         return Response.ok(user.getProgressInGroup(id)).build();
     }
@@ -424,10 +416,6 @@ public class SingleGroupResource {
         tokenService.validateToken(token, request);
         
         User user = userService.getUser(userId);
-        
-        if(!groupService.isInGroup(user, id)) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         
         if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)
                 || !achievementService.isInGroup(achievementId, id)) {
@@ -450,10 +438,6 @@ public class SingleGroupResource {
         tokenService.validateToken(token, request);
         
         User user = userService.getUser(userId);
-        
-        if(!groupService.isInGroup(user, id)) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         
         if(!groupService.isPriviledgedInGroup(tokenService.getToken(token).getUser(), id)
                 || !achievementService.isInGroup(achievementId, id)) {

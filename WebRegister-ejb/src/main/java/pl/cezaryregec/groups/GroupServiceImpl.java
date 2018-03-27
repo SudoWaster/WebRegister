@@ -108,7 +108,7 @@ public class GroupServiceImpl implements GroupService {
     public boolean isPriviledgedInGroup(User user, int groupId) {
         Group group = getGroup(groupId);
         
-        return user.getType().equals(UserType.ADMIN) || group.getMembers(GroupRole.PRIVILEDGED).contains(user);
+        return user.getType() == UserType.ADMIN || group.getMembers(GroupRole.PRIVILEDGED).contains(user);
     }
     
     @Override

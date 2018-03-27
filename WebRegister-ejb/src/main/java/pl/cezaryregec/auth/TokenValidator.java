@@ -22,7 +22,7 @@ public class TokenValidator {
     
     public boolean isTokenValid(String fingerprint) {
         
-        Boolean isUnauthorized = token.getUser() == null || token.getUser().getType().equals(UserType.UNAUTHORIZED);
+        Boolean isUnauthorized = token.getUser() == null || token.getUser().getType() == UserType.UNAUTHORIZED;
         
         return !hasTokenExpired() && !isUnauthorized && token.getFingerprint().equals(fingerprint);
     }

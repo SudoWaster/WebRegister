@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.NotFoundException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -194,7 +195,7 @@ public class User implements Serializable {
             }
         }
         
-        return null;
+        throw new NotFoundException("Not in group " + groupId);
     }
     
     
@@ -215,7 +216,7 @@ public class User implements Serializable {
             }
         }
         
-        return null;
+        throw new NotFoundException("Not in group " + groupId);
     }
     
     @Override

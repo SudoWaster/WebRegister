@@ -69,6 +69,10 @@ public class AchievementServiceImpl implements AchievementService {
     public void giveAchievement(Integer id, User user) {
         Achievement achievement = getAchievement(id);
         
+        if(!groupService.isInGroup(user, achievement.getGroup().getId())) {
+            throw new NotFoundException("User not in group");
+        }
+        
         user.giveAchievement(achievement);
         
         entityManager.get().merge(user);
@@ -78,6 +82,10 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public void denyAchievement(Integer id, User user) {
         Achievement achievement = getAchievement(id);
+        
+        if(!groupService.isInGroup(user, achievement.getGroup().getId())) {
+            throw new NotFoundException("User not in group");
+        }
         
         user.denyAchievement(achievement);
         

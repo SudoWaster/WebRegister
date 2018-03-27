@@ -110,7 +110,7 @@ public class UserResource {
         tokenService.validateToken(tokenId, request);
 
         if(!tokenService.getToken(tokenId).getUser().hasPriviledge(UserType.ADMIN)) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
         
         return Response.ok(userService.getUsers()).build();
