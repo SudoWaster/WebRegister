@@ -127,7 +127,27 @@ public class UserResource {
     }
     
     @PUT
-    public Response setUser(@FormParam("id") Integer id,
+    public Response setSelf(@FormParam("firstname") String firstname,
+            @FormParam("lastname") String lastname,
+            @FormParam("password") String password,
+            @QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(tokenId, request);
+        
+        Integer id = tokenService.getToken(tokenId).getUser().getId();
+        
+        userService.setUser(id, firstname, lastname);
+        Token token = tokenService.getToken(tokenId);
+        token.setUser(userService.getUser(id));
+        tokenService.refreshToken(token);
+        
+        return Response.ok().build();
+    }
+    
+    @PUT
+    @Path("{id}")
+    public Response setUser(@PathParam("id") Integer id,
             @FormParam("firstname") String firstname,
             @FormParam("lastname") String lastname,
             @FormParam("password") String password,
@@ -148,6 +168,28 @@ public class UserResource {
         
         return Response.ok().build();
     }
+    
+    @PUT
+    @Path("{id}/priviledge")
+    public Response setUserPriviledge(@PathParam("id") Integer id,
+            @FormParam("type") Integer type,
+            @QueryParam("token") String tokenId,
+            @Context HttpServletRequest request) {
+        
+        tokenService.validateToken(tokenId, request);
+        
+        if(!tokenService.getToken(tokenId).getUser().hasPriviledge(UserType.ADMIN)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
+        userService.setUserType(id, UserType.cast(type));
+        Token token = tokenService.getToken(tokenId);
+        token.setUser(userService.getUser(id));
+        tokenService.refreshToken(token);
+        
+        return Response.ok().build();
+    }
+    
     
     @PUT
     @Path("auth")

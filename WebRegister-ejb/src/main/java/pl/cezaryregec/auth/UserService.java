@@ -25,6 +25,8 @@ public interface UserService {
     
     void setUserCredentials(int id, String oldPassword, String mail, String password, String tokenId);
     
+    void setUserType(int id, UserType type);
+    
     void deleteUser(Integer userId);
     
     User getUser(String mail);

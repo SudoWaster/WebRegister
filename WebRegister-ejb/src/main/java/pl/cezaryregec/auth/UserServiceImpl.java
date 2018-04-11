@@ -109,6 +109,17 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
+    public void setUserType(int id, UserType type) {
+        
+        User user = getUser(id);
+        
+        user.setType(type);
+        
+        entityManager.get().merge(user);
+    }
+    
+    @Override
+    @Transactional
     public List<User> getUsers() throws NoResultException {
         
         Query userQuery = entityManager.get().createNamedQuery("User.findAll", User.class);
