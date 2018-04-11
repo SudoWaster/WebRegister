@@ -1,24 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import API from './API';
 
-const APIUrl = "http://localhost:8080/WebRegisterAPI/";
-const api = new API(APIUrl);
-
-class App extends Component {
-  constructor() {
-    super();
-    
-    this.state = {};
-  }
-  
-  api() {
-    return api;
-  }
-  
+class Login extends Component {
   render() {
-    
     return (
       <div className="App">
         <header className="App-header">
@@ -28,7 +13,6 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-      
       </div>
     );
   }
