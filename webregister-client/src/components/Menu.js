@@ -43,6 +43,8 @@ class Menu extends Component {
   }
   
   render() {
+    const addGroup = (this.state.userType === 'PRIVILEDGED' || this.state.userType === 'ADMIN' ? (<button onClick={() => {}}>+</button>) : '');
+    
     let groups = this.state.groups.map((group) => (<li><button>{group.name}</button></li>));
     
     if(this.state.groups.length === 0) {
@@ -55,7 +57,7 @@ class Menu extends Component {
           <li><button onClick={() => { this.props.onSelect(<Landing />); }} >Strona główna</button></li>
           
           <li className="separator"></li>
-          <li>Twoje grupy</li>
+          <li>Twoje grupy {addGroup}</li>
           {groups}
           <li className="separator"></li>
           
