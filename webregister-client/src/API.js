@@ -14,7 +14,11 @@ class API {
       
       return false;
     })
-  } 
+  }
+  
+  isAuthenticated() {
+    return this.token !== undefined && this.token !== null;
+  }
   
   get(url, data = {}, auth) {
     let params = '';
@@ -86,9 +90,19 @@ class API {
           if(status >= 200 && status < 300) {
             return data.json().then((json) => { result.data = json; return result; });
           } else {
+            if (status === 401) {
+              this.token = undefined;
+            }
+            
             return result;
           }
-        });
+        })
+    .catch(
+      (err) => {
+        console.log(err);
+        
+        return { status: '503' };
+      });
   } 
 }
 

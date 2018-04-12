@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Login from './components/Login';
+
 import logo from './logo.svg';
 import './App.css';
 import API from './API';
@@ -10,14 +12,23 @@ class App extends Component {
   constructor() {
     super();
     
-    this.state = {};
+    this.state = { };
+    
+    this.requestStateCheck = this.requestStateCheck.bind(this);
   }
   
-  api() {
-    return api;
+  componentDidMount() {
+    this.requestStateCheck(); 
+  }
+  
+  requestStateCheck() {
+    this.setState({ isAuthenticated: api.isAuthenticated() });
   }
   
   render() {
+    if(!this.state.isAuthenticated && !api.isAuthenticated()) {
+      return <Login api={api} onSubmit={this.requestStateCheck} />;
+    }
     
     return (
       <div className="App">
@@ -25,6 +36,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
+      
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>

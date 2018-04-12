@@ -1,0 +1,38 @@
+.login-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #222;
+  color: #fff;
+  height: 100%;
+  width: 100%;
+}
+
+.login-content {
+  max-width: 200px;
+  text-align: center;
+}
+
+.login-form {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.form-control {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+  opacity: 0.8
+}
+
+.form-control:focus{
+  border-bottom: 2px solid #fff;
+  opacity: 1;
+}
+
+.login-form-error .form-control {
+  border-bottom-color: red;
+}
