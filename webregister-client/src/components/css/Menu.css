@@ -24,11 +24,15 @@
   padding-left: 0;
 }
 
-.menu ul li button {
+.menu button {
   display: inline;
   
   padding: 5px;
   
   border: 1px solid #bbb;
   border-radius: 7px;
+}
+
+.menu button:active {
+  background: #bbb;
 }

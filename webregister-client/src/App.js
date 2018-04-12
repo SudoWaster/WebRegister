@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Login from './components/Login';
 import Header from './components/Header';
 import Menu from './components/Menu';
+import Landing from './components/Landing';
 
 import './App.css';
 import API from './API';
@@ -14,15 +15,11 @@ class App extends Component {
     super();
     
     this.state = { menu: false, 
-        screen: (
-        <p className="App-intro">
-          Hello world from WebRegister!
-        </p>
-        ) };
+        content: (<Landing />) };
     
     this.requestStateCheck = this.requestStateCheck.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
-    this.toggleScreen = this.toggleScreen.bind(this);
+    this.toggleContent = this.toggleContent.bind(this);
   }
   
   componentDidMount() {
@@ -37,8 +34,8 @@ class App extends Component {
     this.setState({ menu: !this.state.menu });
   }
   
-  toggleScreen(component) {
-    this.setState({ screen: component });
+  toggleContent(component) {
+    this.setState({ content: component });
   }
   
   render() {
@@ -50,10 +47,11 @@ class App extends Component {
       <div className="App">
         <Header api={api} onLogout={this.requestStateCheck} toggleMenu={this.toggleMenu} />
       
-        <Menu api={api} display={this.state.menu} onSelect={this.toggleScreen} />
+        <Menu api={api} display={this.state.menu} onSelect={this.toggleContent} />
       
-        {this.state.screen}
-      
+        <div className="container">
+          {this.state.content}
+        </div>
       </div>
     );
   }
