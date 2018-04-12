@@ -38,7 +38,15 @@ class Header extends Component {
       <div>
         <header className="App-header">
           <div className="left">
-            WebRegister
+            <div className="menu-icon" onClick={this.props.toggleMenu}>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            
+            <span className="title">
+              WebRegister
+            </span>
           </div>
           <div className="right">
             Witaj, {name}! <a href="#" onClick={this.handleLogout}>Wyloguj</a>

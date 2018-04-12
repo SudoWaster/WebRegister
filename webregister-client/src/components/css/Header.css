@@ -1,6 +1,6 @@
 .dummy-header {
   content: ' ';
-  height: 46px;
+  height: 32px;
 }
 
 .App-header {
@@ -14,12 +14,45 @@
   left: 0;
   right: 0;
   text-align: left;
+  z-index: 100;
 }
 
 .App-header .left {
   display: inline;
   position: absolute;
   left: 5px;
+}
+
+.App-header .menu-icon {
+  position: absolute;
+  
+  display: inline;
+  
+  width: 30px;
+  height: 26px;
+  
+  border: 1px solid #888;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.App-header .menu-icon div {
+  width: 20px;
+  height: 3px;
+  background-color: #fff;
+  margin: 4px 5px;
+  border-radius: 5px;
+}
+
+.App-header .menu-icon:active {
+  background: #888;
+}
+
+.App-header .title {
+  display: inline;
+  position: absolute;
+  left: 40px;
+  top: 2px;
 }
 
 .App-header .right {
