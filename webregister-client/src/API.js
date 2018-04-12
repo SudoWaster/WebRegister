@@ -20,17 +20,23 @@ class API {
     return this.token !== undefined && this.token !== null;
   }
   
-  get(url, data = {}, auth) {
+  destroySession() {
+    this.token = undefined;
+  }
+  
+  get(url, data = false, auth = false) {
     let params = '';
     
-    for(let p in data) {
-      if(params.includes('?')) {
-        params += '&';
-      } else {
-        params += '?';
+    if(data) {
+      for(let p in data) {
+        if(params.includes('?')) {
+          params += '&';
+        } else {
+          params += '?';
+        }
+
+        params += p + '=' + data[p];
       }
-      
-      params += p + '=' + data[p];
     }
     
     return this.request(url + params, 'get', {}, auth);
@@ -61,11 +67,13 @@ class API {
       
       let body = new URLSearchParams();
 
-      for(const k in data) {
-        body.append(k, data[k]);
+      if(data) {
+        for(const k in data) {
+          body.append(k, data[k]);
+        }
+
+        fetchData.body = body;
       }
-      
-      fetchData.body = body;
     }
     
     let fetchUrl = this.apiUrl + url; 

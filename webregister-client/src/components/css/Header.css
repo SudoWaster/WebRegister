@@ -1,0 +1,29 @@
+.dummy-header {
+  content: ' ';
+  height: 46px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 26px;
+  padding: 5px;
+  color: white;
+  font-size: 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: left;
+}
+
+.App-header .left {
+  display: inline;
+  position: absolute;
+  left: 5px;
+}
+
+.App-header .right {
+  display: inline;
+  position: absolute;
+  right: 5px;
+}
