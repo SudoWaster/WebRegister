@@ -47,7 +47,7 @@ class App extends Component {
       <div className="App">
         <Header api={api} onLogout={this.requestStateCheck} toggleMenu={this.toggleMenu} />
       
-        <Menu api={api} display={this.state.menu} onSelect={this.toggleContent} />
+        <Menu api={api} display={this.state.menu} onSelect={this.toggleContent} onLogout={this.requestStateCheck} />
       
         <div className="container">
           {this.state.content}

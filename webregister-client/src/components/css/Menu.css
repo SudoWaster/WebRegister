@@ -9,6 +9,8 @@
   background: #eee;
   padding: 20px;
   
+  font-size: 12px;
+  
   z-index: -1;
 }
 
@@ -24,13 +26,25 @@
   padding-left: 0;
 }
 
+.menu ul li {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.menu ul .separator {
+  margin-top: 16px;
+}
+
 .menu button {
   display: inline;
   
   padding: 5px;
+  font-size: 14px;
   
   border: 1px solid #bbb;
   border-radius: 7px;
+  
+  cursor: pointer;
 }
 
 .menu button:active {

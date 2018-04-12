@@ -12,6 +12,8 @@ class Menu extends Component {
       groups: [],
       userType: 'UNAUTHORIZED'
     };
+    
+    this.handleLogout = this.handleLogout.bind(this);
   }
   
   componentDidMount() {
@@ -30,12 +32,35 @@ class Menu extends Component {
     })
   }
   
+  handleLogout(e) {
+    this.props.api.delete('auth', true)
+    .then(() => {
+      this.props.api.destroySession();
+      this.props.onLogout();
+    });
+    
+    e.preventDefault();
+  }
+  
   render() {
+    let groups = this.state.groups.map((group) => (<li><button>{group.name}</button></li>));
+    
+    if(this.state.groups.length === 0) {
+      groups = (<li>- brak -</li>);
+    }
+    
     return (
       <div className={'menu' + (this.props.display ? ' menu-display' : '')}>
         <ul>
           <li><button onClick={() => { this.props.onSelect(<Landing />); }} >Strona główna</button></li>
+          
+          <li className="separator"></li>
+          <li>Twoje grupy</li>
+          {groups}
+          <li className="separator"></li>
+          
           <li><button onClick={() => { this.props.onSelect(<User api={this.props.api} />); }}>Moje konto</button></li>
+          <li><button onClick={this.handleLogout}>Wyloguj</button></li>
         </ul>
       </div>
     );
