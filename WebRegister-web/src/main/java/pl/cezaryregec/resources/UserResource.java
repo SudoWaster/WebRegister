@@ -129,7 +129,6 @@ public class UserResource {
     @PUT
     public Response setSelf(@FormParam("firstname") String firstname,
             @FormParam("lastname") String lastname,
-            @FormParam("password") String password,
             @QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
@@ -150,14 +149,13 @@ public class UserResource {
     public Response setUser(@PathParam("id") Integer id,
             @FormParam("firstname") String firstname,
             @FormParam("lastname") String lastname,
-            @FormParam("password") String password,
             @QueryParam("token") String tokenId,
             @Context HttpServletRequest request) {
         
         tokenService.validateToken(tokenId, request);
         
-        if(!(tokenService.getToken(tokenId).getUser().getId().equals(id)
-                && tokenService.getToken(tokenId).getUser().hasPriviledge(UserType.ADMIN))) {
+        if(!tokenService.getToken(tokenId).getUser().getId().equals(id)
+                && !tokenService.getToken(tokenId).getUser().hasPriviledge(UserType.ADMIN)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
