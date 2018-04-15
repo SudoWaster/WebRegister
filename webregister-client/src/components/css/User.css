@@ -28,3 +28,20 @@
   font-weight: bold;
   font-size: 14px;
 }
+
+.edit-label {
+  display: none;
+  font-weight: normal;
+  font-size: 12px;
+  cursor: pointer;
+  color: #00f;
+}
+
+.show-label {
+  display: inline;
+}
+
+.info-field input {
+  border: none;
+  background: transparent;
+}

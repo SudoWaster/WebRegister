@@ -95,8 +95,10 @@ class API {
           
           let result = { status: status };
           
-          if(status >= 200 && status < 300) {
-            return data.json().then((json) => { result.data = json; return result; });
+          if(status >= 200 && status < 300) {            
+            return data.json()
+              .then((json) => { result.data = json; return result; })
+              .catch(() => { result.data = ''; return result; });
           } else {
             if (status === 401) {
               this.token = undefined;
