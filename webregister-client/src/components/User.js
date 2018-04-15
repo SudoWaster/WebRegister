@@ -127,7 +127,7 @@ class User extends Component {
   delete(e) {
     
     let firstname = this.state.user.firstname;
-    let isUserSure = window.confirm('Na pewno chcesz usunąć konto ' + firstname  + '?');
+    let isUserSure = window.confirm('Na pewno chcesz usunąć konto ' + firstname + '?');
     
     if(isUserSure) {
       let url = 'user';

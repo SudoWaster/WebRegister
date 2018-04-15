@@ -1,6 +1,7 @@
 class API {
   constructor(url) {
     this.apiUrl = url;
+    this.callback = () => {};
   }
   
   auth(mail, password) {
@@ -14,6 +15,10 @@ class API {
       
       return false;
     })
+  }
+  
+  setCallback(callback) {
+    this.callback = callback;
   }
   
   isAuthenticated() {
@@ -90,12 +95,14 @@ class API {
     
     return fetch(fetchUrl, fetchData)
       .then(
-        (data) => { 
+        (data) => {
           let status = data.status;
           
           let result = { status: status };
           
-          if(status >= 200 && status < 300) {            
+          if(status >= 200 && status < 300) {        
+            this.callback();
+            
             return data.json()
               .then((json) => { result.data = json; return result; })
               .catch(() => { result.data = ''; return result; });
@@ -103,6 +110,8 @@ class API {
             if (status === 401) {
               this.token = undefined;
             }
+            
+            this.callback();
             
             return result;
           }

@@ -24,7 +24,8 @@ class App extends Component {
   }
   
   componentDidMount() {
-    this.requestStateCheck(); 
+    this.requestStateCheck();
+    api.setCallback(this.requestStateCheck);
   }
   
   requestStateCheck() {
