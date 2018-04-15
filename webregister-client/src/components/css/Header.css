@@ -5,7 +5,7 @@
 
 .App-header {
   background-color: #222;
-  height: 26px;
+  height: 34px;
   padding: 5px;
   color: white;
   font-size: 16px;
@@ -28,8 +28,9 @@
   
   display: inline;
   
-  width: 30px;
-  height: 26px;
+  width: 32px;
+  height: 28px;
+  max-width: initial;
   
   border: 1px solid #888;
   cursor: pointer;
@@ -42,6 +43,7 @@
   background-color: #fff;
   margin: 4px 5px;
   border-radius: 5px;
+  max-width: initial;
 }
 
 .App-header .menu-icon:active {

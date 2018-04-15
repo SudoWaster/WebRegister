@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './css/User.css';
 
 class User extends Component {
   
@@ -40,7 +41,7 @@ class User extends Component {
   }
   
   render() {
-    let groups = this.state.groups.map((group) => <li>{group.group.name} - {group.progress}%</li>);
+    let groups = this.state.groups.map((group) => <li><span className="info-group-progress">{group.progress}%</span> <span className="info-group-name">{group.group.name}</span> </li>);
                                        
     if(this.state.groups.length === 0) {
       groups = <li>brak</li>; 
@@ -48,20 +49,20 @@ class User extends Component {
                                        
     return (
       <div>
-        <ul>
-          <li>Id: {this.state.user.id}</li>
-          <li>Mail: {this.state.user.mail}</li>
-          <li>Imię: {this.state.user.firstname}</li>
-          <li>Nazwisko: {this.state.user.lastname}</li>
-          <li>Typ: {this.state.user.type}</li>
-          <li>Grupy: 
-            <ul>
+        <div className="row">
+          <div className="col-6 col-sm-12">
+            <div className="info-column"><p className="info-label">Id</p> {this.state.user.id}</div>
+            <div className="info-column"><p className="info-label">Mail</p> {this.state.user.mail}</div>
+            <div className="info-column"><p className="info-label">Imię</p> {this.state.user.firstname}</div>
+            <div className="info-column"><p className="info-label">Nazwisko</p> {this.state.user.lastname}</div>
+            <div className="info-column"><p className="info-label">Typ</p> {this.state.user.type}</div>
+          </div>
+          <div className="col-6 col-sm-6">Grupy: 
+            <ul className="user-group-list">
               {groups}
             </ul>  
-          </li>
-        </ul>
-        
-        
+          </div>
+        </div>
       </div>
     );
   }

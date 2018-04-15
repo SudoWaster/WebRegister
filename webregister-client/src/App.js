@@ -5,6 +5,7 @@ import Menu from './components/Menu';
 import Landing from './components/Landing';
 
 import './App.css';
+import './grid.css';
 import API from './API';
 
 const APIUrl = "http://localhost:8080/WebRegisterAPI/";
