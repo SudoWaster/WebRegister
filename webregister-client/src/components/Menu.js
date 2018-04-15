@@ -54,14 +54,14 @@ class Menu extends Component {
     return (
       <div className={'menu' + (this.props.display ? ' menu-display' : '')}>
         <ul>
-          <li><button onClick={() => { this.props.onSelect(<Landing />); }} >Strona główna</button></li>
+          <li><button onClick={() => { this.props.onSelect(<Landing key="landing-default" />); }} >Strona główna</button></li>
           
           <li className="separator"></li>
           <li>Twoje grupy {addGroup}</li>
           {groups}
           <li className="separator"></li>
           
-          <li><button onClick={() => { this.props.onSelect(<User api={this.props.api} />); }}>Moje konto</button></li>
+          <li><button onClick={() => { this.props.onSelect(<User key="user-self" api={this.props.api} />); }}>Moje konto</button></li>
           <li><button onClick={this.handleLogout}>Wyloguj</button></li>
         </ul>
       </div>
