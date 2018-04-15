@@ -61,7 +61,7 @@ class Menu extends Component {
           {groups}
           <li className="separator"></li>
           
-          <li><button onClick={() => { this.props.onSelect(<User key="user-self" api={this.props.api} />); }}>Moje konto</button></li>
+          <li><button onClick={() => { this.props.onSelect(<User key="user-self" api={this.props.api} onLogout={this.props.onLogout} />); }}>Moje konto</button></li>
           <li><button onClick={this.handleLogout}>Wyloguj</button></li>
         </ul>
       </div>

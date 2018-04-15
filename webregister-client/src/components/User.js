@@ -31,6 +31,7 @@ class User extends Component {
     
     this.setUser = this.setUser.bind(this);
     this.save = this.save.bind(this);
+    this.delete = this.delete.bind(this);
   }
   
   componentDidMount() {
@@ -125,7 +126,8 @@ class User extends Component {
   
   delete(e) {
     
-    let isUserSure = confirm('Na pewno chcesz usunąć konto ' + this.state.user.firstname  + '?');
+    let firstname = this.state.user.firstname;
+    let isUserSure = window.confirm('Na pewno chcesz usunąć konto ' + firstname  + '?');
     
     if(isUserSure) {
       let url = 'user';
@@ -133,7 +135,11 @@ class User extends Component {
         url += '/' + this.state.user.id;
       }
       
-      this.props.api.delete(url, true);
+      this.props.api.delete(url, true)
+      .then((result) => {
+        this.props.api.destroySession();
+        this.props.onLogout();
+      });
       
     }
     
@@ -156,7 +162,7 @@ class User extends Component {
     let button = '';
 
     if(this.state.priviledged) {
-      button = (<button onClick={this.save}>Zapisz</button> - <button onClick={this.delete}>Usuń konto</button>)
+      button = (<span><button onClick={this.save}>Zapisz</button> - <button onClick={this.delete}>Usuń konto</button></span>);
     }
       
     return (

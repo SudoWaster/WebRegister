@@ -33,6 +33,6 @@
   opacity: 1;
 }
 
-.login-form-error .form-control {
+.login-form-error .form-control, .login-error {
   border-bottom-color: red;
 }
