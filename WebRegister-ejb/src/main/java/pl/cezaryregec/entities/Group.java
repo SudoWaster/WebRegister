@@ -292,7 +292,7 @@ public class Group implements Serializable {
             return false;
         }
         Group other = (Group) object;
-        return this.name.equals(other.name) && this.description.equals(other.description);
+        return this.id.equals(other.id) || (this.name.equals(other.name) && this.description.equals(other.description));
     }
 
     @Override

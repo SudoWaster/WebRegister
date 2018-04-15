@@ -44,7 +44,7 @@ public class GroupServiceImpl implements GroupService {
     
     @Override
     @Transactional
-    public void createGroup(String name, String description, Integer vacancies) {
+    public Integer createGroup(String name, String description, Integer vacancies) {
         Group group = new Group();
         
         group.setName(name);
@@ -52,6 +52,14 @@ public class GroupServiceImpl implements GroupService {
         group.setVacancies(vacancies);
         
         entityManager.get().merge(group);
+        
+        for(Group g : getGroups()) {
+            if(g.equals(group)) {
+                return g.getId();
+            }
+        }
+        
+        return null;
     }
     
     @Override

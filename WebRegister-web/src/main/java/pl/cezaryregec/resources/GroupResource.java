@@ -17,7 +17,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.auth.TokenService;
 import pl.cezaryregec.groups.GroupService;
-import pl.cezaryregec.auth.UserService;
+import pl.cezaryregec.entities.GroupRole;
+import pl.cezaryregec.entities.User;
 import pl.cezaryregec.entities.UserType;
 
 /**
@@ -75,7 +76,11 @@ public class GroupResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         
-        groupService.createGroup(name, description, vacancies);
+        User user = tokenService.getToken(token).getUser();
+        
+        Integer groupId = groupService.createGroup(name, description, vacancies);
+        groupService.addToGroup(user, groupId, false);
+        groupService.setRole(user, groupId, GroupRole.PRIVILEDGED);
         
         return Response.status(Response.Status.CREATED).build();
     }

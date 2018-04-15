@@ -22,7 +22,7 @@ public interface GroupService {
     
     List<Group> getOpenGroups();
     
-    void createGroup(String name, String description, Integer vacancies);
+    Integer createGroup(String name, String description, Integer vacancies);
     
     void setGroup(int id, String name, String description, Integer vacancies);
     
