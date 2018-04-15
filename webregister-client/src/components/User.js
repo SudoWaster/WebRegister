@@ -123,6 +123,23 @@ class User extends Component {
     e.preventDefault();
   }
   
+  delete(e) {
+    
+    let isUserSure = confirm('Na pewno chcesz usunąć konto ' + this.state.user.firstname  + '?');
+    
+    if(isUserSure) {
+      let url = 'user';
+      if(!this.state.self && this.state.admin) {
+        url += '/' + this.state.user.id;
+      }
+      
+      this.props.api.delete(url, true);
+      
+    }
+    
+    e.preventDefault();
+  }
+  
   render() {
     let groups = this.state.groups.map((group) => <li><span className="info-group-progress">{group.progress}%</span> <span className="info-group-name">{group.group.name}</span> </li>);
                                        
@@ -135,7 +152,13 @@ class User extends Component {
     if(this.state.self) {
       additional = (<Field name="Nowe hasło" value={this.state.user.password} editable={!this.state.processing} onEdit={(value) => {this.setUser('password', value);}} />);
     }
-                                       
+         
+    let button = '';
+
+    if(this.state.priviledged) {
+      button = (<button onClick={this.save}>Zapisz</button> - <button onClick={this.delete}>Usuń konto</button>)
+    }
+      
     return (
       <div>
         <div className="row">
@@ -146,7 +169,7 @@ class User extends Component {
             <Field name="Imię" value={this.state.user.firstname} editable={this.state.priviledged && !this.state.processing} onEdit={(value) => {this.setUser('firstname', value);}}/>
             <Field name="Nazwisko" value={this.state.user.lastname} editable={this.state.priviledged && !this.state.processing} onEdit={(value) => {this.setUser('lastname', value);}} />
             <Field name="Typ" value={this.state.user.type} editable={this.state.admin && !this.state.processing} options={this.state.priviledges} selectable={this.state.admin && !this.state.processing} onEdit={(value) => {this.setUser('type', value);}} />
-            <button onClick={this.save}>Zapisz</button>
+            {button}
           </div>
           <div className="col-6 col-sm-6">Grupy: 
             <ul className="user-group-list">
