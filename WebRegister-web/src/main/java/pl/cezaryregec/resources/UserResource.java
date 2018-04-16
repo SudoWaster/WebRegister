@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import pl.cezaryregec.auth.TokenService;
 import pl.cezaryregec.auth.UserService;
 import pl.cezaryregec.entities.Token;
+import pl.cezaryregec.entities.User;
 import pl.cezaryregec.entities.UserType;
 
 /**
@@ -160,9 +161,12 @@ public class UserResource {
         }
         
         userService.setUser(id, firstname, lastname);
-        Token token = tokenService.getToken(tokenId);
-        token.setUser(userService.getUser(id));
-        tokenService.refreshToken(token);
+        User user = userService.getUser(id);
+        
+        for(Token token : user.getSessions()) {
+            token.setUser(user);
+            tokenService.refreshToken(token);
+        }
         
         return Response.ok().build();
     }
