@@ -38,7 +38,20 @@ class Registerbox extends Component {
     
     if(this.state.password !== this.state.verify
       || this.state.password.length < 8) {
+      
       this.setState({ wrongpass: true });
+      return;
+    }
+    
+    if(!this.state.mail.length.includes('@')) {
+      
+      this.setState({ wrongmail: true });
+      return;
+    }
+    
+    if(this.state.firstname.length <= 0 || this.state.lastname.length <= 0) {
+      
+      this.setState({ error: true });
       return;
     }
     
