@@ -35,7 +35,6 @@ class User extends Component {
   }
   
   componentDidMount() {
-    
     let url = 'user';
     
     if(!(this.props.user === undefined || this.props.user === null)) {
@@ -91,9 +90,16 @@ class User extends Component {
     this.props.api.put('user/' + this.state.user.id, { firstname: this.state.user.firstname, lastname: this.state.user.lastname }, true)
     .then((result) => {
       
-      this.props.api.put('user/' + this.state.user.id + '/priviledge', { type: this.state.priviledges.indexOf(this.state.user.type) }, true);
+      this.props.api.put('user/' + this.state.user.id + '/priviledge', { type: this.state.priviledges.indexOf(this.state.user.type) }, true)
+      .then((result) => {
+        if(result.status === 200) {
+          this.setState({ processing: false });
+        }
+      });
       
       if(this.state.self) {
+        this.setState({ processing: true });
+        
         let password = prompt('Podaj swoje hasło aby kontynuować');
         let newpassword = password;
 
@@ -105,7 +111,7 @@ class User extends Component {
             return;
           }
         }
-
+        
         this.props.api.put('user/auth', { id: this.state.user.id, oldpassword: password, mail: this.state.user.mail, password: newpassword }, true)
         .then((result) => {
           
@@ -179,7 +185,7 @@ class User extends Component {
           </div>
           <div className="col-6 pull-1 col-sm-6 pull-sm-2">
             <div>
-              <div className="user-picture"><span>{this.state.user.firstname.substr(0, 1) + this.state.user.lastname.substr(0, 1)}</span></div>
+              <div className={'user-picture ' + 'user-picture-' + this.state.user.type.toLowerCase()}><span>{this.state.user.firstname.substr(0, 1) + this.state.user.lastname.substr(0, 1)}</span></div>
             </div>
             <div>
               <div className="user-group-list-title">Grupy</div> 

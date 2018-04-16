@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Landing from './Landing';
 import User from './User';
+import Userlist from './Userlist';
 
 import './css/Menu.css';
 
@@ -50,6 +51,12 @@ class Menu extends Component {
     if(this.state.groups.length === 0) {
       groups = (<li>- brak -</li>);
     }
+                      
+    let userlist = '';
+    
+    if(this.state.userType === 'ADMIN') {
+      userlist = (<button onClick={() => { this.props.onSelect(<Userlist key="user-list" api={this.props.api} />); }}>Lista użytkowników</button>);
+    }
     
     return (
       <div className={'menu' + (this.props.display ? ' menu-display' : '')}>
@@ -61,7 +68,7 @@ class Menu extends Component {
           <li>{groups}</li>
           <li className="separator"></li>
           
-          <li><button onClick={() => { this.props.onSelect(<User key="user-self" api={this.props.api} onLogout={this.props.onLogout} />); }}>Moje konto</button> <button onClick={this.handleLogout}>Wyloguj</button></li>
+          <li><button onClick={() => { this.props.onSelect(<User key="user-self" api={this.props.api} onLogout={this.props.onLogout} />); }}>Moje konto</button> {userlist} <button onClick={this.handleLogout}>Wyloguj</button></li>
         </ul>
       </div>
     );
