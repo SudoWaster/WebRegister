@@ -1,0 +1,25 @@
+.group-list {
+  margin: 2em 0;
+}
+
+.group-list-item:hover {
+  background: #eee;
+}
+
+.user-group {
+  border-bottom: 4px solid #0f0;
+}
+
+.group-list-header {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.group-list-separator {
+  border-top: 2px solid #eee;
+}
+
+.info-column {
+  font-weight: bold;
+  font-size: 12px;
+}

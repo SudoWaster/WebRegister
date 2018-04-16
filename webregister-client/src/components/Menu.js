@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Landing from './Landing';
 import User from './User';
 import Userlist from './Userlist';
+import Grouplist from './Grouplist';
 
 import './css/Menu.css';
 
@@ -44,9 +45,7 @@ class Menu extends Component {
   }
   
   render() {
-    const addGroup = (this.state.userType === 'PRIVILEDGED' || this.state.userType === 'ADMIN' ? (<button onClick={() => {}}>+</button>) : '');
-    
-    let groups = this.state.groups.map((group) => (<button>{group.name}</button>));
+    let groups = this.state.groups.map((group) => (<li className="menu-group-item"><span className="clickable">{group.name}</span></li>));
     
     if(this.state.groups.length === 0) {
       groups = (<li>- brak -</li>);
@@ -64,8 +63,8 @@ class Menu extends Component {
           <li><button onClick={() => { this.props.onSelect(<Landing key="landing-default" />); }} >Strona główna</button></li>
           
           <li className="separator"></li>
-          <li>Twoje grupy {addGroup}</li>
-          <li>{groups}</li>
+          <li><button onClick={() => { this.props.onSelect(<Grouplist key="group-list" api={this.props.api} onSelect={this.props.onSelect} />); }}>Lista grup</button></li>
+          {groups}
           <li className="separator"></li>
           
           <li><button onClick={() => { this.props.onSelect(<User key="user-self" api={this.props.api} onLogout={this.props.onLogout} />); }}>Moje konto</button> {userlist} <button onClick={this.handleLogout}>Wyloguj</button></li>

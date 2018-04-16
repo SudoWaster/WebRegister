@@ -50,3 +50,14 @@
 .menu button:active {
   background: #bbb;
 }
+
+.menu-title {
+  font-size: 14px;
+}
+
+.menu-group-item {
+  font-size: 14px;
+  
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
