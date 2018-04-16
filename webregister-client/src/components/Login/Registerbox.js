@@ -43,7 +43,7 @@ class Registerbox extends Component {
       return;
     }
     
-    if(!this.state.mail.length.includes('@')) {
+    if(!this.state.mail.includes('@')) {
       
       this.setState({ wrongmail: true });
       return;
