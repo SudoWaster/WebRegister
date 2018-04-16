@@ -45,7 +45,7 @@ class Menu extends Component {
   render() {
     const addGroup = (this.state.userType === 'PRIVILEDGED' || this.state.userType === 'ADMIN' ? (<button onClick={() => {}}>+</button>) : '');
     
-    let groups = this.state.groups.map((group) => (<li><button>{group.name}</button></li>));
+    let groups = this.state.groups.map((group) => (<button>{group.name}</button>));
     
     if(this.state.groups.length === 0) {
       groups = (<li>- brak -</li>);
@@ -58,11 +58,10 @@ class Menu extends Component {
           
           <li className="separator"></li>
           <li>Twoje grupy {addGroup}</li>
-          {groups}
+          <li>{groups}</li>
           <li className="separator"></li>
           
-          <li><button onClick={() => { this.props.onSelect(<User key="user-self" api={this.props.api} onLogout={this.props.onLogout} />); }}>Moje konto</button></li>
-          <li><button onClick={this.handleLogout}>Wyloguj</button></li>
+          <li><button onClick={() => { this.props.onSelect(<User key="user-self" api={this.props.api} onLogout={this.props.onLogout} />); }}>Moje konto</button> <button onClick={this.handleLogout}>Wyloguj</button></li>
         </ul>
       </div>
     );

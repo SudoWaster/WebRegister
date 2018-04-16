@@ -49,7 +49,7 @@ class Header extends Component {
             </span>
           </div>
           <div className="right">
-            Witaj, {name}! <a href="#" onClick={this.handleLogout}>Wyloguj</a>
+            Witaj, {name}! <span className="clickable" onClick={this.handleLogout}>Wyloguj</span>
           </div>
         </header>
         

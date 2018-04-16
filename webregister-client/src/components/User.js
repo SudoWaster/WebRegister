@@ -168,7 +168,7 @@ class User extends Component {
     return (
       <div>
         <div className="row">
-          <div className="col-6 col-sm-12">
+          <div className="col-6 pull-2 col-sm-12 pull-sm-1">
             <Field name="Id" value={this.state.user.id} editable={false} />
             <Field name="Mail" value={this.state.user.mail} editable={this.state.self && !this.state.processing} />
             {additional}
@@ -177,10 +177,16 @@ class User extends Component {
             <Field name="Typ" value={this.state.user.type} editable={this.state.admin && !this.state.processing} options={this.state.priviledges} selectable={this.state.admin && !this.state.processing} onEdit={(value) => {this.setUser('type', value);}} />
             {button}
           </div>
-          <div className="col-6 col-sm-6">Grupy: 
-            <ul className="user-group-list">
-              {groups}
-            </ul>  
+          <div className="col-6 pull-1 col-sm-6 pull-sm-2">
+            <div>
+              <div className="user-picture"><span>{this.state.user.firstname.substr(0, 1) + this.state.user.lastname.substr(0, 1)}</span></div>
+            </div>
+            <div>
+              <div className="user-group-list-title">Grupy</div> 
+              <ul className="user-group-list">
+                {groups}
+              </ul>  
+            </div>
           </div>
         </div>
       </div>

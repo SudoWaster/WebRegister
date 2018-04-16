@@ -3,6 +3,17 @@
   font-weight: bold;
 }
 
+.user-group-list-title {
+  font-weight: bold;
+  text-transform: uppercase;
+  
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #aaa;
+  
+  border-bottom: 1px solid #aaa;
+}
+
 .info-group-progress {
   display: inline-flex;
   width: 30px;
@@ -44,4 +55,40 @@
 .info-field input {
   border: none;
   background: transparent;
+  font-size: 14px;
+}
+
+.user-picture {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  
+  margin: 5px auto;
+  margin-bottom: 1em;
+  
+  padding: 0;
+  padding-top: 2%;
+  
+  width: 200px;
+  height: 200px;
+  
+  background: #91877b;
+  border-radius: 100%;
+  border: 1px solid #999;
+  
+  color: #eee;
+  
+  font-size: 72px;
+  
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+@media screen and (max-width: 450px) {
+  .user-picture {
+    width: 100px;
+    height: 100px;
+    font-size: 48px;
+  }
 }
