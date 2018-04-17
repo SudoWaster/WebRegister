@@ -8,13 +8,12 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import pl.cezaryregec.auth.TokenService;
-import pl.cezaryregec.auth.UserService;
 import pl.cezaryregec.entities.Token;
 
 /**
@@ -44,7 +43,7 @@ public class AuthResource {
     }
     
     @DELETE
-    public Response deleteToken(@PathParam("token") String token) {
+    public Response deleteToken(@QueryParam("token") String token) {
         
         tokenService.removeToken(token);
         return Response.ok().build();
