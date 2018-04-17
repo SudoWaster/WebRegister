@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import Createbox from './Group/Createbox';
+
 import './css/Group.css';
 
 class Grouplist extends Component {
@@ -9,8 +11,11 @@ class Grouplist extends Component {
     this.state = { 
       userGroups: [],
       groups: [],
-      priviledged: false
-    }
+      priviledged: false,
+      create: false
+    };
+    
+    this.toggleCreate = this.toggleCreate.bind(this);
   }
   
   componentDidMount() {
@@ -52,7 +57,24 @@ class Grouplist extends Component {
     })
   }
   
+  toggleCreate() {
+    this.setState({ create: !this.state.create });
+    this.componentDidMount();
+  }
+  
   render() {
+    
+    if(this.state.create) {
+      return (
+        <div>
+          <button onClick={() => { this.toggleCreate(); }}>Wróć</button>
+    
+          <Createbox api={this.props.api} onSubmit={() => { this.toggleCreate(); }} />
+        </div>
+      );
+    }
+    
+    
     let userGroupIds = [];
     
     let userGroups = this.state.userGroups.map((group) => {
@@ -72,7 +94,7 @@ class Grouplist extends Component {
     let groups = this.state.groups.map((group) => {
       if(userGroupIds.includes(group.id)) {
         counter++;
-        return;
+        return '';
       }
       
       return (
@@ -87,7 +109,7 @@ class Grouplist extends Component {
     
     
     if(groups.length === counter) {
-      groups = (<div className="row"><div className="col-12 info-column">Brak wolnych grup</div></div>);  
+      groups = (<div className="row"><div className="col-12 info-column">Brak wolnych miejsc w innych grupach</div></div>);  
     }
   
     if(this.state.groups.length <= 0) {
@@ -97,7 +119,7 @@ class Grouplist extends Component {
     let addButton = '';
     
     if(this.state.priviledged) {
-      addButton = (<button className="create-group-button" onClick={() => {}}>Stwórz grupę</button>);  
+      addButton = (<button className="create-group-button" onClick={() => { this.toggleCreate(); }}>Stwórz grupę</button>);  
     }
   
     return (

@@ -10,6 +10,10 @@
   border-bottom: 4px solid #0f0;
 }
 
+.user-group .group-name {
+  font-weight: bold;
+}
+
 .group-list-header {
   font-weight: bold;
   font-size: 14px;
@@ -22,4 +26,28 @@
 .info-column {
   font-weight: bold;
   font-size: 12px;
+}
+
+.create-group-form input {
+  display: block;
+  font-size: 14px;
+}
+
+.create-group-form .form-field {
+  border: none;
+  border-bottom: 1px solid #aaa;
+  background: transparent;
+  font-size: 18px;
+  opacity: 0.8;
+  margin: 12px;
+  width: 100%;
+}
+
+.create-group-form .form-field:focus {
+  border-bottom: 2px solid #aaa;
+  opacity: 1;
+}
+
+.create-group-form-error .form-field {
+  border-bottom-color: #f00;
 }

@@ -170,6 +170,8 @@ class User extends Component {
     if(this.state.priviledged) {
       button = (<span><button onClick={this.save}>Zapisz</button> - <button onClick={this.delete}>Usuń konto</button></span>);
     }
+                
+    let userPictureClass = 'user-picture-' + this.state.user.type.toLowerCase();
       
     return (
       <div>
@@ -185,7 +187,7 @@ class User extends Component {
           </div>
           <div className="col-6 pull-1 col-sm-6 pull-sm-2">
             <div>
-              <div className={'user-picture ' + 'user-picture-' + this.state.user.type.toLowerCase()}><span>{this.state.user.firstname.substr(0, 1) + this.state.user.lastname.substr(0, 1)}</span></div>
+              <div className={'user-picture ' + userPictureClass}><span>{this.state.user.firstname.substr(0, 1) + this.state.user.lastname.substr(0, 1)}</span></div>
             </div>
             <div>
               <div className="user-group-list-title">Grupy</div> 
