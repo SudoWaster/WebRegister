@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Createbox from './Group/Createbox';
+import Group from './Group';
 
 import './css/Group.css';
 
@@ -16,6 +17,7 @@ class Grouplist extends Component {
     };
     
     this.toggleCreate = this.toggleCreate.bind(this);
+    this.openGroup = this.openGroup.bind(this);
   }
   
   componentDidMount() {
@@ -62,6 +64,10 @@ class Grouplist extends Component {
     this.componentDidMount();
   }
   
+  openGroup(id) {
+    this.props.onSelect(<Group key={'group-' + id} api={this.props.api} group={id} />);
+  }
+  
   render() {
     
     if(this.state.create) {
@@ -81,7 +87,7 @@ class Grouplist extends Component {
       userGroupIds.push(group.id);
       
       return (
-      <div className="group-list-item user-group clickable row">
+      <div key={'group-list-user-' + group.id} className="group-list-item user-group clickable row" onClick={() => { this.openGroup(group.id); }}>
         <div className="col-4 group-name">{group.name}</div>
         <div className="col-4 group-description">{group.description}</div>
         <div className="col-4 group-vacancies">{group.vacancies}</div>
@@ -98,7 +104,7 @@ class Grouplist extends Component {
       }
       
       return (
-      <div className="group-list-item clickable row">
+      <div key={'group-list-' + group.id} className="group-list-item clickable row" onClick={() => { this.openGroup(group.id); }}>
         <div className="col-4 group-name">{group.name}</div>
         <div className="col-4 group-description">{group.description}</div>
         <div className="col-3 group-vacancies">{group.vacancies}</div>

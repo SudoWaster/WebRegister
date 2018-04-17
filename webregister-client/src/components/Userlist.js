@@ -45,7 +45,7 @@ class Userlist extends Component {
     }
     
     let users = this.state.users.map((user) => (
-        <div className="clickable row list-element" onClick={() => { this.showUser(user.id); }}>
+        <div key={'user-list-' + user.id} className="clickable row list-element" onClick={() => { this.showUser(user.id); }}>
           <div className="col-4 user-list-id">{user.id}</div> 
           <div className="col-4 user-list-mail">{user.mail}</div> 
           <div className="col-4 user-list-name">{user.firstname + ' ' + user.lastname}</div>

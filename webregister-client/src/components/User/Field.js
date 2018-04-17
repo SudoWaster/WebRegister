@@ -19,7 +19,8 @@ class Field extends Component {
     let options = '';
     
     if(!(this.props.options === undefined)) {
-      options = this.props.options.map((option) => <option value={option} selected={option === this.props.value}>{option}</option>);
+      let optionCounter = 0;
+      options = this.props.options.map((option) => <option key={'option-' + optionCounter++} value={option} selected={option === this.props.value}>{option}</option>);
     }
 
     let input = (<input type="text" value={this.props.value} disabled={!this.props.editable} onChange={this.changeValue} />);

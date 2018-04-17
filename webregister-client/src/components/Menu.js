@@ -3,6 +3,7 @@ import Landing from './Landing';
 import User from './User';
 import Userlist from './Userlist';
 import Grouplist from './Grouplist';
+import Group from './Group';
 
 import './css/Menu.css';
 
@@ -45,7 +46,7 @@ class Menu extends Component {
   }
   
   render() {
-    let groups = this.state.groups.map((group) => (<li className="menu-group-item"><span className="clickable">{group.name}</span></li>));
+    let groups = this.state.groups.map((group) => (<li key={'menu-group-list-' + group.id} className="menu-group-item"><span className="clickable" onClick={() => { this.props.onSelect(<Group api={this.props.api} group={group.id} key={'group-' + group.id} />) }}>{group.name}</span></li>));
     
     if(this.state.groups.length === 0) {
       groups = (<li>- brak -</li>);
@@ -63,7 +64,7 @@ class Menu extends Component {
           <li><button onClick={() => { this.props.onSelect(<Landing key="landing-default" />); }} >Strona główna</button></li>
           
           <li className="separator"></li>
-          <li><button onClick={() => { this.props.onSelect(<Grouplist key="group-list" api={this.props.api} onSelect={this.props.onSelect} />); }}>Lista grup</button></li>
+          <li><button onSelect={this.props.onSelect} onClick={() => { this.props.onSelect(<Grouplist key="group-list" api={this.props.api} onSelect={this.props.onSelect} />); }}>Lista grup</button></li>
           {groups}
           <li className="separator"></li>
           

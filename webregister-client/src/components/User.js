@@ -153,7 +153,7 @@ class User extends Component {
   }
   
   render() {
-    let groups = this.state.groups.map((group) => <li><span className="info-group-progress">{group.progress}%</span> <span className="info-group-name">{group.group.name}</span> </li>);
+    let groups = this.state.groups.map((group) => <li key={'user-group-profile-' + group.id}><span className="info-group-progress">{group.progress}%</span> <span className="info-group-name">{group.group.name}</span> </li>);
                                        
     if(this.state.groups.length === 0) {
       groups = <li>brak</li>; 

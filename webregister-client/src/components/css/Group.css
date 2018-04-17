@@ -6,6 +6,13 @@
   background: #eee;
 }
 
+.group-list-item .group-description {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
 .user-group {
   border-bottom: 4px solid #0f0;
 }
@@ -50,4 +57,24 @@
 
 .create-group-form-error .form-field {
   border-bottom-color: #f00;
+}
+
+.group-title {
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+}
+
+.group-description {
+  color: #666;
+}
+
+.group-instructors {
+  background: #eee;
+}
+
+.instructors-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
