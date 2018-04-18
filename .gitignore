@@ -3,3 +3,4 @@ WebRegister-ear/target/
 WebRegister-web/target/
 WebRegister-ejb/nbproject/
 .DS_Store
+.idea
