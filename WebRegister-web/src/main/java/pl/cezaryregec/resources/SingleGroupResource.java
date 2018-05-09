@@ -278,7 +278,7 @@ public class SingleGroupResource {
     @Path("{id}/presence/{date}/{user_id}")
     public Response setUserPresence(@PathParam("id") Integer id,
             @PathParam("date") Date date,
-            @PathParam("userId") String userId,
+            @PathParam("user_id") String userId,
             @QueryParam("present") Boolean present,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
@@ -297,7 +297,7 @@ public class SingleGroupResource {
     @Path("{id}/presence/{date}/{user_id}")
     public Response removeUserPresence(@PathParam("id") Integer id,
             @PathParam("date") Date date,
-            @PathParam("userId") String userId,
+            @PathParam("user_id") String userId,
             @QueryParam("token") String token,
             @Context HttpServletRequest request) {
      
