@@ -65,8 +65,23 @@
   letter-spacing: 5px;
 }
 
+.group-title input {
+  font-size: 18px;
+  margin: 15px 0;
+}
+
+.group-vacancies {
+  font-size: 12px;
+  color: #666;
+}
+
 .group-description {
   color: #666;
+}
+
+.group-description textarea {
+  width: 100%;
+  min-height: 100px;
 }
 
 .group-instructors {

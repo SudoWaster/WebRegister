@@ -15,9 +15,13 @@ class App extends Component {
   constructor() {
     super();
     
-    this.state = { menu: false, 
-        content: (<Landing />) };
-    
+    this.state = {
+      menu: false,
+      defaultContent: (<Landing key="default-landing" />),
+      content: (<div></div>),
+      isAuthenticated: false
+    };
+
     this.requestStateCheck = this.requestStateCheck.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.toggleContent = this.toggleContent.bind(this);
@@ -30,6 +34,9 @@ class App extends Component {
   
   requestStateCheck() {
     this.setState({ isAuthenticated: api.isAuthenticated() });
+    if(!api.isAuthenticated()) {
+      this.setState({ content: this.state.defaultContent });
+    }
   }
   
   toggleMenu() {

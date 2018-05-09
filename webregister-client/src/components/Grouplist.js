@@ -19,7 +19,11 @@ class Grouplist extends Component {
     this.toggleCreate = this.toggleCreate.bind(this);
     this.openGroup = this.openGroup.bind(this);
   }
-  
+
+  componentWillReceiveProps() {
+    this.componentDidMount();
+  }
+
   componentDidMount() {
     
     let user = { type: 'UNAUTHORIZED' };
@@ -65,7 +69,7 @@ class Grouplist extends Component {
   }
   
   openGroup(id) {
-    this.props.onSelect(<Group key={'group-' + id} api={this.props.api} group={id} />);
+    this.props.onSelect(<Group key={'group-' + id} api={this.props.api} group={id} returnAction={() => { this.componentDidMount(); this.props.onSelect(this); }} />);
   }
   
   render() {

@@ -6,24 +6,30 @@ class Group extends Component {
     
     this.state = {
       group: {
+        id: 0,
         name: '',
         description: '',
         vacancies: ''
       },
       instructors: [],
       priviledged: false,
-      isin: false
+      isin: false,
+      editable: false
     };
     
     this.join = this.join.bind(this);
     this.leave = this.leave.bind(this);
+    this.setValue = this.setValue.bind(this);
   }
   
   componentDidMount() {
     this.props.api.get('group/' + this.props.group, false, true)
     .then((result) => {
       if(result.status === 200) {
-        this.setState({ group: result.data });
+
+        let group = result.data;
+        group.id = this.props.group;
+        this.setState({ group: group });
       }
     })
     .then(() => {
@@ -89,7 +95,40 @@ class Group extends Component {
       }
     });
   }
-  
+
+  deleteGroup() {
+    let deleteConfirmation = window.confirm("Czy na pewno chcesz usunąć grupę " + this.state.group.name + "?");
+
+    if(!deleteConfirmation) {
+      return;
+    }
+
+    this.props.api.delete('groups/' + this.props.group, true)
+    .then((result) => {
+      if(result.status === 200) {
+        this.props.returnAction();
+      }
+    })
+  }
+
+  setValue(e) {
+    let key = e.target.name;
+    let value = e.target.value;
+
+    let group = this.state.group;
+    group[key] = value;
+
+    this.setState({ group: group });
+  }
+
+  save() {
+    if(!this.state.priviledged) {
+      return;
+    }
+
+    this.props.api.put('groups', this.state.group, true);
+  }
+
   render() {
     
     let instructors = this.state.instructors.map((instructor) => (<li key={'instructor-' + this.props.group + '-' + instructor.id}>{instructor.firstname + ' ' + instructor.lastname}</li>));
@@ -98,22 +137,42 @@ class Group extends Component {
       instructors = '- brak -';
     }
     
-    let addButton = (!this.state.isin ? (<button onClick={() => { this.join(); }} disabled={this.state.group.vacancies <= 0}>Dołącz</button>) : (<button onClick={() => {this.leave(); }}>Opuść</button>));
-    
+    let addButton = <button onClick={() => {this.leave(); }}>Opuść</button>;
+
+    if(this.state.isin) {
+      addButton = (<button onClick={() => { this.join(); }} disabled={this.state.group.vacancies <= 0}>Dołącz</button>);
+    }
+
     let manageButtons = '';
     
     if(this.state.priviledged) {
-      manageButtons = (<span><button>Edytuj</button> <button>Usuń</button></span>);
+      manageButtons = (<span><button onClick={() => { this.setState({ editable: !this.state.editable }); }}>Edytuj</button> <button onClick={() => { this.deleteGroup(); }}>Usuń</button></span>);
     }
-    
+
+    let titleElement = (<h2 className="group-title">{this.state.group.name}</h2>);
+    let description = this.state.group.description;
+    let vacancies = this.state.group.vacancies;
+    let saveButton = '';
+
+    if(this.state.editable) {
+        titleElement = (<div className="group-title"><input onChange={this.setValue} value={this.state.group.name} name="name" /></div>);
+        description = (<textarea onChange={this.setValue} value={this.state.group.description} name="description" />);
+        vacancies = (<input type="number" onChange={this.setValue} defaultValue={this.state.group.vacancies} />);
+        saveButton = (<button onClick={() => { this.save(); }}>Zapisz</button>);
+    }
+
     return (
       <div>
         <div className="row">
-          <div className="col-12"><h2 className="group-title">{this.state.group.name}</h2> {addButton} {manageButtons}</div>
+          <div className="col-12">
+            {titleElement}
+            <div className="group-vacancies">Wolne miejsca: {vacancies}</div>
+            {saveButton} {addButton} {manageButtons}
+          </div>
         </div>
       
         <div className="row">
-          <div className="col-12 group-description">{this.state.group.description}</div>
+          <div className="col-12 group-description">{description}</div>
         </div>
       
         <div className="row group-instructors">
